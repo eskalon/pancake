@@ -1,0 +1,74 @@
+## Java
+*.class
+*.war
+*.ear
+hs_err_pid*
+
+## Eclipse
+.classpath
+.project
+.metadata/
+/core/bin/
+/desktop/bin/
+/g3d/bin/
+/gwt/bin/
+*.tmp
+*.bak
+*.swp
+*~.nib
+.settings/
+.loadpath
+.externalToolBuilders/
+*.launch
+
+## NetBeans
+/nbproject/private/
+/core/nbproject/private/
+/desktop/nbproject/private/
+/g3d/nbproject/private/
+/gwt/nbproject/private/
+
+/build/
+/core/build/
+/desktop/build/
+/g3d/build/
+/gwt/build/
+
+/nbbuild/
+/core/nbbuild/
+/desktop/nbbuild/
+/g3d/nbbuild/
+/gwt/nbbuild/
+
+/dist/
+/core/dist/
+/desktop/dist/
+/g3d/dist/
+/gwt/dist/
+
+/nbdist/
+/core/nbdist/
+/desktop/nbdist/
+/g3d/nbdist/
+/gwt/nbdist/
+
+nbactions.xml
+nb-configuration.xml
+
+## Gradle
+/local.properties
+.gradle/
+gradle-app.setting
+/build/
+/core/build/
+/desktop/build/
+/g3d/build/
+/gwt/build/
+
+## OS Specific
+.DS_Store
+Thumbs.db
+
+## Project Specific
+*.log
+/bin/
