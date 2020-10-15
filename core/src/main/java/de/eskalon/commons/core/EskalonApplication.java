@@ -26,6 +26,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.reflect.ReflectionUtils;
+import com.github.acanthite.gdx.graphics.g2d.FreeTypeSkinLoader;
 
 import de.damios.guacamole.annotations.GwtIncompatible;
 import de.damios.guacamole.gdx.Log;
@@ -35,6 +36,7 @@ import de.eskalon.commons.asset.AnnotationAssetManager;
 import de.eskalon.commons.asset.BitmapFontAssetLoaderParametersFactory;
 import de.eskalon.commons.asset.PlaylistDefinition;
 import de.eskalon.commons.asset.PlaylistDefinitionLoader;
+import de.eskalon.commons.asset.SkinAssetLoaderParametersFactory;
 import de.eskalon.commons.audio.ISoundManager;
 import de.eskalon.commons.misc.DebugInfoRenderer;
 import de.eskalon.commons.misc.EskalonGameInputProcessor;
@@ -130,8 +132,11 @@ public abstract class EskalonApplication extends ManagedGame<AbstractEskalonScre
 		this.assetManager.setLoader(Text.class, new TextLoader(this.assetManager.getFileHandleResolver()));
 		this.assetManager.setLoader(PlaylistDefinition.class,
 				new PlaylistDefinitionLoader(this.assetManager.getFileHandleResolver()));
+		this.assetManager.setLoader(Skin.class, new FreeTypeSkinLoader(this.assetManager.getFileHandleResolver()));
+
 		this.assetManager.registerAssetLoaderParametersFactory(BitmapFont.class,
 				new BitmapFontAssetLoaderParametersFactory());
+		this.assetManager.registerAssetLoaderParametersFactory(Skin.class, new SkinAssetLoaderParametersFactory());
 
 		// Sound manager
 		this.soundManager = ReflectionUtils.newInstance("de.eskalon.commons.audio.DesktopSoundManager",
