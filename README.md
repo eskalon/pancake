@@ -1,5 +1,7 @@
 # Pancake
 
+[![Release](https://jitpack.io/v/eskalon/pancake.svg)](https://jitpack.io/#eskalon/pancake) [![Build Status](https://travis-ci.com/eskalon/pancake.svg?branch=master)](https://travis-ci.com/eskalon/pancake)
+
 Pancake is the basis for all libGDX games developed by eskalon.
 
 ## Technical 
