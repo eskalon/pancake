@@ -17,6 +17,7 @@ allprojects {
 	ext {
 		appName = "pancake"
 		gdxVersion = "1.9.11"
+		guacamoleVersion = "0.2.2" // is used for the EventBus
 		guavaVersion = "29.0-jre" // is used for the EventBus
 		junitVersion = "5.6.0"
 		mockitoVersion = "3.4.4"
@@ -76,6 +77,7 @@ project(":desktop") {
 
 	dependencies {
 		api project(":core")
+		api "com.github.crykn.guacamole:gdx-desktop:$guacamoleVersion"
 		implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
 	}
 }
