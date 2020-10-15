@@ -1,0 +1,81 @@
+buildscript {
+	repositories {
+		mavenLocal()
+		mavenCentral()
+		maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+		jcenter()
+	}
+	dependencies {
+	}
+}
+
+allprojects {
+	apply plugin: "eclipse"
+	apply plugin: "idea"
+
+	version = "0.1.0"
+	ext {
+		appName = "pancake"
+		gdxVersion = "1.9.11"
+		guavaVersion = "29.0-jre" // is used for the EventBus
+		junitVersion = "5.6.0"
+		mockitoVersion = "3.4.4"
+		reflectionsVersion = "0.9.11" //0.9.12 doesn't work, see https://github.com/ronmamo/reflections/issues/273
+        screenmanagerVersion = "0.6.2"
+    }
+
+    repositories {
+		mavenLocal()
+		mavenCentral()
+		maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+		maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+		maven { url "https://jitpack.io" }
+		jcenter()
+    }
+}
+
+project(":core") {
+	apply plugin: "java-library"
+
+	dependencies {
+		implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
+		implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+		implementation "com.google.guava:guava:$guavaVersion"
+		implementation "org.reflections:reflections:$reflectionsVersion"
+		api "com.github.crykn:libgdx-screenmanager:$screenmanagerVersion"
+
+		testImplementation "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+		testImplementation "org.mockito:mockito-core:$mockitoVersion"
+		testImplementation "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
+		testImplementation "com.badlogicgames.gdx:gdx:$gdxVersion"
+		testImplementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+		testImplementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+		testImplementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
+	}
+
+	sourceSets.main {
+		resources.srcDirs = ["src/main/assets"]
+	}
+
+	sourceSets.test {
+		resources.srcDirs = ["src/test/assets"]
+	}
+}
+
+project(":g3d") {
+	apply plugin: "java-library"
+
+	dependencies {
+		api project(":core")
+		implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+	}
+}
+
+project(":desktop") {
+	apply plugin: "java-library"
+
+	dependencies {
+		api project(":core")
+		implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+	}
+}
