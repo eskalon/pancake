@@ -3,7 +3,7 @@ package com.badlogic.gdx.utils.reflect;
 import javax.annotation.Nullable;
 
 /**
- * Reflection utils for fields.
+ * Reflection utils.
  * 
  * @author damios
  */
@@ -14,6 +14,7 @@ public class ReflectionUtils {
 	}
 
 	public static Field convertFieldObject(java.lang.reflect.Field field) {
+		// The constructor is package private
 		return new Field(field);
 	}
 
