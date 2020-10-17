@@ -27,6 +27,9 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.reflect.ReflectionUtils;
 import com.github.acanthite.gdx.graphics.g2d.FreeTypeSkinLoader;
+import com.google.common.eventbus.DeadEvent;
+import com.google.common.eventbus.ExceptionEvent;
+import com.google.common.eventbus.Subscribe;
 
 import de.damios.guacamole.annotations.GwtIncompatible;
 import de.damios.guacamole.gdx.Log;
@@ -68,7 +71,7 @@ import de.eskalon.commons.utils.graphics.GL32CMacIssueHandler;
  * @author damios
  * @see BasicScreenManager
  */
-@GwtIncompatible // TODO replace with something compatible with GWT
+@GwtIncompatible // TODO replace EventBus with something compatible with GWT
 public abstract class EskalonApplication
 		extends ManagedGame<AbstractEskalonScreen, ScreenTransition> {
 
@@ -125,6 +128,26 @@ public abstract class EskalonApplication
 
 		// Initialize managed game
 		super.create();
+
+		// Event bus
+		this.eventBus.register(new Object() {
+			@Subscribe
+			public void onExceptionEvent(ExceptionEvent ev) {
+				Log.error("EventHandler",
+						"Exception thrown by subscriber method '%s(%s)' on subscriber '%s' when dispatching event '%s'",
+						ev.getSubscriberMethod().getName(),
+						ev.getSubscriberMethod().getParameterTypes()[0]
+								.getSimpleName(),
+						ev.getSubscriber(), ev.getEvent());
+			}
+
+			@Subscribe
+			public void onDeadEvent(DeadEvent ev) {
+				Log.debug("EventHandler",
+						"The event '%s' was dispatched, but there were no subscribers registered",
+						ev.getEvent());
+			}
+		});
 
 		// Add input listener
 		getInputMultiplexer().addProcessor(applicationInputProcessor);

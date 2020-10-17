@@ -16,7 +16,7 @@ allprojects {
 	version = "0.1.0"
 	ext {
 		appName = "pancake"
-		eventbusVersion = "38cc084895" // = 1.5.2
+		eventbusVersion = "1.6.0"
 		freetypeSkinVersion = "0.3.1"
 		gdxVersion = "1.9.11"
 		guacamoleVersion = "0.2.2"
