@@ -27,9 +27,6 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.reflect.ReflectionUtils;
 import com.github.acanthite.gdx.graphics.g2d.FreeTypeSkinLoader;
-import com.google.common.eventbus.DeadEvent;
-import com.google.common.eventbus.ExceptionEvent;
-import com.google.common.eventbus.Subscribe;
 
 import de.damios.guacamole.annotations.GwtIncompatible;
 import de.damios.guacamole.gdx.Log;
@@ -44,6 +41,7 @@ import de.eskalon.commons.audio.ISoundManager;
 import de.eskalon.commons.misc.DebugInfoRenderer;
 import de.eskalon.commons.misc.EskalonGameInputProcessor;
 import de.eskalon.commons.misc.EskalonLogger;
+import de.eskalon.commons.misc.EventBusLogger;
 import de.eskalon.commons.misc.EventQueueBus;
 import de.eskalon.commons.screen.transition.ScreenTransition;
 import de.eskalon.commons.screen.transition.impl.BlankTimedTransition;
@@ -130,24 +128,7 @@ public abstract class EskalonApplication
 		super.create();
 
 		// Event bus
-		this.eventBus.register(new Object() {
-			@Subscribe
-			public void onExceptionEvent(ExceptionEvent ev) {
-				Log.error("EventHandler",
-						"Exception thrown by subscriber method '%s(%s)' on subscriber '%s' when dispatching event '%s'",
-						ev.getSubscriberMethod().getName(),
-						ev.getSubscriberMethod().getParameterTypes()[0]
-								.getSimpleName(),
-						ev.getSubscriber(), ev.getEvent());
-			}
-
-			@Subscribe
-			public void onDeadEvent(DeadEvent ev) {
-				Log.debug("EventHandler",
-						"The event '%s' was dispatched, but there were no subscribers registered",
-						ev.getEvent());
-			}
-		});
+		this.eventBus.register(new EventBusLogger());
 
 		// Add input listener
 		getInputMultiplexer().addProcessor(applicationInputProcessor);
