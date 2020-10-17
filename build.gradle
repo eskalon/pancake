@@ -16,13 +16,13 @@ allprojects {
 	version = "0.1.0"
 	ext {
 		appName = "pancake"
+		eventbusVersion = "38cc084895" // = 1.5.2
 		freetypeSkinVersion = "0.3.1"
 		gdxVersion = "1.9.11"
-		guacamoleVersion = "0.2.2" // is used for the EventBus
-		guavaVersion = "29.0-jre" // is used for the EventBus
+		guacamoleVersion = "0.2.2"
 		junitVersion = "5.6.0"
 		mockitoVersion = "3.4.4"
-		reflectionsVersion = "0.9.11" //0.9.12 doesn't work, see https://github.com/ronmamo/reflections/issues/273
+		reflectionsVersion = "0.11.5" // -> 0.9.13
         screenmanagerVersion = "0.6.2"
     }
 
@@ -42,8 +42,9 @@ project(":core") {
 	dependencies {
 		implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
 		implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
-		implementation "com.google.guava:guava:$guavaVersion"
-		implementation "org.reflections:reflections:$reflectionsVersion"
+		
+		implementation "com.github.crykn:guava-eventbus:$eventbusVersion"
+		implementation "net.oneandone.reflections8:reflections8:$reflectionsVersion" // alternative to org.reflections:reflections, see https://github.com/ronmamo/reflections/issues/273
 		api "com.github.crykn:libgdx-screenmanager:$screenmanagerVersion"
 		implementation "com.github.crykn:freetype-skin:$freetypeSkinVersion"
 

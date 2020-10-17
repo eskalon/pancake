@@ -42,12 +42,12 @@ import de.eskalon.commons.utils.graphics.PingPongBufferHandler;
  * <pre>
  * boolean doPostProcessing = postProcessor.hasEffects();
  * if (doPostProcessing) {
- *      postProcessor.beginCapture();
+ * 	postProcessor.beginCapture();
  * }
  * render(); // the actual rendering
  * if (doPostProcessing) {
- *      postProcessor.endCapture();
- *      postProcessor.renderEffectsOntoBatch(batch);
+ * 	postProcessor.endCapture();
+ * 	postProcessor.renderEffectsOntoBatch(batch);
  * }
  * </pre>
  * 

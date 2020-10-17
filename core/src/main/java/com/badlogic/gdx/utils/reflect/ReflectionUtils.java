@@ -19,8 +19,8 @@ public class ReflectionUtils {
 	}
 
 	/**
-	 * Creates a class via libGDX reflection by using its name. Returns null, if the
-	 * reflection or instantiation fails.
+	 * Creates a class via libGDX reflection by using its name. Returns null, if
+	 * the reflection or instantiation fails.
 	 * 
 	 * @param <T>
 	 * @param className
@@ -31,7 +31,8 @@ public class ReflectionUtils {
 	@Nullable
 	public static <T> T newInstance(String className, Class<T> clazz) {
 		try {
-			return (T) ClassReflection.newInstance(ClassReflection.forName(className));
+			return (T) ClassReflection
+					.newInstance(ClassReflection.forName(className));
 		} catch (ReflectionException e) {
 			return null;
 		}

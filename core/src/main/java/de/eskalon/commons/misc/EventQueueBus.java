@@ -20,6 +20,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.google.common.eventbus.EventBus;
 
+import de.damios.guacamole.annotations.GwtIncompatible;
+
 /**
  * This event bus queues events and only posts them to the subscribers when
  * {@link #distributeEvents()} is called. This can be useful if events have to
@@ -27,17 +29,18 @@ import com.google.common.eventbus.EventBus;
  * 
  * @author damios
  */
+@GwtIncompatible
 public class EventQueueBus extends EventBus {
 
 	/**
-	 * Queue of posted events. Is taken care of when {@link #distributeEvents()} is
-	 * called.
+	 * Queue of posted events. Is taken care of when {@link #distributeEvents()}
+	 * is called.
 	 */
 	private Queue<Object> eventQueue = new ConcurrentLinkedQueue<>();
 
 	/**
-	 * After this method is called the {@linkplain #eventQueue queued events} get
-	 * posted to their respective subscribers.
+	 * After this method is called the {@linkplain #eventQueue queued events}
+	 * get posted to their respective subscribers.
 	 */
 	public void distributeEvents() {
 		Object event = eventQueue.poll();

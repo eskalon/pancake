@@ -68,17 +68,21 @@ import de.eskalon.commons.utils.graphics.GL32CMacIssueHandler;
  * @author damios
  * @see BasicScreenManager
  */
-public abstract class EskalonApplication extends ManagedGame<AbstractEskalonScreen, ScreenTransition> {
+@GwtIncompatible // TODO replace with something compatible with GWT
+public abstract class EskalonApplication
+		extends ManagedGame<AbstractEskalonScreen, ScreenTransition> {
 
 	@GwtIncompatible
-	public final boolean IN_DEV_ENV = EskalonApplication.class.getPackage().getImplementationVersion() == null;
+	public final boolean IN_DEV_ENV = EskalonApplication.class.getPackage()
+			.getImplementationVersion() == null;
 	@GwtIncompatible
 	public final String VERSION = IN_DEV_ENV ? "Development Build"
 			: EskalonApplication.class.getPackage().getImplementationVersion();
 
 	private DebugInfoRenderer debugInfoRenderer;
 
-	protected AnnotationAssetManager assetManager = new AnnotationAssetManager(new InternalFileHandleResolver());
+	protected AnnotationAssetManager assetManager = new AnnotationAssetManager(
+			new InternalFileHandleResolver());
 
 	protected ISoundManager soundManager;
 
@@ -113,9 +117,10 @@ public abstract class EskalonApplication extends ManagedGame<AbstractEskalonScre
 		else
 			Log.showInfoAndErrors();
 
-		Log.info("Start ", "Version: '%s' | App Type: '%s' | OS: '%s'", VERSION, Gdx.app.getType(),
-				System.getProperty("os.name"));
-		Log.debug("Start ", "GL30 Available: '%b' | Renderer: '%s'", Gdx.graphics.isGL30Available(),
+		Log.info("Start ", "Version: '%s' | App Type: '%s' | OS: '%s'", VERSION,
+				Gdx.app.getType(), System.getProperty("os.name"));
+		Log.debug("Start ", "GL30 Available: '%b' | Renderer: '%s'",
+				Gdx.graphics.isGL30Available(),
 				Gdx.graphics.getGLVersion().getRendererString());
 
 		// Initialize managed game
@@ -126,25 +131,34 @@ public abstract class EskalonApplication extends ManagedGame<AbstractEskalonScre
 
 		// Configure asset manager
 		this.assetManager.setLoader(FreeTypeFontGenerator.class,
-				new FreeTypeFontGeneratorLoader(this.assetManager.getFileHandleResolver()));
+				new FreeTypeFontGeneratorLoader(
+						this.assetManager.getFileHandleResolver()));
 		this.assetManager.setLoader(BitmapFont.class, ".ttf",
-				new FreetypeFontLoader(this.assetManager.getFileHandleResolver()));
-		this.assetManager.setLoader(Text.class, new TextLoader(this.assetManager.getFileHandleResolver()));
+				new FreetypeFontLoader(
+						this.assetManager.getFileHandleResolver()));
+		this.assetManager.setLoader(Text.class,
+				new TextLoader(this.assetManager.getFileHandleResolver()));
 		this.assetManager.setLoader(PlaylistDefinition.class,
-				new PlaylistDefinitionLoader(this.assetManager.getFileHandleResolver()));
-		this.assetManager.setLoader(Skin.class, new FreeTypeSkinLoader(this.assetManager.getFileHandleResolver()));
+				new PlaylistDefinitionLoader(
+						this.assetManager.getFileHandleResolver()));
+		this.assetManager.setLoader(Skin.class, new FreeTypeSkinLoader(
+				this.assetManager.getFileHandleResolver()));
 
 		this.assetManager.registerAssetLoaderParametersFactory(BitmapFont.class,
 				new BitmapFontAssetLoaderParametersFactory());
-		this.assetManager.registerAssetLoaderParametersFactory(Skin.class, new SkinAssetLoaderParametersFactory());
+		this.assetManager.registerAssetLoaderParametersFactory(Skin.class,
+				new SkinAssetLoaderParametersFactory());
 
 		// Sound manager
-		this.soundManager = ReflectionUtils.newInstance("de.eskalon.commons.audio.DesktopSoundManager",
+		this.soundManager = ReflectionUtils.newInstance(
+				"de.eskalon.commons.audio.DesktopSoundManager",
 				ISoundManager.class);
 
 		// Create sprite batch & camera
 		this.batch = new SpriteBatch(1000,
-				GL32CMacIssueHandler.doUse32CShader() ? GL32CMacIssueHandler.createSpriteBatchShader() : null);
+				GL32CMacIssueHandler.doUse32CShader()
+						? GL32CMacIssueHandler.createSpriteBatchShader()
+						: null);
 
 		this.uiCamera = new OrthographicCamera(viewportWidth, viewportHeight);
 		this.uiCamera.combined.setToOrtho2D(0, 0, getWidth(), getHeight());
@@ -153,30 +167,41 @@ public abstract class EskalonApplication extends ManagedGame<AbstractEskalonScre
 		this.getScreenManager().setHasDepth(hasDepth);
 
 		// Debug info renderer
-		debugInfoRenderer = new DebugInfoRenderer(batch, debugLogging, VERSION, soundManager);
+		debugInfoRenderer = new DebugInfoRenderer(batch, debugLogging, VERSION,
+				soundManager);
 
 		// Splash Screen
 		this.screenManager.addScreen("blank", new BlankEskalonScreen(this));
-		this.screenManager.addScreen("splash", new EskalonSplashScreen(this, (param) -> {
-			// Enable stuff depending on commons assets
-			applicationInputProcessor.enable();
-			debugInfoRenderer.initialize(getWidth(), getHeight(),
-					assetManager.get(EskalonCommonsAssets.DEFAULT_FONT_NAME));
+		this.screenManager.addScreen("splash",
+				new EskalonSplashScreen(this, (param) -> {
+					// Enable stuff depending on commons assets
+					applicationInputProcessor.enable();
+					debugInfoRenderer.initialize(getWidth(), getHeight(),
+							assetManager.get(
+									EskalonCommonsAssets.DEFAULT_FONT_NAME));
 
-			// Push second screen (usually asset loading)
-			screenManager.pushScreen("blank", "splashOutTransition1");
-			screenManager.pushScreen("blank", "splashOutTransition2");
-			screenManager.pushScreen(initApp(), "splashOutTransition3");
-		}));
+					// Push second screen (usually asset loading)
+					screenManager.pushScreen("blank", "splashOutTransition1");
+					screenManager.pushScreen("blank", "splashOutTransition2");
+					screenManager.pushScreen(initApp(), "splashOutTransition3");
+				}));
 
-		BlendingTransition splashBlendingTransition = new BlendingTransition(batch, 0.25F, Interpolation.exp10In);
-		screenManager.addScreenTransition("splashInTransition", splashBlendingTransition);
-		BlendingTransition splashOutTransition1 = new BlendingTransition(batch, 0.18F, Interpolation.fade);
-		screenManager.addScreenTransition("splashOutTransition1", splashOutTransition1);
-		BlankTimedTransition splashOutTransition2 = new BlankTimedTransition(0.22F);
-		screenManager.addScreenTransition("splashOutTransition2", splashOutTransition2);
-		BlendingTransition splashOutTransition3 = new BlendingTransition(batch, 0.35F, Interpolation.pow2In);
-		screenManager.addScreenTransition("splashOutTransition3", splashOutTransition3);
+		BlendingTransition splashBlendingTransition = new BlendingTransition(
+				batch, 0.25F, Interpolation.exp10In);
+		screenManager.addScreenTransition("splashInTransition",
+				splashBlendingTransition);
+		BlendingTransition splashOutTransition1 = new BlendingTransition(batch,
+				0.18F, Interpolation.fade);
+		screenManager.addScreenTransition("splashOutTransition1",
+				splashOutTransition1);
+		BlankTimedTransition splashOutTransition2 = new BlankTimedTransition(
+				0.22F);
+		screenManager.addScreenTransition("splashOutTransition2",
+				splashOutTransition2);
+		BlendingTransition splashOutTransition3 = new BlendingTransition(batch,
+				0.35F, Interpolation.pow2In);
+		screenManager.addScreenTransition("splashOutTransition3",
+				splashOutTransition3);
 
 		// Push the splash screen
 		screenManager.pushScreen("splash", "splashInTransition");
@@ -185,7 +210,8 @@ public abstract class EskalonApplication extends ManagedGame<AbstractEskalonScre
 	/**
 	 * Takes care of initializing the application.
 	 * 
-	 * @return the name of the screen that should be pushed after the splash screen
+	 * @return the name of the screen that should be pushed after the splash
+	 *         screen
 	 */
 	protected abstract String initApp();
 
@@ -217,7 +243,8 @@ public abstract class EskalonApplication extends ManagedGame<AbstractEskalonScre
 		 */
 		if (applicationInputProcessor.takeScreenshot()) {
 			ScreenshotUtils.takeAndSaveScreenshot();
-			soundManager.playSoundEffect(EskalonCommonsAssets.SHUTTER_SOUND_NAME);
+			soundManager
+					.playSoundEffect(EskalonCommonsAssets.SHUTTER_SOUND_NAME);
 			applicationInputProcessor.setTakeScreenshot(false);
 		}
 	}
@@ -271,8 +298,8 @@ public abstract class EskalonApplication extends ManagedGame<AbstractEskalonScre
 	}
 
 	/**
-	 * @return the application's UI skin; has to be set via {@link #setUISkin(Skin)}
-	 *         beforehand
+	 * @return the application's UI skin; has to be set via
+	 *         {@link #setUISkin(Skin)} beforehand
 	 */
 	public Skin getUISkin() {
 		return uiSkin;

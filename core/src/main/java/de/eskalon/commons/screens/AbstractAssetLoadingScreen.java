@@ -20,8 +20,8 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
-import org.reflections.Reflections;
-import org.reflections.scanners.FieldAnnotationsScanner;
+import org.reflections8.Reflections;
+import org.reflections8.scanners.FieldAnnotationsScanner;
 
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.utils.reflect.ReflectionUtils;
@@ -68,8 +68,8 @@ public abstract class AbstractAssetLoadingScreen extends AbstractEskalonScreen {
 					.getFieldsAnnotatedWith(Asset.class);
 
 			for (Field f : assetFields) {
-				application.getAssetManager()
-						.loadAnnotatedAsset(ReflectionUtils.convertFieldObject(f));
+				application.getAssetManager().loadAnnotatedAsset(
+						ReflectionUtils.convertFieldObject(f));
 			}
 		}
 	}

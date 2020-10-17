@@ -68,7 +68,7 @@ public abstract class AbstractImageScreen extends AbstractEskalonScreen {
 		this.position = new Vector2(0, 0);
 		this.mode = DEFAULT_SCREEN_MODE;
 	}
-	
+
 	@Override
 	protected void create() {
 		// do nothing
@@ -139,25 +139,23 @@ public abstract class AbstractImageScreen extends AbstractEskalonScreen {
 			this.position.set(0, 0);
 			break;
 		case SCALE:
-			scl = image.getWidth()
-					- getApplication().getWidth() >= image.getHeight()
-							- getApplication().getHeight()
-									? getApplication().getWidth()
-											/ (float) image.getWidth()
-									: getApplication().getHeight()
-											/ (float) image.getHeight();
+			scl = image.getWidth() - getApplication().getWidth() >= image
+					.getHeight() - getApplication().getHeight()
+							? getApplication().getWidth()
+									/ (float) image.getWidth()
+							: getApplication().getHeight()
+									/ (float) image.getHeight();
 			this.dimensions.set(image.getWidth() * scl,
 					image.getHeight() * scl);
 			this.position.set(0, 0);
 			break;
 		case CENTERED_SCALE:
-			scl = image.getWidth()
-					- getApplication().getWidth() >= image.getHeight()
-							- getApplication().getHeight()
-									? getApplication().getWidth()
-											/ (float) image.getWidth()
-									: getApplication().getHeight()
-											/ (float) image.getHeight();
+			scl = image.getWidth() - getApplication().getWidth() >= image
+					.getHeight() - getApplication().getHeight()
+							? getApplication().getWidth()
+									/ (float) image.getWidth()
+							: getApplication().getHeight()
+									/ (float) image.getHeight();
 			this.dimensions.set(image.getWidth() * scl,
 					image.getHeight() * scl);
 			this.position.set(

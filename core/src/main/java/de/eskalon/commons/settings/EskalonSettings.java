@@ -20,10 +20,11 @@ public class EskalonSettings {
 
 	/**
 	 * @param fileName
-	 *                     the name of the preferences file
+	 *            the name of the preferences file
 	 */
 	public EskalonSettings(String fileName) {
-		this.preferences = BetterPreferences.createInstance(Gdx.app.getPreferences(fileName));
+		this.preferences = BetterPreferences
+				.createInstance(Gdx.app.getPreferences(fileName));
 		this.preferences.setAutoFlushing(true);
 
 		this.keybinds = new HashMap<>();
@@ -86,7 +87,8 @@ public class EskalonSettings {
 
 	public void setDefaultKeybind(String name, int defaultKey) {
 		if (!keybinds.containsKey(name)) {
-			int key = preferences.getInteger(KEYBINDING_PREFIX + name, defaultKey);
+			int key = preferences.getInteger(KEYBINDING_PREFIX + name,
+					defaultKey);
 
 			KeyBinding k = new KeyBinding(key);
 			keybinds.put(name, k);
