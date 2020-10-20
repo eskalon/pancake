@@ -11,7 +11,7 @@ Pancake uses the following libraries and frameworks :
 - [libGDX](https://github.com/libgdx/libgdx)
 - [libgdx-screenmanager](https://github.com/crykn/libgdx-screenmanager)
 - [guacamole](https://github.com/crykn/guacamole)
-- [guava](https://github.com/google/guava) (for its EventBus) and [reflections](https://github.com/ronmamo/reflections) (for the classpath scanning in AbstractAssetLoadingScreen)
+- [guava-eventbus](https://github.com/crykn/guava-eventbus) and [reflections](https://github.com/ronmamo/reflections) (for the classpath scanning in AbstractAssetLoadingScreen)
 
 ## Content
 A selection of what Pancake offers:
@@ -39,7 +39,7 @@ A selection of what Pancake offers:
      ]
  }
  ```
-- **EskalonApplication:** the core application, which keeps a sprite batch, an asset manager, a sound manager, etc.
+- **EskalonApplication:** the core application, which keeps a sprite batch, an asset manager, a sound manager, an event bus etc.
 - **PostProcessingPipeline:** A simple post processing pipeline [WIP]
 - **Lang, ILocalizable & ILocalized**
 	- `Lang#get(String key, Object... args)`
