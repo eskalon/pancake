@@ -66,9 +66,9 @@ public class ToggleableInputWrapper implements InputProcessor {
 		return false;
 	}
 
-	public boolean scrolled(int amount) {
+	public boolean scrolled(float amountX, float amountY) {
 		if (enabled)
-			return processor.scrolled(amount);
+			return processor.scrolled(amountX, amountY);
 		return false;
 	}
 }
