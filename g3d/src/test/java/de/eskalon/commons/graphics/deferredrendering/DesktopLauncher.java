@@ -23,8 +23,8 @@ public class DesktopLauncher {
 		config.setWindowedMode(1280, 720);
 		config.useVsync(false);
 
-		config.setWindowIcon(FileType.Internal, "icon16.png", "icon32.png",
-				"icon48.png");
+//		config.setWindowIcon(FileType.Internal, "icon16.png", "icon32.png",
+//				"icon48.png");
 
 		config.useOpenGL3(true, 3, 2);
 		ShaderProgram.prependVertexCode = "#version 150\n";
