@@ -23,7 +23,6 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
@@ -34,13 +33,11 @@ import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
-import com.badlogic.gdx.math.Matrix4;
 
 import de.damios.guacamole.gdx.graphics.NestableFrameBuffer;
 import de.damios.guacamole.gdx.graphics.QuadMeshGenerator;
 import de.damios.guacamole.gdx.graphics.ShaderProgramFactory;
 import de.eskalon.commons.graphics.Scene;
-import de.eskalon.commons.graphics.Skybox;
 import de.eskalon.commons.screens.EskalonSplashScreen.EskalonCommonsAssets;
 import de.eskalon.commons.utils.graphics.GL32CMacIssueHandler;
 
