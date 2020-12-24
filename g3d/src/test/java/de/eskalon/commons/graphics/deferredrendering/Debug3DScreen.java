@@ -68,6 +68,7 @@ public class Debug3DScreen extends AbstractEskalonScreen {
 	private Texture cubeFront;
 
 	private Scene scene;
+	private DeferredRenderer renderer;
 
 	private Camera camera;
 	private CameraInputController cameraController;
@@ -79,7 +80,7 @@ public class Debug3DScreen extends AbstractEskalonScreen {
 	@Override
 	public void render(float delta) {
 		this.cameraController.update();
-		this.scene.render();
+		this.renderer.render(this.scene);
 	}
 
 	@Override
@@ -95,7 +96,7 @@ public class Debug3DScreen extends AbstractEskalonScreen {
 		this.cameraController = new CameraInputController(this.camera);
 		this.addInputProcessor(this.cameraController);
 
-		this.scene = new Scene(this.application, this.application.getWidth(),
+		this.scene = new Scene(this.application.getWidth(),
 				this.application.getHeight());
 		this.scene.setCamera(camera);
 		Cubemap cubemap = new Cubemap(cubeRight.getTextureData(),
@@ -104,6 +105,8 @@ public class Debug3DScreen extends AbstractEskalonScreen {
 				cubeBack.getTextureData());
 		this.scene.setSkybox(new Skybox(this.camera,
 				this.application.getRenderContext(), cubemap));
+		
+		this.renderer = new DeferredRenderer(this.application);
 
 //		 Material granite = this.debug.materials.get(0);
 //		 this.granite_albedo.setFilter(TextureFilter.MipMapLinearLinear,

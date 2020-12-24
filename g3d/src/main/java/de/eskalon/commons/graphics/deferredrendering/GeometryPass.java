@@ -80,15 +80,15 @@ public class GeometryPass implements Disposable {
 		/*
 		 * Fills all the specified buffers for the #gBuffer.
 		 */
-		this.renderer.context.begin();
 		this.renderer.gBuffer.begin();
+		this.renderer.context.begin();
 
 		Gdx.gl.glClearColor(0f, 0f, 0f, 0f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
 		Shader currentShader = null;
-		for (int i = 0; i < this.renderables.size; i++) {
-			final Renderable renderable = this.renderables.get(i);
+		for (Renderable renderable : this.renderables) {
+//			final Renderable renderable = this.renderables.get(i);
 			if (currentShader != renderable.shader) {
 				if (currentShader != null)
 					currentShader.end();
@@ -101,8 +101,8 @@ public class GeometryPass implements Disposable {
 		if (currentShader != null)
 			currentShader.end();
 
-		this.renderer.gBuffer.end();
 		this.renderer.context.end();
+		this.renderer.gBuffer.end();
 	}
 
 	@Override

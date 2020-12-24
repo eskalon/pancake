@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Cubemap;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttribute;
@@ -25,20 +26,18 @@ public class Skybox implements Disposable{
 		this.camera = camera;
 		this.context = context;
 		this.cubemap = cubemap;
-		// TODO: use mipmaps here
+		// TODO: find out how to use mipmaps here
 		this.cubemap.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 		this.cubemap.setWrap(Texture.TextureWrap.ClampToEdge, Texture.TextureWrap.ClampToEdge);
 		this.cube = this.createCube();
 
 		this.program = ShaderProgramFactory.fromFile(
-				Gdx.files.internal("resources/shaders/cube.vert"),
-				Gdx.files.internal("resources/shaders/cube.frag"));
+				Gdx.files.internal("resources/shaders/skybox.vert"),
+				Gdx.files.internal("resources/shaders/skybox.frag"));
 	}
 
 	public void render() {
 		// TODO: find best location in the code to disable the depth test
-		Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
-		Gdx.gl.glDepthMask(false);
 		this.context.begin();
 		
 		Matrix4 view = this.camera.view.cpy();
@@ -47,13 +46,18 @@ public class Skybox implements Disposable{
 		view.val[Matrix4.M23] = 0;
 
 		this.program.bind();
-		// TODO: check this against the cube.vert shader!
+		
+		Gdx.gl.glDepthMask(false);
+		Gdx.gl.glEnable(GL30.GL_DEPTH_TEST);
+		
 		this.program.setUniformMatrix("u_view", view);
 		this.program.setUniformMatrix("u_proj", this.camera.projection);
 			this.program.setUniformi("u_cube",
 					this.context.textureBinder
 							.bind(this.cubemap));
 		this.cube.render(this.program, GL20.GL_TRIANGLE_STRIP);
+		
+		Gdx.gl.glDepthMask(true);
 
 		this.context.end();
 	}

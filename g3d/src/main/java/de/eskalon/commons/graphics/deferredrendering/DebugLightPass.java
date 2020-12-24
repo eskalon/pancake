@@ -186,6 +186,7 @@ public class DebugLightPass extends LightPass {
 	@Override
 	public void render() {
 		this.renderFinalRender();
+		
 		this.renderer.context.begin();
 
 		Gdx.gl.glClearColor(0f, 0f, 0f, 0f);
@@ -205,7 +206,7 @@ public class DebugLightPass extends LightPass {
 				DeferredRenderer.MATERIAL_ATTACHMENT_INDEX);
 		this.renderQuad(metallic, "metallic", this.renderer.gBuffer,
 				DeferredRenderer.MATERIAL_ATTACHMENT_INDEX);
-
+		
 		this.renderer.context.end();
 
 		this.renderDebugLines();

@@ -55,7 +55,7 @@ public class AmbientLightPass extends LightPass {
 	@Override
 	public void render() {
 		this.renderer.context.begin();
-
+		
 		this.renderer.gBuffer.getTextureAttachments()
 				.get(DeferredRenderer.MATERIAL_ATTACHMENT_INDEX)
 				.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
@@ -77,7 +77,7 @@ public class AmbientLightPass extends LightPass {
 						.bind(this.renderer.gBuffer.getTextureAttachments().get(
 								DeferredRenderer.ALBEDO_ATTACHMENT_INDEX)));
 		this.screenQuad.render(this.program, GL20.GL_TRIANGLE_STRIP);
-
+		
 		this.renderer.context.end();
 	}
 

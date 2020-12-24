@@ -15,15 +15,10 @@
 
 package de.eskalon.commons.graphics;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
-
-import de.eskalon.commons.core.EskalonApplication;
-import de.eskalon.commons.graphics.deferredrendering.DeferredRenderer;
 
 /**
  * This class contains all information needed for rendering a 3D Scene.
@@ -33,8 +28,6 @@ import de.eskalon.commons.graphics.deferredrendering.DeferredRenderer;
 public class Scene implements Disposable {
 
 	private Array<ModelInstance> instances;
-	private IRenderer renderer;
-	private EskalonApplication game;
 	private Skybox skybox;
 
 	private Camera camera;
@@ -46,47 +39,41 @@ public class Scene implements Disposable {
 	 * @param height
 	 *            viewport height
 	 */
-	public Scene(EskalonApplication game, int width, int height) {
-		this.game = game;
+	public Scene(int width, int height) {
 		this.instances = new Array<ModelInstance>();
-		this.renderer = new DeferredRenderer(this.game);
 	}
 
-	public void render() {
-		// TODO: let the renderer deal with the skybox
-//		if (this.skybox != null)
-//			this.skybox.render();
-		Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
-		Gdx.gl.glDepthMask(true);
-		this.renderer.render(this);
-		if (this.skybox != null)
-			this.skybox.render();
+	public Camera getCamera() {
+		return this.camera;
 	}
 
 	public void setCamera(Camera camera) {
 		this.camera = camera;
 	}
 	
+	public Skybox getSkybox() {
+		return this.skybox;
+	}
+
 	public void setSkybox(Skybox skybox) {
 		this.skybox = skybox;
-	}
-	
-	public Camera getCamera() {
-		return this.camera;
 	}
 	
 	public Array<ModelInstance> getInstances() {
 		return this.instances;
 	}
-
+	
 	public void addInstance(ModelInstance instance) {
 		this.instances.add(instance);
+	}
+	
+	public void addInstances(Array<? extends ModelInstance> instances) {
+		this.instances.addAll(instances);
 	}
 
 	@Override
 	public void dispose() {
-		if (renderer instanceof Disposable)
-			((Disposable) renderer).dispose();
+		this.skybox.dispose();
 	}
 
 }

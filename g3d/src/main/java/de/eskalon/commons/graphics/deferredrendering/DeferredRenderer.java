@@ -74,7 +74,7 @@ public class DeferredRenderer implements IRenderer, Disposable {
 				GL30.GL_UNSIGNED_BYTE);
 		builder.addColorTextureAttachment(GL30.GL_RGB8, GL30.GL_RGB,
 				GL30.GL_UNSIGNED_BYTE);
-		builder.addDepthTextureAttachment(GL30.GL_DEPTH_COMPONENT,
+		builder.addDepthTextureAttachment(GL30.GL_DEPTH_COMPONENT24,
 				GL30.GL_UNSIGNED_SHORT);
 		// TODO: add stencil buffer
 
@@ -93,16 +93,20 @@ public class DeferredRenderer implements IRenderer, Disposable {
 		this.lightPass = new AmbientLightPass(this);
 	}
 
-//	public void render(Array<ModelInstance> objects) {
-//		this.geometryPass.render(objects); // add camera and context and gBuffer
-//		this.lightPass.render();
-//	}
-	
 	@Override
 	public void render(Scene scene) {
+		// TODO: skybox needs to be rendered here
 		this.camera = scene.getCamera();
 		this.geometryPass.render(scene.getInstances());
 		this.lightPass.render();
+
+		Gdx.gl.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, gBuffer.getFramebufferHandle());
+		Gdx.gl30.glBlitFramebuffer(0, 0, gBuffer.getWidth(),
+				gBuffer.getHeight(), 0, 0, gBuffer.getWidth(),
+				gBuffer.getHeight(), GL30.GL_DEPTH_BUFFER_BIT, GL30.GL_NEAREST);
+
+		if (scene.getSkybox() != null)
+			scene.getSkybox().render();
 	}
 
 	@Override
