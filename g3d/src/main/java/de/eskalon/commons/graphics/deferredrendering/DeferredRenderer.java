@@ -20,12 +20,14 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.g3d.utils.RenderContext;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.Disposable;
 
 import de.damios.guacamole.gdx.graphics.NestableFrameBuffer.NestableFrameBufferBuilder;
 import de.eskalon.commons.core.EskalonApplication;
 import de.eskalon.commons.graphics.IRenderer;
 import de.eskalon.commons.graphics.Scene;
+import de.eskalon.commons.graphics.Skybox;
 
 /**
  * @author Sarroxxie
@@ -80,13 +82,6 @@ public class DeferredRenderer implements IRenderer, Disposable {
 
 		this.gBuffer = builder.build();
 
-		// TODO: this bliting will be required inside the light (shading) pass
-		// Gdx.gl30.glReadBuffer(gBuffer.getFramebufferHandle());
-		// Gdx.gl30.glBlitFramebuffer(0, 0, game.getWidth(), game.getHeight(),
-		// 0,
-		// 0, game.getWidth(), game.getHeight(), GL30.GL_DEPTH_BUFFER_BIT,
-		// GL30.GL_NEAREST);
-
 		// TODO: set the light pass from the outside maybe?
 		this.geometryPass = new GeometryPass(this);
 		//this.lightPass = new DebugLightPass(this);
@@ -95,18 +90,48 @@ public class DeferredRenderer implements IRenderer, Disposable {
 
 	@Override
 	public void render(Scene scene) {
-		// TODO: skybox needs to be rendered here
 		this.camera = scene.getCamera();
 		this.geometryPass.render(scene.getInstances());
-		this.lightPass.render();
+		this.lightPass.render(scene);
 
-		Gdx.gl.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, gBuffer.getFramebufferHandle());
+		// copies the depth from the gBuffer to the currently used FrameBuffer
+		Gdx.gl.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER,
+				gBuffer.getFramebufferHandle());
 		Gdx.gl30.glBlitFramebuffer(0, 0, gBuffer.getWidth(),
 				gBuffer.getHeight(), 0, 0, gBuffer.getWidth(),
 				gBuffer.getHeight(), GL30.GL_DEPTH_BUFFER_BIT, GL30.GL_NEAREST);
+		
+		this.render(scene.getSkybox());
+	}
 
-		if (scene.getSkybox() != null)
-			scene.getSkybox().render();
+	public void render(Skybox skybox) {
+		this.context.begin();
+
+		// delete the translation from the view matrix
+		Matrix4 view = this.camera.view.cpy();
+		view.val[Matrix4.M03] = 0;
+		view.val[Matrix4.M13] = 0;
+		view.val[Matrix4.M23] = 0;
+
+		skybox.getShaderProgram().bind();
+
+		// disables depth writing
+		Gdx.gl.glDepthMask(false);
+		Gdx.gl.glEnable(GL30.GL_DEPTH_TEST);
+
+		// set modified view and projection matrices
+		skybox.getShaderProgram().setUniformMatrix("u_view", view);
+		skybox.getShaderProgram().setUniformMatrix("u_proj",
+				this.camera.projection);
+		
+		// set cubemap
+		skybox.getShaderProgram().setUniformi("u_cube",
+				this.context.textureBinder.bind(skybox.getCubemap()));
+		
+		skybox.getMesh().render(skybox.getShaderProgram(),
+				Skybox.PRIMITIVE_TYPE);
+
+		this.context.end();
 	}
 
 	@Override
@@ -115,5 +140,4 @@ public class DeferredRenderer implements IRenderer, Disposable {
 		this.geometryPass.dispose();
 		this.lightPass.dispose();
 	}
-
 }

@@ -23,6 +23,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
@@ -33,10 +34,13 @@ import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.math.Matrix4;
 
 import de.damios.guacamole.gdx.graphics.NestableFrameBuffer;
 import de.damios.guacamole.gdx.graphics.QuadMeshGenerator;
 import de.damios.guacamole.gdx.graphics.ShaderProgramFactory;
+import de.eskalon.commons.graphics.Scene;
+import de.eskalon.commons.graphics.Skybox;
 import de.eskalon.commons.screens.EskalonSplashScreen.EskalonCommonsAssets;
 import de.eskalon.commons.utils.graphics.GL32CMacIssueHandler;
 
@@ -128,6 +132,36 @@ public class DebugLightPass extends LightPass {
 		this.roughness = ShaderProgramFactory.fromFile(vert, roughnessFrag);
 		this.metallic = ShaderProgramFactory.fromFile(vert, metallicFrag);
 	}
+	
+	@Override
+	public void render(Scene scene) {
+		this.renderFinalRender(scene);
+		
+		this.renderer.context.begin();
+
+		Gdx.gl.glClearColor(0f, 0f, 0f, 0f);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+
+		// renders the content of the g-buffer onto quads
+		this.renderQuad(program, "albedo", this.renderer.gBuffer,
+				DeferredRenderer.ALBEDO_ATTACHMENT_INDEX);
+		this.renderQuad(program, "normal", this.renderer.gBuffer,
+				DeferredRenderer.NORMAL_ATTACHMENT_INDEX);
+		this.renderQuad(depth, "depth", this.renderer.gBuffer,
+				DeferredRenderer.DEPTH_ATTACHMENT_INDEX);
+		this.renderQuad(program, "final render", finalRenderBuffer, 0);
+		this.renderQuad(ambient, "ambient occlusion", this.renderer.gBuffer,
+				DeferredRenderer.MATERIAL_ATTACHMENT_INDEX);
+		this.renderQuad(roughness, "roughness", this.renderer.gBuffer,
+				DeferredRenderer.MATERIAL_ATTACHMENT_INDEX);
+		this.renderQuad(metallic, "metallic", this.renderer.gBuffer,
+				DeferredRenderer.MATERIAL_ATTACHMENT_INDEX);
+		
+		this.renderer.context.end();
+
+		this.renderDebugLines();
+		this.renderDebugText();
+	}
 
 	/**
 	 * Calculates the positions for the lines and the texts using the given
@@ -183,36 +217,6 @@ public class DebugLightPass extends LightPass {
 				linePositions[1], 0, viewportWidth, linePositions[2], true));
 	}
 
-	@Override
-	public void render() {
-		this.renderFinalRender();
-		
-		this.renderer.context.begin();
-
-		Gdx.gl.glClearColor(0f, 0f, 0f, 0f);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-
-		// renders the content of the g-buffer onto quads
-		this.renderQuad(program, "albedo", this.renderer.gBuffer,
-				DeferredRenderer.ALBEDO_ATTACHMENT_INDEX);
-		this.renderQuad(program, "normal", this.renderer.gBuffer,
-				DeferredRenderer.NORMAL_ATTACHMENT_INDEX);
-		this.renderQuad(depth, "depth", this.renderer.gBuffer,
-				DeferredRenderer.DEPTH_ATTACHMENT_INDEX);
-		this.renderQuad(program, "final render", finalRenderBuffer, 0);
-		this.renderQuad(ambient, "ambient occlusion", this.renderer.gBuffer,
-				DeferredRenderer.MATERIAL_ATTACHMENT_INDEX);
-		this.renderQuad(roughness, "roughness", this.renderer.gBuffer,
-				DeferredRenderer.MATERIAL_ATTACHMENT_INDEX);
-		this.renderQuad(metallic, "metallic", this.renderer.gBuffer,
-				DeferredRenderer.MATERIAL_ATTACHMENT_INDEX);
-		
-		this.renderer.context.end();
-
-		this.renderDebugLines();
-		this.renderDebugText();
-	}
-
 	/**
 	 * Renders a texture onto a given quad at a given attachment index using a
 	 * given {@link ShaderProgram}. Note, that this method uses
@@ -243,12 +247,14 @@ public class DebugLightPass extends LightPass {
 		this.quads.get(quadID).render(program, GL20.GL_TRIANGLE_STRIP);
 	}
 
-	private void renderFinalRender() {
+	private void renderFinalRender(Scene scene) {
+		this.renderer.context.begin();
 		this.finalRenderBuffer.begin();
 		Gdx.gl.glClearColor(0, 0, 0, 0);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-		this.ambientLightPass.render();
+		this.ambientLightPass.render(scene);
 		this.finalRenderBuffer.end();
+		this.renderer.context.end();
 	}
 
 	/**

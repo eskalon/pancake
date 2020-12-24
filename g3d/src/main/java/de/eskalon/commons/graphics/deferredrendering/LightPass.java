@@ -17,6 +17,8 @@ package de.eskalon.commons.graphics.deferredrendering;
 
 import com.badlogic.gdx.utils.Disposable;
 
+import de.eskalon.commons.graphics.Scene;
+
 /**
  * @author Sarroxxie
  */
@@ -28,7 +30,7 @@ public abstract class LightPass implements Disposable {
 		this.renderer = renderer;
 	}
 
-	public void render() {
+	public void render(Scene scene) {
 	};
 
 }

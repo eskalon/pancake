@@ -103,8 +103,7 @@ public class Debug3DScreen extends AbstractEskalonScreen {
 				cubeLeft.getTextureData(), cubeTop.getTextureData(),
 				cubeBottom.getTextureData(), cubeFront.getTextureData(),
 				cubeBack.getTextureData());
-		this.scene.setSkybox(new Skybox(this.camera,
-				this.application.getRenderContext(), cubemap));
+		this.scene.setSkybox(new Skybox(cubemap));
 		
 		this.renderer = new DeferredRenderer(this.application);
 

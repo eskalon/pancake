@@ -26,6 +26,7 @@ import com.badlogic.gdx.math.Vector3;
 
 import de.damios.guacamole.gdx.graphics.QuadMeshGenerator;
 import de.damios.guacamole.gdx.graphics.ShaderProgramFactory;
+import de.eskalon.commons.graphics.Scene;
 
 /**
  * @author Sarroxxie
@@ -53,7 +54,7 @@ public class AmbientLightPass extends LightPass {
 	}
 
 	@Override
-	public void render() {
+	public void render(Scene scene) {
 		this.renderer.context.begin();
 		
 		this.renderer.gBuffer.getTextureAttachments()
