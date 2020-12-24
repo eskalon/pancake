@@ -15,17 +15,11 @@
 
 package de.eskalon.commons.graphics;
 
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
-import com.badlogic.gdx.utils.Array;
-
 /**
  * @author Sarroxxie
  */
 public interface IRenderer {
 
-	public void render(Array<ModelInstance> objects);
-
-	public void setCamera(Camera camera);
+	public void render(Scene scene);
 
 }

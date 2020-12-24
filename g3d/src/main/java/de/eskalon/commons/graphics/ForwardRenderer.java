@@ -15,10 +15,6 @@
 
 package de.eskalon.commons.graphics;
 
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
-import com.badlogic.gdx.utils.Array;
-
 /**
  * This class should implement forward rendering.
  * 
@@ -27,13 +23,7 @@ import com.badlogic.gdx.utils.Array;
 public class ForwardRenderer implements IRenderer {
 
 	@Override
-	public void render(Array<ModelInstance> objects) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void setCamera(Camera camera) {
+	public void render(Scene scene) {
 		// TODO Auto-generated method stub
 
 	}

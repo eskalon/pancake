@@ -1,12 +1,14 @@
 package de.eskalon.commons.graphics.deferredrendering;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 
 import de.eskalon.commons.core.EskalonApplication;
 
 public class GraphicsDebugApplication extends EskalonApplication {
+	
+	public GraphicsDebugApplication() {
+		super(false, false);
+	}
 
 	@Override
 	protected String initApp() {

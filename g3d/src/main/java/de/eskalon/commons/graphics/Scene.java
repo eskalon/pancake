@@ -15,7 +15,9 @@
 
 package de.eskalon.commons.graphics;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
@@ -33,6 +35,7 @@ public class Scene implements Disposable {
 	private Array<ModelInstance> instances;
 	private IRenderer renderer;
 	private EskalonApplication game;
+	private Skybox skybox;
 
 	private Camera camera;
 
@@ -50,12 +53,30 @@ public class Scene implements Disposable {
 	}
 
 	public void render() {
-		this.renderer.render(this.instances);
+		// TODO: let the renderer deal with the skybox
+//		if (this.skybox != null)
+//			this.skybox.render();
+		Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
+		Gdx.gl.glDepthMask(true);
+		this.renderer.render(this);
+		if (this.skybox != null)
+			this.skybox.render();
 	}
 
 	public void setCamera(Camera camera) {
 		this.camera = camera;
-		this.renderer.setCamera(this.camera);
+	}
+	
+	public void setSkybox(Skybox skybox) {
+		this.skybox = skybox;
+	}
+	
+	public Camera getCamera() {
+		return this.camera;
+	}
+	
+	public Array<ModelInstance> getInstances() {
+		return this.instances;
 	}
 
 	public void addInstance(ModelInstance instance) {

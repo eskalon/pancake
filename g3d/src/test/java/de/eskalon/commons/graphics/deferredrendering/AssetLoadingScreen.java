@@ -23,8 +23,7 @@ public class AssetLoadingScreen extends AbstractAssetLoadingScreen {
 
 	@Override
 	protected void onFinishedLoading() {
-		System.out.println("finished");
-		this.application.getScreenManager().pushScreen("debug", "splashOutTransition3");
+		this.application.getScreenManager().pushScreen("debug", null);
 		
 		for (AbstractEskalonScreen s : application.getScreenManager().getScreens()) {
             if (s != this) {// exclude loading screen
@@ -42,11 +41,6 @@ public class AssetLoadingScreen extends AbstractAssetLoadingScreen {
 	@Override
 	public void render(float delta) {
 		super.render(delta);
-	}
-	
-	@Override
-	public Color getClearColor() {
-		return Color.WHITE;
 	}
 
 	@Override

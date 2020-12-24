@@ -18,16 +18,14 @@ package de.eskalon.commons.graphics.deferredrendering;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL30;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
-import com.badlogic.gdx.graphics.g3d.utils.DefaultTextureBinder;
 import com.badlogic.gdx.graphics.g3d.utils.RenderContext;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 
 import de.damios.guacamole.gdx.graphics.NestableFrameBuffer.NestableFrameBufferBuilder;
 import de.eskalon.commons.core.EskalonApplication;
 import de.eskalon.commons.graphics.IRenderer;
+import de.eskalon.commons.graphics.Scene;
 
 /**
  * @author Sarroxxie
@@ -65,19 +63,21 @@ public class DeferredRenderer implements IRenderer, Disposable {
 
 	public DeferredRenderer(EskalonApplication game) {
 		this.game = game;
-		this.context = new RenderContext(
-				new DefaultTextureBinder(DefaultTextureBinder.ROUNDROBIN));
+		this.context = this.game.getRenderContext();
 
 		NestableFrameBufferBuilder builder = new NestableFrameBufferBuilder(
 				Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		builder.addColorTextureAttachment(GL30.GL_RGB8, GL30.GL_RGB,
 				GL30.GL_UNSIGNED_BYTE);
+		// TODO: is it worth to use 16 bit float here for the normals?
 		builder.addColorTextureAttachment(GL30.GL_RGB8, GL30.GL_RGB,
 				GL30.GL_UNSIGNED_BYTE);
 		builder.addColorTextureAttachment(GL30.GL_RGB8, GL30.GL_RGB,
 				GL30.GL_UNSIGNED_BYTE);
 		builder.addDepthTextureAttachment(GL30.GL_DEPTH_COMPONENT,
 				GL30.GL_UNSIGNED_SHORT);
+		// TODO: add stencil buffer
+
 		this.gBuffer = builder.build();
 
 		// TODO: this bliting will be required inside the light (shading) pass
@@ -87,19 +87,22 @@ public class DeferredRenderer implements IRenderer, Disposable {
 		// 0, game.getWidth(), game.getHeight(), GL30.GL_DEPTH_BUFFER_BIT,
 		// GL30.GL_NEAREST);
 
+		// TODO: set the light pass from the outside maybe?
 		this.geometryPass = new GeometryPass(this);
-		this.lightPass = new DebugLightPass(this);
+		//this.lightPass = new DebugLightPass(this);
+		this.lightPass = new AmbientLightPass(this);
 	}
 
+//	public void render(Array<ModelInstance> objects) {
+//		this.geometryPass.render(objects); // add camera and context and gBuffer
+//		this.lightPass.render();
+//	}
+	
 	@Override
-	public void render(Array<ModelInstance> objects) {
-		this.geometryPass.render(objects); // add camera and context and gBuffer
+	public void render(Scene scene) {
+		this.camera = scene.getCamera();
+		this.geometryPass.render(scene.getInstances());
 		this.lightPass.render();
-	}
-
-	@Override
-	public void setCamera(Camera camera) {
-		this.camera = camera;
 	}
 
 	@Override

@@ -23,6 +23,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
+import com.badlogic.gdx.graphics.g3d.utils.DefaultTextureBinder;
+import com.badlogic.gdx.graphics.g3d.utils.RenderContext;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.reflect.ReflectionUtils;
@@ -79,6 +81,8 @@ public abstract class EskalonApplication
 	@GwtIncompatible
 	public final String VERSION = IN_DEV_ENV ? "Development Build"
 			: EskalonApplication.class.getPackage().getImplementationVersion();
+
+	private RenderContext renderContext;
 
 	private DebugInfoRenderer debugInfoRenderer;
 
@@ -169,6 +173,10 @@ public abstract class EskalonApplication
 
 		// Configure screen manager
 		this.getScreenManager().setHasDepth(hasDepth);
+
+		// Render Context, important for texture bindings
+		this.renderContext = new RenderContext(
+				new DefaultTextureBinder(DefaultTextureBinder.ROUNDROBIN));
 
 		// Debug info renderer
 		debugInfoRenderer = new DebugInfoRenderer(batch, debugLogging, VERSION,
@@ -295,6 +303,14 @@ public abstract class EskalonApplication
 	 */
 	public EventQueueBus getEventBus() {
 		return eventBus;
+	}
+
+	/**
+	 * @return the render context; every rendering should be done in this
+	 *         context to ensure correctly bound textures
+	 */
+	public RenderContext getRenderContext() {
+		return this.renderContext;
 	}
 
 	public void setUISkin(Skin skin) {

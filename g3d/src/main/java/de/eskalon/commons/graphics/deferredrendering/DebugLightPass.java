@@ -244,6 +244,8 @@ public class DebugLightPass extends LightPass {
 
 	private void renderFinalRender() {
 		this.finalRenderBuffer.begin();
+		Gdx.gl.glClearColor(0, 0, 0, 0);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 		this.ambientLightPass.render();
 		this.finalRenderBuffer.end();
 	}

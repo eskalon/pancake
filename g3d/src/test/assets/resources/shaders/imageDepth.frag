@@ -9,6 +9,6 @@ in vec2 v_texCoord0;
 out vec4 out_Color;
 
 void main() {
-	vec4 col = texture(u_texture, v_texCoord0);
-	out_Color = vec4(1- col.r, 1- col.r, 1- col.r, 1);
+	float depth = texture(u_texture, v_texCoord0).r;
+	out_Color = vec4(1- depth, 1- depth, 1- depth, 1);
 }

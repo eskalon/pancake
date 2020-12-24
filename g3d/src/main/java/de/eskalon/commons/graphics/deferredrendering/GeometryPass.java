@@ -49,7 +49,6 @@ public class GeometryPass implements Disposable {
 			@Override
 			protected Shader createShader(Renderable renderable) {
 				DefaultGeometryPassShader shader = new DefaultGeometryPassShader();
-				shader.init();
 				return shader;
 			}
 		};

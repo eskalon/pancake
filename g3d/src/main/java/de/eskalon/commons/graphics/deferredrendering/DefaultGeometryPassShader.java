@@ -59,8 +59,7 @@ public class DefaultGeometryPassShader implements Shader {
 				Gdx.files.internal("resources/shaders/defaultGeometryPassShader.vert"),
 				Gdx.files.internal("resources/shaders/defaultGeometryPassShader.frag"));
 
-		int handle = 0;
-		// TODO use program.getHandle();
+		int handle = this.program.getHandle();
 		try {
 			Field field = ShaderProgram.class.getDeclaredField("program");
 			field.setAccessible(true);
@@ -69,7 +68,6 @@ public class DefaultGeometryPassShader implements Shader {
 				| IllegalArgumentException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
-		System.out.println(handle);
 		GL32C.glBindFragDataLocation(handle, 0, "albedoOut");
 		GL32C.glBindFragDataLocation(handle, 1, "normalOut");
 		GL32C.glBindFragDataLocation(handle, 2, "materialOut");
@@ -143,8 +141,6 @@ public class DefaultGeometryPassShader implements Shader {
 		this.program.setUniformMatrix("u_worldTrans",
 				renderable.worldTransform);
 
-		// TODO: keep an eye on this thing here, so no transformations are wrong
-		// in the end
 		this.program.setUniformMatrix("u_normalWorldTrans",
 				matrix3.set(renderable.worldTransform).inv().transpose());
 
