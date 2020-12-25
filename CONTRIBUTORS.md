@@ -3,6 +3,7 @@ A list of all contributors and the used external assets.
 ## Contributors
 * [damios](https://github.com/crykn)
 * [Sarroxxie](https://github.com/Sarroxxie)
+* [NouCake](https://github.com/NouCake)
 
 ## External assets and code
 ### Fonts
