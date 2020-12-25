@@ -39,6 +39,7 @@ import de.eskalon.commons.asset.AnnotationAssetManager.AssetLoaderParametersFact
  * 
  * Supported params are:
  * <ul>
+ * <li>{@code -genmipmap}</li>
  * <li>{@code -minfilter [filter]}, with filters being:
  * nearest/linear/mipmap/mipmapnearestnearest/mipmaplinearnearest/mipmaplinearlinear</li>
  * <li>{@code -magfilter [filter]}</li>
