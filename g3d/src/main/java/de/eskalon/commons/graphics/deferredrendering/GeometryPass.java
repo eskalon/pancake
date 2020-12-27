@@ -88,7 +88,6 @@ public class GeometryPass implements Disposable {
 
 		Shader currentShader = null;
 		for (Renderable renderable : this.renderables) {
-//			final Renderable renderable = this.renderables.get(i);
 			if (currentShader != renderable.shader) {
 				if (currentShader != null)
 					currentShader.end();

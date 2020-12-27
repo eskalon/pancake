@@ -18,8 +18,10 @@ package de.eskalon.commons.graphics.deferredrendering;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL30;
+import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.g3d.utils.RenderContext;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.Disposable;
 
@@ -62,13 +64,17 @@ public class DeferredRenderer implements IRenderer, Disposable {
 	protected RenderContext context;
 	protected FrameBuffer gBuffer;
 	protected Camera camera;
+	
+	// TODO: remove whole Icosphere Code from this class
+	private Mesh ico;
+	private ShaderProgram icoProgram;
 
 	public DeferredRenderer(EskalonApplication game) {
 		this.game = game;
 		this.context = this.game.getRenderContext();
 
 		NestableFrameBufferBuilder builder = new NestableFrameBufferBuilder(
-				Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+				this.game.getWidth(), this.game.getHeight());
 		builder.addColorTextureAttachment(GL30.GL_RGB8, GL30.GL_RGB,
 				GL30.GL_UNSIGNED_BYTE);
 		// TODO: is it worth to use 16 bit float here for the normals?
@@ -86,6 +92,9 @@ public class DeferredRenderer implements IRenderer, Disposable {
 		this.geometryPass = new GeometryPass(this);
 		//this.lightPass = new DebugLightPass(this);
 		this.lightPass = new AmbientLightPass(this);
+		
+		this.ico = IcosphereBuilder.createIcosphere(1f, 1);
+		this.icoProgram = IcosphereBuilder.getProgram();
 	}
 
 	@Override
@@ -102,6 +111,17 @@ public class DeferredRenderer implements IRenderer, Disposable {
 				gBuffer.getHeight(), GL30.GL_DEPTH_BUFFER_BIT, GL30.GL_NEAREST);
 		
 		this.render(scene.getSkybox());
+		
+		Gdx.gl.glDisable(GL30.GL_CULL_FACE);
+		this.renderIco();
+	}
+	
+	public void renderIco() {
+		Gdx.gl.glDisable(GL30.GL_DEPTH_TEST);
+		this.icoProgram.bind();
+		this.icoProgram.setUniformMatrix("u_projView", this.camera.combined);
+		this.ico.render(this.icoProgram, IcosphereBuilder.PRIMITIVE_TYPE);
+		Gdx.gl.glEnable(GL30.GL_DEPTH_TEST);
 	}
 
 	public void render(Skybox skybox) {
