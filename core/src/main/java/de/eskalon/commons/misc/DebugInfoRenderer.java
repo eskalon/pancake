@@ -129,7 +129,7 @@ public class DebugInfoRenderer {
 		 */
 		font.draw(batch,
 				String.valueOf(fpsCounter.getFramesPerSecond()) + " FPS",
-				width - 58, height - 5);
+				width - 65, height - 5);
 
 		/*
 		 * FPS GRPAH
@@ -191,8 +191,18 @@ public class DebugInfoRenderer {
 
 			shapeRenderer.setColor(ColorUtils.getInterpolatedColor(0, 129,
 					Math.min(1, 1000 / frameTime / 140F), 90, 70));
-			shapeRenderer.rect(fpsGraphX + 103 + (startIndex + i) * 5,
-					fpsGraphY, 4, Math.max((frameTime * (43 / 8)), 1));
+
+			if (frameTime > 16.7F) { // use logarithmic scale above certain
+										// threshold
+				shapeRenderer.rect(fpsGraphX + 103 + (startIndex + i) * 5,
+						fpsGraphY, 4,
+						(16.7F + (float) Math.sqrt((frameTime - 17F) * 2.8F))
+								* (43 / 8));
+			} else {
+				shapeRenderer.rect(fpsGraphX + 103 + (startIndex + i) * 5,
+						fpsGraphY, 4, Math.max((frameTime * (43 / 8)), 1));
+			}
+
 		}
 
 		shapeRenderer.end();

@@ -16,6 +16,7 @@
 package de.eskalon.commons.core;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -37,6 +38,7 @@ import de.eskalon.commons.asset.BitmapFontAssetLoaderParametersFactory;
 import de.eskalon.commons.asset.PlaylistDefinition;
 import de.eskalon.commons.asset.PlaylistDefinitionLoader;
 import de.eskalon.commons.asset.SkinAssetLoaderParametersFactory;
+import de.eskalon.commons.audio.DefaultSoundManager;
 import de.eskalon.commons.audio.ISoundManager;
 import de.eskalon.commons.misc.DebugInfoRenderer;
 import de.eskalon.commons.misc.EskalonGameInputProcessor;
@@ -154,9 +156,14 @@ public abstract class EskalonApplication
 				new SkinAssetLoaderParametersFactory());
 
 		// Sound manager
-		this.soundManager = ReflectionUtils.newInstance(
-				"de.eskalon.commons.audio.DesktopSoundManager",
-				ISoundManager.class);
+		if (Gdx.app.getType() == ApplicationType.Desktop
+				|| Gdx.app.getType() == ApplicationType.HeadlessDesktop)
+			this.soundManager = ReflectionUtils.newInstance(
+					"de.eskalon.commons.audio.DesktopSoundManager",
+					ISoundManager.class);
+
+		if (this.soundManager == null)
+			this.soundManager = new DefaultSoundManager();
 
 		// Create sprite batch & camera
 		this.batch = new SpriteBatch(1000,

@@ -17,6 +17,8 @@ package com.badlogic.gdx.utils.reflect;
 
 import javax.annotation.Nullable;
 
+import de.damios.guacamole.gdx.Log;
+
 /**
  * Reflection utils.
  * 
@@ -34,8 +36,8 @@ public class ReflectionUtils {
 	}
 
 	/**
-	 * Creates a class via libGDX reflection by using its name. Returns null, if
-	 * the reflection or instantiation fails.
+	 * Creates a class via libGDX reflection by using its name. Returns
+	 * {@code null}, if the reflection or instantiation fails.
 	 * 
 	 * @param <T>
 	 * @param className
@@ -49,6 +51,7 @@ public class ReflectionUtils {
 			return (T) ClassReflection
 					.newInstance(ClassReflection.forName(className));
 		} catch (ReflectionException e) {
+			Log.debug("ReflectionUtils", e.getLocalizedMessage());
 			return null;
 		}
 	}

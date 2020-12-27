@@ -55,6 +55,7 @@ project(":core") {
 		testImplementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
 		testImplementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
 		testImplementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
+		testImplementation "com.github.crykn.guacamole:gdx-desktop:$guacamoleVersion"
 	}
 
 	sourceSets.main {

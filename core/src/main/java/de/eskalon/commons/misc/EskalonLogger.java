@@ -26,9 +26,9 @@ import com.badlogic.gdx.ApplicationLogger;
 public class EskalonLogger implements ApplicationLogger {
 
 	public static final TimeUnit DEFAULT_TIME_UNIT = TimeUnit.MILLISECONDS;
-	private final String INFO_LOG_FORMAT = "%tT - [INFO ] [%S]:  %s";
-	private final String ERROR_LOG_FORMAT = "%tT - [ERROR] [%S]:  %s";
-	private final String DEBUG_LOG_FORMAT = "%tT - [DEBUG] [%S]:  %s";
+	private final String INFO_LOG_FORMAT = "%tT - [INFO ] [%s]:  %s";
+	private final String ERROR_LOG_FORMAT = "%tT - [ERROR] [%s]:  %s";
+	private final String DEBUG_LOG_FORMAT = "%tT - [DEBUG] [%s]:  %s";
 
 	private static final String formatMessage(String formatString, String tag,
 			String message) {
