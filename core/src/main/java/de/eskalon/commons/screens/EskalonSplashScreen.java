@@ -124,6 +124,11 @@ public class EskalonSplashScreen extends AbstractEskalonScreen {
 		// not needed
 	}
 
+	/**
+	 * The assets used by pancake itself. They are
+	 * {@link EskalonSplashScreen#addCommonAssets() loaded}, while the splash
+	 * screen is shown.
+	 */
 	public static class EskalonCommonsAssets {
 		public static final String LOGO_TEXTURE_PATH = "resources/eskalon.png";
 		private static final String DEFAULT_FONT_PATH = "resources/fonts/OpenSans-Regular.ttf";

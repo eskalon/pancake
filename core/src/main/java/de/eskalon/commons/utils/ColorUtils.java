@@ -55,7 +55,7 @@ public final class ColorUtils {
 	}
 
 	/**
-	 * Converts a hsv color to a rgb one.
+	 * Converts a HSV color to a RGB one.
 	 *
 	 * @param hue
 	 * @param saturation

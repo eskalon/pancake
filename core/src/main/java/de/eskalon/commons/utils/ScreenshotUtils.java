@@ -40,7 +40,7 @@ public class ScreenshotUtils {
 			"yyyy-MM-dd_HH-mm-ss-SSS");
 
 	private ScreenshotUtils() {
-		// not used
+		throw new UnsupportedOperationException();
 	}
 
 	public static void takeAndSaveScreenshot() {

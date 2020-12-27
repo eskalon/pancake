@@ -15,8 +15,8 @@
 
 package de.eskalon.commons.core;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Application.ApplicationType;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -65,6 +65,8 @@ import de.eskalon.commons.utils.graphics.GL32CMacIssueHandler;
  * <li>a {@linkplain #getSpriteBatch() batch} and an {@linkplain #getUICamera()
  * ui camera}</li>
  * <li>support for setting an {@linkplain #uiSkin UI skin}</li>
+ * <li>a screenshot keybind (see {@link EskalonGameInputProcessor}) and a
+ * {@linkplain DebugInfoRenderer debug overlay}</li>
  * </ul>
  * When the application is created, a {@link EskalonSplashScreen} is pushed.
  * 

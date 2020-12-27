@@ -29,14 +29,14 @@ import de.damios.guacamole.annotations.GwtIncompatible;
 public final class MachineIdentificationUtils {
 
 	private static final String HOSTNAME_COMMAND = "hostname";
-	private static final String UNKNOWN_HOST_PREFIX = "_u";
+	private static final String UNKNOWN_HOST_PREFIX = "_u-";
 
 	private MachineIdentificationUtils() {
 		throw new UnsupportedOperationException();
 	}
 
 	/**
-	 * @return the (host)name of the machine. If the name cannot be found
+	 * @return the (host)name of the machine. If the name cannot be found,
 	 *         <code>{@value #UNKNOWN_HOST_PREFIX}</code> is returned followed
 	 *         by the {@linkplain System#currentTimeMillis() current time
 	 *         millis}.

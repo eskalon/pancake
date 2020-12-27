@@ -20,6 +20,8 @@ import java.util.Map;
 
 import com.badlogic.gdx.Gdx;
 
+import de.damios.guacamole.Preconditions;
+
 /**
  * Manages the actual game settings.
  */
@@ -38,6 +40,7 @@ public class EskalonSettings {
 	 *            the name of the preferences file
 	 */
 	public EskalonSettings(String fileName) {
+		Preconditions.checkNotNull(fileName);
 		this.preferences = BetterPreferences
 				.createInstance(Gdx.app.getPreferences(fileName));
 		this.preferences.setAutoFlushing(true);

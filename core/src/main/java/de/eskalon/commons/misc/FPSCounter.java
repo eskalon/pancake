@@ -18,8 +18,8 @@ package de.eskalon.commons.misc;
 import com.badlogic.gdx.math.WindowedMean;
 
 /**
- * A fps counter. Logs the past frames times to be used in a
- * {@link WindowedMean} instance.
+ * A fps counter. Logs the past frame times to be used in a {@link WindowedMean}
+ * instance.
  * 
  * @author damios
  */

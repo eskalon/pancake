@@ -30,6 +30,10 @@ import de.damios.guacamole.tuple.Pair;
 import de.eskalon.commons.utils.MathStuffUtils;
 
 /**
+ * The default implementation of a sound manager responsible for playing (a)
+ * {@linkplain Sound sound effects} and (b) {@linkplain Music music} via
+ * playlists. Does not support spatial audio.
+ * 
  * @author damios
  */
 public class DefaultSoundManager implements ISoundManager, Disposable {

@@ -39,51 +39,36 @@ public class ToggleableInputWrapper implements InputProcessor {
 	}
 
 	public boolean keyDown(int keycode) {
-		if (enabled)
-			return processor.keyDown(keycode);
-		return false;
+		return enabled && processor.keyDown(keycode);
 	}
 
 	public boolean keyUp(int keycode) {
-		if (enabled)
-			return processor.keyUp(keycode);
-		return false;
+		return enabled && processor.keyUp(keycode);
 	}
 
 	public boolean keyTyped(char character) {
-		if (enabled)
-			return processor.keyTyped(character);
-		return false;
+		return enabled && processor.keyTyped(character);
 	}
 
 	public boolean touchDown(int screenX, int screenY, int pointer,
 			int button) {
-		if (enabled)
-			return processor.touchDown(screenX, screenY, pointer, button);
-		return false;
+		return enabled
+				&& processor.touchDown(screenX, screenY, pointer, button);
 	}
 
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		if (enabled)
-			return processor.touchUp(screenX, screenY, pointer, button);
-		return false;
+		return enabled && processor.touchUp(screenX, screenY, pointer, button);
 	}
 
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		if (enabled)
-			return processor.touchDragged(screenX, screenY, pointer);
-		return false;
+		return enabled && processor.touchDragged(screenX, screenY, pointer);
 	}
 
 	public boolean mouseMoved(int screenX, int screenY) {
-		if (enabled)
-			return processor.mouseMoved(screenX, screenY);
-		return false;
+		return enabled && processor.mouseMoved(screenX, screenY);
 	}
 
 	public boolean scrolled(float amountX, float amountY) {
-		if (enabled)
-			return processor.scrolled(amountX, amountY);
-		return false;
+		return enabled && processor.scrolled(amountX, amountY);
 	}
 }

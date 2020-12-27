@@ -15,7 +15,7 @@
 
 package de.eskalon.commons.asset;
 
-import java.nio.charset.Charset;
+import java.io.UnsupportedEncodingException;
 
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetLoaderParameters;
@@ -37,9 +37,6 @@ import de.eskalon.commons.asset.PlaylistDefinitionLoader.PlaylistDefinitionParam
 public class PlaylistDefinitionLoader extends
 		AsynchronousAssetLoader<PlaylistDefinition, PlaylistDefinitionParameter> {
 
-	private static final Charset CHARSET = Charset.isSupported("UTF-8")
-			? Charset.forName("UTF-8")
-			: Charset.defaultCharset();
 	private Json jsonParser;
 
 	private PlaylistDefinition data;
@@ -56,8 +53,13 @@ public class PlaylistDefinitionLoader extends
 	public Array<AssetDescriptor> getDependencies(String fileName,
 			FileHandle file, PlaylistDefinitionParameter parameter) {
 		Array<AssetDescriptor> deps = new Array<>();
-		data = jsonParser.fromJson(PlaylistDefinition.class,
-				new String(file.readBytes(), CHARSET));
+		String json;
+		try { // Charset.defaultCharset(), etc. is not supported on GWT
+			json = new String(file.readBytes(), "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			json = new String(file.readBytes());
+		}
+		data = jsonParser.fromJson(PlaylistDefinition.class, json);
 
 		for (String[] s : data.music) {
 			FileHandle f = file.parent().child(s[1]);

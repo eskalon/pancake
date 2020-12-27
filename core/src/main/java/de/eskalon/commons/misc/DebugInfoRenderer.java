@@ -33,7 +33,7 @@ import de.eskalon.commons.utils.graphics.GL32CMacIssueHandler;
  * Prints the current fps count, a corresponding graph and some other debug
  * information on screen.
  * <p>
- * Has to be continously {@linkplain #update(float) updated} for the fps counter
+ * Has to be continuously {@linkplain #update(float) updated} for the fps counter
  * to work.
  * 
  * @author damios

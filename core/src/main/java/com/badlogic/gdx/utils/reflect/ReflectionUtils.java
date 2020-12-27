@@ -37,7 +37,7 @@ public class ReflectionUtils {
 
 	/**
 	 * Creates a class via libGDX reflection by using its name. Returns
-	 * {@code null}, if the reflection or instantiation fails.
+	 * {@code null} if the reflection or instantiation fails.
 	 * 
 	 * @param <T>
 	 * @param className

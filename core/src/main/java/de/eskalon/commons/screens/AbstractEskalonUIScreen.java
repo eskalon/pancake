@@ -100,7 +100,7 @@ public abstract class AbstractEskalonUIScreen extends AbstractImageScreen {
 	public void show() {
 		super.show();
 
-		// Fixes ui elements still being selected when the stage is shown a
+		// Fixes UI elements still being selected when the stage is shown a
 		// second time
 		stage.mouseMoved(1, 1);
 		stage.touchUp(1, 1, 0, 0);

@@ -24,6 +24,8 @@ import com.badlogic.gdx.Preferences;
  * events.
  * 
  * @author damios
+ * @see EskalonSettings#setDefaultKeybind(String, int)
+ * @see EskalonSettings#getKeybind(String)
  */
 public class KeyBinding {
 

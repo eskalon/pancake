@@ -51,6 +51,11 @@ public abstract class AbstractAssetLoadingScreen extends AbstractEskalonScreen {
 	private float progress;
 	private boolean isDone = false;
 
+	/**
+	 * @param application
+	 * @param packageRoot
+	 *            the root package, e.g. "de.eskalon"
+	 */
 	public AbstractAssetLoadingScreen(EskalonApplication application,
 			@Nullable String packageRoot) {
 		this.application = application;
@@ -95,8 +100,7 @@ public abstract class AbstractAssetLoadingScreen extends AbstractEskalonScreen {
 	public void render(float delta) {
 		progress = Interpolation.linear
 				.apply(application.getAssetManager().getProgress());
-		// make sure that the final few progress values are 1, which is more
-		// pleasant to look at
+		// Smooth the final loading progress
 		progress = progress > 0.98F ? 1 : progress + 0.02F;
 
 		// Check if the asset manager is done
