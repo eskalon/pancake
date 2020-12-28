@@ -20,7 +20,6 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
-import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector3;
 
@@ -35,11 +34,10 @@ public class AmbientLightPass extends LightPass {
 
 	private ShaderProgram program;
 	private Camera orthoCam;
-	public Vector3 ambientColor = new Vector3(0.6f, 0.6f, 0.6f);
+	public Vector3 ambientColor = new Vector3(0.3f, 0.3f, 0.3f);
 
 	private Mesh screenQuad;
 
-	// TODO: Write missing shader!
 	private final FileHandle vert = Gdx.files
 			.internal("resources/shaders/image.vert");
 	private final FileHandle frag = Gdx.files
@@ -56,14 +54,6 @@ public class AmbientLightPass extends LightPass {
 	@Override
 	public void render(Scene scene) {
 		this.renderer.context.begin();
-		
-		this.renderer.gBuffer.getTextureAttachments()
-				.get(DeferredRenderer.MATERIAL_ATTACHMENT_INDEX)
-				.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-
-		this.renderer.gBuffer.getTextureAttachments()
-				.get(DeferredRenderer.ALBEDO_ATTACHMENT_INDEX)
-				.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 
 		this.program.bind();
 		this.program.setUniformMatrix("u_projTrans", this.orthoCam.combined);

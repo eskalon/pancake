@@ -28,6 +28,7 @@ import com.badlogic.gdx.utils.Disposable;
 public class Scene implements Disposable {
 
 	private Array<ModelInstance> instances;
+	private Array<Light> lights;
 	private Skybox skybox;
 
 	private Camera camera;
@@ -41,6 +42,7 @@ public class Scene implements Disposable {
 	 */
 	public Scene(int width, int height) {
 		this.instances = new Array<ModelInstance>();
+		this.lights = new Array<Light>();
 	}
 
 	public Camera getCamera() {
@@ -49,6 +51,18 @@ public class Scene implements Disposable {
 
 	public void setCamera(Camera camera) {
 		this.camera = camera;
+	}
+	
+	public Array<Light> getLights() {
+		return this.lights;
+	}
+	
+	public void addLight(Light light) {
+		this.lights.add(light);
+	}
+	
+	public void addLights(Array<? extends Light> lights) {
+		this.lights.addAll(lights);
 	}
 	
 	public Skybox getSkybox() {

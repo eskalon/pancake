@@ -10,9 +10,11 @@ import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
+import com.badlogic.gdx.math.Vector3;
 
 import de.eskalon.commons.asset.AnnotationAssetManager.Asset;
 import de.eskalon.commons.core.EskalonApplication;
+import de.eskalon.commons.graphics.Light;
 import de.eskalon.commons.graphics.PBRTextureAttribute;
 import de.eskalon.commons.graphics.Scene;
 import de.eskalon.commons.graphics.Skybox;
@@ -26,20 +28,20 @@ public class Debug3DScreen extends AbstractEskalonScreen {
 	@Asset("models/debug_model_tangent.g3dj")
 	private Model debug;
 
-//	 @Asset(value = "textures/granite/granite albedo.png", params =
-//	 "-genmipmap")
-//	 private Texture granite_albedo;
-//	 @Asset(value = "textures/granite/granite normal.png", params =
-//	 "-genmipmap")
-//	 private Texture granite_normal;
-//	 @Asset(value = "textures/granite/granite metallic.png", params =
-//	 "-genmipmap")
-//	 private Texture granite_metallic;
-//	 @Asset(value = "textures/granite/granite roughness.png", params =
-//	 "-genmipmap")
-//	 private Texture granite_roughness;
-//	 @Asset(value = "textures/granite/granite ao.png", params = "-genmipmap")
-//	 private Texture granite_ao;
+	// @Asset(value = "textures/granite/granite albedo.png", params =
+	// "-genmipmap")
+	// private Texture granite_albedo;
+	// @Asset(value = "textures/granite/granite normal.png", params =
+	// "-genmipmap")
+	// private Texture granite_normal;
+	// @Asset(value = "textures/granite/granite metallic.png", params =
+	// "-genmipmap")
+	// private Texture granite_metallic;
+	// @Asset(value = "textures/granite/granite roughness.png", params =
+	// "-genmipmap")
+	// private Texture granite_roughness;
+	// @Asset(value = "textures/granite/granite ao.png", params = "-genmipmap")
+	// private Texture granite_ao;
 
 	@Asset(value = "textures/red_bricks/red_bricks albedo.png", params = "-genmipmap")
 	private Texture red_bricks_albedo;
@@ -99,37 +101,39 @@ public class Debug3DScreen extends AbstractEskalonScreen {
 		this.scene = new Scene(this.application.getWidth(),
 				this.application.getHeight());
 		this.scene.setCamera(camera);
+		this.scene.addLight(
+				new Light(new Vector3(1, 1, 1), new Vector3(1, 1, 1), 6f));
 		Cubemap cubemap = new Cubemap(cubeRight.getTextureData(),
 				cubeLeft.getTextureData(), cubeTop.getTextureData(),
 				cubeBottom.getTextureData(), cubeFront.getTextureData(),
 				cubeBack.getTextureData());
 		this.scene.setSkybox(new Skybox(cubemap));
-		
+
 		this.renderer = new DeferredRenderer(this.application);
 
-//		 Material granite = this.debug.materials.get(0);
-//		 this.granite_albedo.setFilter(TextureFilter.MipMapLinearLinear,
-//		 TextureFilter.MipMapLinearLinear);
-//		 this.granite_albedo.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
-//		 this.granite_normal.setFilter(TextureFilter.MipMapLinearLinear,
-//		 TextureFilter.MipMapLinearLinear);
-//		 this.granite_normal.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
-//		 this.granite_metallic.setFilter(TextureFilter.MipMapLinearLinear,
-//		 TextureFilter.MipMapLinearLinear);
-//		 this.granite_metallic.setWrap(TextureWrap.Repeat,
-//		 TextureWrap.Repeat);
-//		 this.granite_roughness.setFilter(TextureFilter.MipMapLinearLinear,
-//		 TextureFilter.MipMapLinearLinear);
-//		 this.granite_roughness.setWrap(TextureWrap.Repeat,
-//		 TextureWrap.Repeat);
-//		 this.granite_ao.setFilter(TextureFilter.MipMapLinearLinear,
-//		 TextureFilter.MipMapLinearLinear);
-//		 this.granite_ao.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
-//		 granite.set(PBRTextureAttribute.createAlbedo(granite_albedo));
-//		 granite.set(PBRTextureAttribute.createNormal(granite_normal));
-//		 granite.set(PBRTextureAttribute.createMetallic(granite_metallic));
-//		 granite.set(PBRTextureAttribute.createRoughness(granite_roughness));
-//		 granite.set(PBRTextureAttribute.createAmbient(granite_ao));
+		// Material granite = this.debug.materials.get(0);
+		// this.granite_albedo.setFilter(TextureFilter.MipMapLinearLinear,
+		// TextureFilter.MipMapLinearLinear);
+		// this.granite_albedo.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
+		// this.granite_normal.setFilter(TextureFilter.MipMapLinearLinear,
+		// TextureFilter.MipMapLinearLinear);
+		// this.granite_normal.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
+		// this.granite_metallic.setFilter(TextureFilter.MipMapLinearLinear,
+		// TextureFilter.MipMapLinearLinear);
+		// this.granite_metallic.setWrap(TextureWrap.Repeat,
+		// TextureWrap.Repeat);
+		// this.granite_roughness.setFilter(TextureFilter.MipMapLinearLinear,
+		// TextureFilter.MipMapLinearLinear);
+		// this.granite_roughness.setWrap(TextureWrap.Repeat,
+		// TextureWrap.Repeat);
+		// this.granite_ao.setFilter(TextureFilter.MipMapLinearLinear,
+		// TextureFilter.MipMapLinearLinear);
+		// this.granite_ao.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
+		// granite.set(PBRTextureAttribute.createAlbedo(granite_albedo));
+		// granite.set(PBRTextureAttribute.createNormal(granite_normal));
+		// granite.set(PBRTextureAttribute.createMetallic(granite_metallic));
+		// granite.set(PBRTextureAttribute.createRoughness(granite_roughness));
+		// granite.set(PBRTextureAttribute.createAmbient(granite_ao));
 
 		Material red_bricks = this.debug.materials.get(0);
 		this.red_bricks_albedo.setFilter(TextureFilter.MipMap,

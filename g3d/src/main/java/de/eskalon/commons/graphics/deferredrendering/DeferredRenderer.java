@@ -18,10 +18,9 @@ package de.eskalon.commons.graphics.deferredrendering;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL30;
-import com.badlogic.gdx.graphics.Mesh;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g3d.utils.RenderContext;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.Disposable;
 
@@ -64,10 +63,6 @@ public class DeferredRenderer implements IRenderer, Disposable {
 	protected RenderContext context;
 	protected FrameBuffer gBuffer;
 	protected Camera camera;
-	
-	// TODO: remove whole Icosphere Code from this class
-	private Mesh ico;
-	private ShaderProgram icoProgram;
 
 	public DeferredRenderer(EskalonApplication game) {
 		this.game = game;
@@ -88,20 +83,30 @@ public class DeferredRenderer implements IRenderer, Disposable {
 
 		this.gBuffer = builder.build();
 
+		this.gBuffer.getTextureAttachments()
+				.get(DeferredRenderer.ALBEDO_ATTACHMENT_INDEX)
+				.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		this.gBuffer.getTextureAttachments()
+				.get(DeferredRenderer.NORMAL_ATTACHMENT_INDEX)
+				.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		this.gBuffer.getTextureAttachments()
+				.get(DeferredRenderer.MATERIAL_ATTACHMENT_INDEX)
+				.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		this.gBuffer.getTextureAttachments()
+				.get(DeferredRenderer.DEPTH_ATTACHMENT_INDEX)
+				.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+
 		// TODO: set the light pass from the outside maybe?
 		this.geometryPass = new GeometryPass(this);
-		//this.lightPass = new DebugLightPass(this);
-		this.lightPass = new AmbientLightPass(this);
-		
-		this.ico = IcosphereBuilder.createIcosphere(1f, 1);
-		this.icoProgram = IcosphereBuilder.getProgram();
+		// this.lightPass = new DebugLightPass(this);
+		// this.lightPass = new AmbientLightPass(this);
+		this.lightPass = new DeferredLightPass(this);
 	}
 
 	@Override
 	public void render(Scene scene) {
 		this.camera = scene.getCamera();
 		this.geometryPass.render(scene.getInstances());
-		this.lightPass.render(scene);
 
 		// copies the depth from the gBuffer to the currently used FrameBuffer
 		Gdx.gl.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER,
@@ -110,18 +115,9 @@ public class DeferredRenderer implements IRenderer, Disposable {
 				gBuffer.getHeight(), 0, 0, gBuffer.getWidth(),
 				gBuffer.getHeight(), GL30.GL_DEPTH_BUFFER_BIT, GL30.GL_NEAREST);
 		
+		this.lightPass.render(scene);
+
 		this.render(scene.getSkybox());
-		
-		Gdx.gl.glDisable(GL30.GL_CULL_FACE);
-		this.renderIco();
-	}
-	
-	public void renderIco() {
-		Gdx.gl.glDisable(GL30.GL_DEPTH_TEST);
-		this.icoProgram.bind();
-		this.icoProgram.setUniformMatrix("u_projView", this.camera.combined);
-		this.ico.render(this.icoProgram, IcosphereBuilder.PRIMITIVE_TYPE);
-		Gdx.gl.glEnable(GL30.GL_DEPTH_TEST);
 	}
 
 	public void render(Skybox skybox) {
@@ -143,13 +139,15 @@ public class DeferredRenderer implements IRenderer, Disposable {
 		skybox.getShaderProgram().setUniformMatrix("u_view", view);
 		skybox.getShaderProgram().setUniformMatrix("u_proj",
 				this.camera.projection);
-		
+
 		// set cubemap
 		skybox.getShaderProgram().setUniformi("u_cube",
 				this.context.textureBinder.bind(skybox.getCubemap()));
-		
+
 		skybox.getMesh().render(skybox.getShaderProgram(),
 				Skybox.PRIMITIVE_TYPE);
+		
+		Gdx.gl.glDepthMask(true);
 
 		this.context.end();
 	}

@@ -274,8 +274,7 @@ public class IcosphereBuilder {
 			for (int i = 0; i < pointer; i += 3) {
 				if ((vertex1 == table[i] && vertex2 == table[i + 1])
 						|| (vertex2 == table[i] && vertex1 == table[i + 1])) {
-					short result = table[i + 2];
-					return result;
+					return table[i + 2];
 				}
 			}
 			return -1;
