@@ -102,7 +102,7 @@ public class Debug3DScreen extends AbstractEskalonScreen {
 				this.application.getHeight());
 		this.scene.setCamera(camera);
 		this.scene.addLight(
-				new Light(new Vector3(1, 1, 1), new Vector3(1, 1, 1), 6f));
+				new Light(new Vector3(1, 1, 1), new Vector3(0.4f,0.4f,0.4f), 6f));
 		Cubemap cubemap = new Cubemap(cubeRight.getTextureData(),
 				cubeLeft.getTextureData(), cubeTop.getTextureData(),
 				cubeBottom.getTextureData(), cubeFront.getTextureData(),
