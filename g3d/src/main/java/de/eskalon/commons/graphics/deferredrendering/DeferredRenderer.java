@@ -18,15 +18,18 @@ package de.eskalon.commons.graphics.deferredrendering;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL30;
+import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g3d.utils.RenderContext;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.Disposable;
 
 import de.damios.guacamole.gdx.graphics.NestableFrameBuffer.NestableFrameBufferBuilder;
 import de.eskalon.commons.core.EskalonApplication;
 import de.eskalon.commons.graphics.IRenderer;
+import de.eskalon.commons.graphics.Light;
 import de.eskalon.commons.graphics.Scene;
 import de.eskalon.commons.graphics.Skybox;
 
@@ -63,6 +66,10 @@ public class DeferredRenderer implements IRenderer, Disposable {
 	protected RenderContext context;
 	protected FrameBuffer gBuffer;
 	protected Camera camera;
+	
+	// TODO: remove this debug code
+	private Mesh ico;
+	private ShaderProgram icoProgram;
 
 	public DeferredRenderer(EskalonApplication game) {
 		this.game = game;
@@ -101,6 +108,9 @@ public class DeferredRenderer implements IRenderer, Disposable {
 		// this.lightPass = new DebugLightPass(this);
 		// this.lightPass = new AmbientLightPass(this);
 		this.lightPass = new DeferredLightPass(this);
+		
+		this.ico = IcosphereBuilder.createIcosphere(1f, 2);
+		this.icoProgram = IcosphereBuilder.getProgram();
 	}
 
 	@Override
@@ -118,6 +128,29 @@ public class DeferredRenderer implements IRenderer, Disposable {
 		this.lightPass.render(scene);
 
 		this.render(scene.getSkybox());
+//		this.renderDebugLights(scene);
+	}
+	
+	public void renderDebugLights(Scene scene) {
+		this.icoProgram.bind();
+		this.icoProgram.setUniformMatrix("u_projView", this.camera.combined);
+		Gdx.gl.glDisable(GL30.GL_DEPTH_TEST);
+		for (Light light : scene.getLights()) {
+			Matrix4 model = new Matrix4();
+			model.setToScaling(light.radius, light.radius, light.radius);
+			model.setTranslation(light.getPosition());
+			this.icoProgram.setUniformMatrix("u_model", model);
+			this.ico.render(this.icoProgram, GL30.GL_LINE_STRIP);
+			
+			model.setToScaling(0.1f, 0.1f, 0.1f);
+			model.setTranslation(light.getPosition());
+			this.icoProgram.setUniformMatrix("u_model", model);
+			this.ico.render(this.icoProgram, IcosphereBuilder.PRIMITIVE_TYPE);
+			
+		
+		}
+		Gdx.gl.glEnable(GL30.GL_DEPTH_TEST);
+
 	}
 
 	public void render(Skybox skybox) {

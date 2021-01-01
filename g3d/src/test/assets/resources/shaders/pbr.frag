@@ -88,35 +88,35 @@ void main() {
 	           
     // reflectance equation
     vec3 Lo = vec3(0.0);
-    for(int i = 0; i < 4; ++i) 
-    {
-        // calculate per-light radiance
-        vec3 L = normalize(u_position - world_position);
-        vec3 H = normalize(V + L);
-        float distance    = length(u_position - world_position);
-        //float attenuation = clamp(1.0 - distance * distance/(u_radius * u_radius), 0.0, 1.0);
-        float attenuation = 1.0 / distance * distance;
-        vec3 radiance     = u_color * attenuation;
-        
-        // cook-torrance brdf
-        float NDF = DistributionGGX(N, H, roughness);        
-        float G   = GeometrySmith(N, V, L, roughness);      
-        vec3 F    = fresnelSchlick(max(dot(H, V), 0.0), F0);
-        
-        vec3 kS = F;
-        vec3 kD = vec3(1.0) - kS;
-        kD *= 1.0 - metalness;	  
-        
-        vec3 numerator    = NDF * G * F;
-        float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0);
-        vec3 specular     = numerator / max(denominator, 0.001);  
-            
-        // add to outgoing radiance Lo
-        float NdotL = max(dot(N, L), 0.0);                
-        Lo += (kD * albedo / PI + specular) * radiance * NdotL; 
-    }   
+	// calculate per-light radiance
+	vec3 L = normalize(u_position - world_position);
+	vec3 H = normalize(V + L);
+	float distance    = length(u_position - world_position);
+
+	// TODO: find a nice looking attenuation function
+	// -> maybe use 1D texture for lookup
+	float attenuation = clamp(1.0 - (distance * distance)/(u_radius * u_radius), 0.0, 1.0);
+//	float attenuation = 1.0 / distance * distance;
+	vec3 radiance     = u_color * attenuation;
+
+	// cook-torrance brdf
+	float NDF = DistributionGGX(N, H, roughness);
+	float G   = GeometrySmith(N, V, L, roughness);
+	vec3 F    = fresnelSchlick(max(dot(H, V), 0.0), F0);
+
+	vec3 kS = F;
+	vec3 kD = vec3(1.0) - kS;
+	kD *= 1.0 - metalness;
+
+	vec3 numerator    = NDF * G * F;
+	float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0);
+	vec3 specular     = numerator / max(denominator, 0.001);
+
+	// add to outgoing radiance Lo
+	float NdotL = max(dot(N, L), 0.0);
+	Lo += (kD * albedo / PI + specular) * radiance * NdotL;
   
-    vec3 ambient = vec3(0.1) * albedo * ao;
+    vec3 ambient = vec3(0.1) * albedo * ao * 0;
     vec3 color = ambient + Lo;
 	
     color = color / (color + vec3(1.0));

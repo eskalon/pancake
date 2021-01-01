@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector3;
 
+import de.damios.guacamole.Preconditions;
 import de.damios.guacamole.gdx.graphics.ShaderProgramFactory;
 
 public class IcosphereBuilder {
@@ -48,8 +49,10 @@ public class IcosphereBuilder {
 	 * @return The subdivided icosphere.
 	 */
 	public static Mesh createIcosphere(float circumRadius, int subdivisions) {
+		Preconditions.checkArgument(subdivisions <= MAX_SUBDIVISIONS,
+				"exceeded maximum subdivion count");
 		Mesh output = IcosphereBuilder.createIcosahedron(circumRadius);
-		for (int i = 0; i < Math.min(MAX_SUBDIVISIONS, subdivisions); i++) {
+		for (int i = 0; i < subdivisions; i++) {
 			output = IcosphereBuilder.subdivide(output);
 		}
 		return output;

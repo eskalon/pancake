@@ -61,13 +61,13 @@ public class DeferredLightPass extends LightPass {
 								.get(DeferredRenderer.DEPTH_ATTACHMENT_INDEX)));
 
 		// TODO: find out if the faces really get culled
-		Gdx.gl.glEnable(GL30.GL_CULL_FACE);
-		Gdx.gl.glCullFace(GL30.GL_BACK);
+//		Gdx.gl.glEnable(GL30.GL_CULL_FACE);
+//		Gdx.gl.glCullFace(GL30.GL_FRONT);
 		// TODO: depth test needs to be enabled for the final thing
 		// TODO: no lighting should be calculated, where no objects are
 		// -> check if there is any value in the depth buffer maybe
 		Gdx.gl.glDepthMask(false);
-		Gdx.gl.glDisable(GL30.GL_DEPTH_TEST);
+		Gdx.gl.glEnable(GL30.GL_DEPTH_TEST);
 
 		// TODO: each light should add its color to the previous calculated
 		// color -> need to access old color value in fragment shader

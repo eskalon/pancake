@@ -1,6 +1,5 @@
 package de.eskalon.commons.graphics.deferredrendering;
 
-import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
@@ -20,7 +19,7 @@ public class DesktopLauncher {
 	public static void main(String[] args) {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 
-		config.setWindowedMode(1280, 720);
+		config.setWindowedMode(1920, 1080);
 		config.useVsync(false);
 
 //		config.setWindowIcon(FileType.Internal, "icon16.png", "icon32.png",
