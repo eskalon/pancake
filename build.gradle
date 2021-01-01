@@ -13,17 +13,18 @@ allprojects {
 	apply plugin: "eclipse"
 	apply plugin: "idea"
 
-	version = "0.1.1"
+	version = "0.1.2"
 	ext {
 		appName = "pancake"
 		eventbusVersion = "1.6.1"
 		freetypeSkinVersion = "0.3.1"
-		gdxVersion = "1.9.12"
-		guacamoleVersion = "0.2.3"
-		junitVersion = "5.6.0"
-		mockitoVersion = "3.5.13"
+		gdxVersion = "1.9.13"
+		guacamoleVersion = "0.2.4"
 		reflectionsVersion = "0.11.5" // -> 0.9.13
-        screenmanagerVersion = "0.6.4"
+        screenmanagerVersion = "0.6.5"
+        // Test dependencies:
+        junitVersion = "5.6.0"
+		mockitoVersion = "3.5.13"
     }
 
     repositories {
