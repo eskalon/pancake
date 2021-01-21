@@ -21,9 +21,9 @@ allprojects {
 		gdxVersion = "1.9.13"
 		guacamoleVersion = "c7a8df86c1" // = 0.2.5
 		reflectionsVersion = "0.11.5"
-        screenmanagerVersion = "36796fc286" // = 0.6.6
-        // Test dependencies:
-        junitVersion = "5.6.0"
+		screenmanagerVersion = "36796fc286" // = 0.6.6
+		// Test dependencies:
+		junitVersion = "5.6.0"
 		mockitoVersion = "3.5.13"
     }
 
@@ -49,7 +49,7 @@ project(":core") {
 		api("com.github.crykn:libgdx-screenmanager:$screenmanagerVersion") {
 			exclude group: "com.github.crykn.guacamole", module: "gdx" 
 		}
-		compile( "com.github.crykn.guacamole:gdx:$guacamoleVersion")
+		api( "com.github.crykn.guacamole:gdx:$guacamoleVersion")
 		implementation "com.github.crykn:freetype-skin:$freetypeSkinVersion"
 
 		testImplementation "org.junit.jupiter:junit-jupiter-engine:$junitVersion"

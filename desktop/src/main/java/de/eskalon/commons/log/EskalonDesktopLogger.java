@@ -41,12 +41,12 @@ public class EskalonDesktopLogger implements ApplicationLogger {
 
 	@Override
 	public void error(String tag, String message) {
-		System.out.println(String.format(LOG_FORMAT, new Date(), tag, message));
+		System.err.println(String.format(LOG_FORMAT, new Date(), tag, message));
 	}
 
 	@Override
 	public void error(String tag, String message, Throwable exception) {
-		System.out.println(String.format(LOG_FORMAT, new Date(), tag, message));
+		System.err.println(String.format(LOG_FORMAT, new Date(), tag, message));
 		exception.printStackTrace(System.err);
 	}
 
