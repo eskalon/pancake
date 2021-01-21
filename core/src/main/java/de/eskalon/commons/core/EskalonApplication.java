@@ -16,6 +16,7 @@
 package de.eskalon.commons.core;
 
 import com.badlogic.gdx.Application.ApplicationType;
+import com.badlogic.gdx.ApplicationLogger;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -30,9 +31,10 @@ import com.badlogic.gdx.utils.reflect.ReflectionUtils;
 import com.github.acanthite.gdx.graphics.g2d.FreeTypeSkinLoader;
 
 import de.damios.guacamole.annotations.GwtIncompatible;
-import de.damios.guacamole.gdx.Log;
 import de.damios.guacamole.gdx.assets.Text;
 import de.damios.guacamole.gdx.assets.TextLoader;
+import de.damios.guacamole.gdx.log.Logger;
+import de.damios.guacamole.gdx.log.LoggerService;
 import de.eskalon.commons.asset.AnnotationAssetManager;
 import de.eskalon.commons.asset.BitmapFontAssetLoaderParametersFactory;
 import de.eskalon.commons.asset.PlaylistDefinition;
@@ -42,7 +44,6 @@ import de.eskalon.commons.audio.DefaultSoundManager;
 import de.eskalon.commons.audio.ISoundManager;
 import de.eskalon.commons.misc.DebugInfoRenderer;
 import de.eskalon.commons.misc.EskalonGameInputProcessor;
-import de.eskalon.commons.misc.EskalonLogger;
 import de.eskalon.commons.misc.EventBusLogger;
 import de.eskalon.commons.misc.EventQueueBus;
 import de.eskalon.commons.screen.transition.ScreenTransition;
@@ -76,6 +77,9 @@ import de.eskalon.commons.utils.graphics.GL32CMacIssueHandler;
 @GwtIncompatible // TODO replace EventBus with something compatible with GWT
 public abstract class EskalonApplication
 		extends ManagedGame<AbstractEskalonScreen, ScreenTransition> {
+
+	private static final Logger LOG = LoggerService
+			.getLogger(EskalonApplication.class);
 
 	@GwtIncompatible
 	public final boolean IN_DEV_ENV = EskalonApplication.class.getPackage()
@@ -115,16 +119,20 @@ public abstract class EskalonApplication
 	@Override
 	public final void create() {
 		// Log stuff
-		Gdx.app.setApplicationLogger(new EskalonLogger());
+		if (Gdx.app.getType() == ApplicationType.Desktop
+				|| Gdx.app.getType() == ApplicationType.HeadlessDesktop)
+			Gdx.app.setApplicationLogger(ReflectionUtils.newInstance(
+					"de.eskalon.commons.log.EskalonDesktopLogger",
+					ApplicationLogger.class));
 
 		if (debugLogging)
-			Log.showAll();
+			LoggerService.showAll();
 		else
-			Log.showInfoAndErrors();
+			LoggerService.showInfoAndErrors();
 
-		Log.info("Start ", "Version: '%s' | App Type: '%s' | OS: '%s'", VERSION,
+		LOG.info("Version: '%s' | App Type: '%s' | OS: '%s'", VERSION,
 				Gdx.app.getType(), System.getProperty("os.name"));
-		Log.debug("Start ", "GL30 Available: '%b' | Renderer: '%s'",
+		LOG.debug("GL30 Available: '%b' | Renderer: '%s'",
 				Gdx.graphics.isGL30Available(),
 				Gdx.graphics.getGLVersion().getRendererString());
 

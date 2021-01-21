@@ -19,9 +19,9 @@ allprojects {
 		eventbusVersion = "1.6.1"
 		freetypeSkinVersion = "0.3.1"
 		gdxVersion = "1.9.13"
-		guacamoleVersion = "0.2.4"
-		reflectionsVersion = "0.11.5" // -> 0.9.13
-        screenmanagerVersion = "0.6.5"
+		guacamoleVersion = "c7a8df86c1" // = 0.2.5
+		reflectionsVersion = "0.11.5"
+        screenmanagerVersion = "36796fc286" // = 0.6.6
         // Test dependencies:
         junitVersion = "5.6.0"
 		mockitoVersion = "3.5.13"
@@ -46,7 +46,10 @@ project(":core") {
 		
 		implementation "com.github.crykn:guava-eventbus:$eventbusVersion"
 		implementation "net.oneandone.reflections8:reflections8:$reflectionsVersion" // alternative to org.reflections:reflections, see https://github.com/ronmamo/reflections/issues/273
-		api "com.github.crykn:libgdx-screenmanager:$screenmanagerVersion"
+		api("com.github.crykn:libgdx-screenmanager:$screenmanagerVersion") {
+			exclude group: "com.github.crykn.guacamole", module: "gdx" 
+		}
+		compile( "com.github.crykn.guacamole:gdx:$guacamoleVersion")
 		implementation "com.github.crykn:freetype-skin:$freetypeSkinVersion"
 
 		testImplementation "org.junit.jupiter:junit-jupiter-engine:$junitVersion"

@@ -1,10 +1,11 @@
 package de.eskalon;
 
-
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 
 import de.damios.guacamole.gdx.StartOnFirstThreadHelper;
+import de.damios.guacamole.gdx.log.Logger;
+import de.damios.guacamole.gdx.log.LoggerService;
 import de.eskalon.commons.core.EskalonApplication;
 import de.eskalon.commons.screens.BlankEskalonScreen;
 
@@ -21,8 +22,16 @@ public class RunnableTest extends EskalonApplication {
 	}
 
 	public class TestScreen extends BlankEskalonScreen {
+		private final Logger LOG = LoggerService.getLogger(TestScreen.class);
+
 		public TestScreen(EskalonApplication app) {
 			super(app);
+		}
+
+		@Override
+		public void show() {
+			LOG.error("Test");
+			super.show();
 		}
 	}
 
@@ -33,7 +42,7 @@ public class RunnableTest extends EskalonApplication {
 			config.setWindowedMode(1280, 720);
 			config.setResizable(false);
 			config.useVsync(false);
-			//config.setForegroundFPS(60);
+			// config.setForegroundFPS(60);
 
 			try {
 				new Lwjgl3Application(new RunnableTest(), config);

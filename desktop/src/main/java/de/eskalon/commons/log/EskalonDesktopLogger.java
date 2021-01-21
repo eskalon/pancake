@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 eskalon
+ * Copyright 2021 eskalon
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,58 +13,51 @@
  * limitations under the License.
  */
 
-package de.eskalon.commons.misc;
+package de.eskalon.commons.log;
 
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 import com.badlogic.gdx.ApplicationLogger;
 
 /**
+ * A logger for libGDX's desktop backends which also logs the current time.
+ * 
  * @author damios
  */
-public class EskalonLogger implements ApplicationLogger {
+public class EskalonDesktopLogger implements ApplicationLogger {
 
-	public static final TimeUnit DEFAULT_TIME_UNIT = TimeUnit.MILLISECONDS;
-	private final String INFO_LOG_FORMAT = "%tT - [INFO ] [%s]:  %s";
-	private final String ERROR_LOG_FORMAT = "%tT - [ERROR] [%s]:  %s";
-	private final String DEBUG_LOG_FORMAT = "%tT - [DEBUG] [%s]:  %s";
-
-	private static final String formatMessage(String formatString, String tag,
-			String message) {
-		return String.format(formatString, new Date(), tag, message);
-	}
+	private final String LOG_FORMAT = "%tT - [%s] %s";
 
 	@Override
 	public void log(String tag, String message) {
-		System.out.println(formatMessage(INFO_LOG_FORMAT, tag, message));
+		System.out.println(String.format(LOG_FORMAT, new Date(), tag, message));
 	}
 
 	@Override
 	public void log(String tag, String message, Throwable exception) {
-		System.out.println(formatMessage(INFO_LOG_FORMAT, tag, message));
+		System.out.println(String.format(LOG_FORMAT, new Date(), tag, message));
 		exception.printStackTrace(System.out);
 	}
 
 	@Override
 	public void error(String tag, String message) {
-		System.out.println(formatMessage(ERROR_LOG_FORMAT, tag, message));
+		System.out.println(String.format(LOG_FORMAT, new Date(), tag, message));
 	}
 
 	@Override
 	public void error(String tag, String message, Throwable exception) {
-		System.out.println(formatMessage(ERROR_LOG_FORMAT, tag, message));
+		System.out.println(String.format(LOG_FORMAT, new Date(), tag, message));
 		exception.printStackTrace(System.err);
 	}
 
 	@Override
 	public void debug(String tag, String message) {
-		System.out.println(formatMessage(DEBUG_LOG_FORMAT, tag, message));
+		System.out.println(String.format(LOG_FORMAT, new Date(), tag, message));
 	}
 
 	@Override
 	public void debug(String tag, String message, Throwable exception) {
-		System.out.println(formatMessage(DEBUG_LOG_FORMAT, tag, message));
+		System.out.println(String.format(LOG_FORMAT, new Date(), tag, message));
 		exception.printStackTrace(System.out);
 	}
 

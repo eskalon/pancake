@@ -17,7 +17,8 @@ package com.badlogic.gdx.utils.reflect;
 
 import javax.annotation.Nullable;
 
-import de.damios.guacamole.gdx.Log;
+import de.damios.guacamole.gdx.log.Logger;
+import de.damios.guacamole.gdx.log.LoggerService;
 
 /**
  * Reflection utils.
@@ -25,6 +26,9 @@ import de.damios.guacamole.gdx.Log;
  * @author damios
  */
 public class ReflectionUtils {
+
+	private static final Logger LOG = LoggerService
+			.getLogger(ReflectionUtils.class);
 
 	private ReflectionUtils() {
 		throw new UnsupportedOperationException();
@@ -51,7 +55,7 @@ public class ReflectionUtils {
 			return (T) ClassReflection
 					.newInstance(ClassReflection.forName(className));
 		} catch (ReflectionException e) {
-			Log.debug("ReflectionUtils", e.getLocalizedMessage());
+			LOG.debug(e.getLocalizedMessage());
 			return null;
 		}
 	}

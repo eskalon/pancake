@@ -20,7 +20,8 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.ExceptionEvent;
 import com.google.common.eventbus.Subscribe;
 
-import de.damios.guacamole.gdx.Log;
+import de.damios.guacamole.gdx.log.Logger;
+import de.damios.guacamole.gdx.log.LoggerService;
 
 /**
  * A simple logger for events thrown by an {@link EventBus}. Has to be
@@ -30,9 +31,12 @@ import de.damios.guacamole.gdx.Log;
  */
 public class EventBusLogger {
 
+	private static final Logger LOG = LoggerService
+			.getLogger(EventBusLogger.class);
+
 	@Subscribe
 	public void onExceptionEvent(ExceptionEvent ev) {
-		Log.error("EventHandler",
+		LOG.error(
 				"Exception thrown by subscriber method '%s(%s)' on subscriber '%s' when dispatching event '%s'",
 				ev.getSubscriberMethod().getName(),
 				ev.getSubscriberMethod().getParameterTypes()[0].getSimpleName(),
@@ -41,7 +45,7 @@ public class EventBusLogger {
 
 	@Subscribe
 	public void onDeadEvent(DeadEvent ev) {
-		Log.debug("EventHandler",
+		LOG.debug(
 				"The event '%s' was dispatched, but there were no matching subscribers registered",
 				ev.getEvent());
 	}
