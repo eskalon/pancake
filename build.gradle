@@ -17,7 +17,7 @@ allprojects {
 	ext {
 		appName = "pancake"
 		eventbusVersion = "1.6.1"
-		freetypeSkinVersion = "0.3.1"
+		freetypeSkinVersion = "0.4"
 		gdxVersion = "1.9.13"
 		guacamoleVersion = "c7a8df86c1" // = 0.2.5
 		reflectionsVersion = "0.11.5"
@@ -50,7 +50,7 @@ project(":core") {
 			exclude group: "com.github.crykn.guacamole", module: "gdx" 
 		}
 		api( "com.github.crykn.guacamole:gdx:$guacamoleVersion")
-		implementation "com.github.crykn:freetype-skin:$freetypeSkinVersion"
+		implementation "com.github.acanthite:freetype-skin:$freetypeSkinVersion"
 
 		testImplementation "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
 		testImplementation "org.mockito:mockito-core:$mockitoVersion"

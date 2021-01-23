@@ -23,6 +23,7 @@ import javax.annotation.Nullable;
 import org.reflections8.Reflections;
 import org.reflections8.scanners.FieldAnnotationsScanner;
 
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.reflect.ReflectionUtils;
 
@@ -48,6 +49,7 @@ public abstract class AbstractAssetLoadingScreen extends AbstractEskalonScreen {
 	@Nullable
 	private String packageRoot;
 
+	private int loadingFps;
 	private float progress;
 	private boolean isDone = false;
 
@@ -55,11 +57,19 @@ public abstract class AbstractAssetLoadingScreen extends AbstractEskalonScreen {
 	 * @param application
 	 * @param packageRoot
 	 *            the root package, e.g. "de.eskalon"
+	 * @param loadingFps
+	 *            used to call {@link AssetManager#update(int)}
 	 */
 	public AbstractAssetLoadingScreen(EskalonApplication application,
-			@Nullable String packageRoot) {
+			@Nullable String packageRoot, int loadingFps) {
 		this.application = application;
 		this.packageRoot = packageRoot;
+		this.loadingFps = loadingFps;
+	}
+
+	public AbstractAssetLoadingScreen(EskalonApplication application,
+			@Nullable String packageRoot) {
+		this(application, packageRoot, 30);
 	}
 
 	@Override
@@ -102,7 +112,8 @@ public abstract class AbstractAssetLoadingScreen extends AbstractEskalonScreen {
 				application.getAssetManager().getProgress() + 0.02F, 0, 1);
 
 		// Check if the asset manager is done
-		if (!isDone && application.getAssetManager().update()) {
+		if (!isDone
+				&& application.getAssetManager().update(1000 / loadingFps)) {
 			isDone = true;
 			onFinishedLoading();
 		}
