@@ -20,7 +20,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader.FreeTypeFontLoaderParameter;
 
-import de.damios.guacamole.ISimpleCallback;
 import de.eskalon.commons.core.EskalonApplication;
 
 /**
@@ -32,7 +31,7 @@ import de.eskalon.commons.core.EskalonApplication;
 public class EskalonSplashScreen extends AbstractEskalonScreen {
 
 	private EskalonApplication game;
-	private ISimpleCallback finishedCallback;
+	private Runnable finishedCallback;
 	private Texture titleImage;
 
 	private long startTime = -1;
@@ -44,12 +43,12 @@ public class EskalonSplashScreen extends AbstractEskalonScreen {
 	private int yPos;
 
 	public EskalonSplashScreen(EskalonApplication game,
-			ISimpleCallback loadingFinishedCallback) {
+			Runnable loadingFinishedCallback) {
 		this(game, loadingFinishedCallback, false);
 	}
 
 	public EskalonSplashScreen(EskalonApplication game,
-			ISimpleCallback loadingFinishedCallback, boolean skip) {
+			Runnable loadingFinishedCallback, boolean skip) {
 		this.game = game;
 		this.finishedCallback = loadingFinishedCallback;
 		this.skip = skip;
@@ -82,7 +81,7 @@ public class EskalonSplashScreen extends AbstractEskalonScreen {
 			isDone = true;
 			onCommonAssetsFinished();
 
-			finishedCallback.call(null);
+			finishedCallback.run();
 		}
 
 		game.getSpriteBatch().end();

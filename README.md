@@ -11,7 +11,7 @@ Pancake uses the following libraries and frameworks :
 - [libGDX](https://github.com/libgdx/libgdx)
 - [libgdx-screenmanager](https://github.com/crykn/libgdx-screenmanager)
 - [guacamole](https://github.com/crykn/guacamole)
-- [guava-eventbus](https://github.com/crykn/guava-eventbus) and [reflections](https://github.com/ronmamo/reflections) (for the classpath scanning in AbstractAssetLoadingScreen)
+- [reflections](https://github.com/ronmamo/reflections) (for the classpath scanning in AbstractAssetLoadingScreen)
 
 ## Content
 A selection of what Pancake offers:
@@ -43,7 +43,8 @@ A selection of what Pancake offers:
 - **PostProcessingPipeline:** A simple post processing pipeline [WIP]
 - **Lang, ILocalizable & ILocalized**
 	- `Lang#get(String key, Object... args)`
-- **DebugInfoRenderer:** renders some debug information, including a fps graph
+- **DebugInfoRenderer:** renders some debug information, including a neat fps graph
+- **EventBus, EventQueueBus** 
 - **AbstractAssetLoadingScreen:** a screen loading all assets annotated with `@Asset` in a specified package 
 - **AbstractEskalonUIScreen:** a screen rendering a background image & a stage
 - **AbstractImageScreen:** a simple screen rendering one image

@@ -44,7 +44,6 @@ import de.eskalon.commons.audio.DefaultSoundManager;
 import de.eskalon.commons.audio.ISoundManager;
 import de.eskalon.commons.misc.DebugInfoRenderer;
 import de.eskalon.commons.misc.EskalonGameInputProcessor;
-import de.eskalon.commons.misc.EventBusLogger;
 import de.eskalon.commons.misc.EventQueueBus;
 import de.eskalon.commons.screen.transition.ScreenTransition;
 import de.eskalon.commons.screen.transition.impl.BlankTimedTransition;
@@ -74,7 +73,6 @@ import de.eskalon.commons.utils.graphics.GL32CMacIssueHandler;
  * @author damios
  * @see BasicScreenManager
  */
-@GwtIncompatible // TODO replace EventBus with something compatible with GWT
 public abstract class EskalonApplication
 		extends ManagedGame<AbstractEskalonScreen, ScreenTransition> {
 
@@ -140,9 +138,6 @@ public abstract class EskalonApplication
 		// Initialize managed game
 		super.create();
 
-		// Event bus
-		this.eventBus.register(new EventBusLogger());
-
 		// Add input listener
 		getInputMultiplexer().addProcessor(applicationInputProcessor);
 
@@ -195,7 +190,7 @@ public abstract class EskalonApplication
 		// Splash Screen
 		this.screenManager.addScreen("blank", new BlankEskalonScreen(this));
 		this.screenManager.addScreen("splash",
-				new EskalonSplashScreen(this, (param) -> {
+				new EskalonSplashScreen(this, () -> {
 					// Enable stuff depending on commons assets
 					applicationInputProcessor.enable();
 					debugInfoRenderer.initialize(getWidth(), getHeight(),
@@ -242,7 +237,7 @@ public abstract class EskalonApplication
 		/*
 		 * Takes care of posting the events in the rendering thread
 		 */
-		eventBus.distributeEvents();
+		eventBus.dispatchEvents();
 
 		/*
 		 * Render the screen

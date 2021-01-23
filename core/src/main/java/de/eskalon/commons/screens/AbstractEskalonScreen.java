@@ -19,9 +19,7 @@ import de.eskalon.commons.core.EskalonApplication;
 import de.eskalon.commons.screen.ManagedScreen;
 
 /**
- * A basic screen for use with {@link EskalonApplication}. Is automatically
- * registered as event listener when the screen is {@linkplain #show() shown}
- * /{@linkplain #hide() hidden}.
+ * A basic screen for use with {@link EskalonApplication}.
  * 
  * @author damios
  */
@@ -30,14 +28,8 @@ public abstract class AbstractEskalonScreen extends ManagedScreen {
 	protected abstract EskalonApplication getApplication();
 
 	@Override
-	public void show() {
-		super.show();
-		getApplication().getEventBus().register(this);
-	}
-
-	@Override
 	public void hide() {
-		getApplication().getEventBus().unregister(this);
+		// empty default method
 	}
 
 	@Override

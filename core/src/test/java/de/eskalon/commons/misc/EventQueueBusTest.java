@@ -4,41 +4,74 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.google.common.eventbus.Subscribe;
+import de.eskalon.commons.LibgdxUnitTest;
 
-public class EventQueueBusTest {
+public class EventQueueBusTest extends LibgdxUnitTest {
 
-	int i = 0;
+	int i;
+	boolean b;
 
 	@Test
-	public void testEventBus() {
+	public void testConsumer() {
 		EventQueueBus bus = new EventQueueBus();
-		TestSubscriber sub = new TestSubscriber() {
-			@Override
-			public void test(TestEvent ev) {
-				i++;
-				assertEquals(43, ev.integer);
-			}
-		};
 		TestEvent ev = new TestEvent();
 		ev.integer = 43;
-		bus.register(sub);
-		bus.post(ev);
+		bus.on(TestEvent.class, e -> {
+			i++;
+			assertEquals(43, ev.integer);
+		});
 
+		// Post & Dispatch
+		i = 0;
+		bus.post(ev);
 		assertEquals(0, i);
 
-		bus.distributeEvents();
+		bus.dispatchEvents();
 		assertEquals(1, i);
 
-		bus.post(ev);
-		assertEquals(1, i);
-		bus.distributeEvents();
+		// Dispatch manually
+		bus.dispatch(ev);
+		assertEquals(2, i);
+
+		bus.dispatchEvents();
 		assertEquals(2, i);
 	}
 
-	public abstract class TestSubscriber {
-		@Subscribe
-		public abstract void test(TestEvent ev);
+	@Test
+	public void testRunnable() {
+		EventQueueBus bus = new EventQueueBus();
+		TestEvent ev = new TestEvent();
+		bus.on(TestEvent.class, () -> {
+			b = true;
+		});
+		// Post & Dispatch
+		b = false;
+		bus.post(ev);
+		assertEquals(false, b);
+		bus.dispatchEvents();
+		assertEquals(true, b);
+
+		// Dispatch manually
+		b = false;
+		bus.dispatchEvents();
+		assertEquals(false, b);
+
+		bus.dispatch(ev);
+		assertEquals(true, b);
+	}
+
+	@Test
+	public void testException() {
+		EventQueueBus bus = new EventQueueBus();
+		TestEvent ev = new TestEvent();
+		bus.on(TestEvent.class, () -> {
+			throw new RuntimeException("hello world!");
+		});
+		// Post & Dispatch
+		bus.post(ev);
+		System.out.println(1);
+		bus.dispatchEvents();
+		System.out.println(2);
 	}
 
 	public class TestEvent {

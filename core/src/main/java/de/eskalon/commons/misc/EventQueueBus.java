@@ -18,46 +18,51 @@ package de.eskalon.commons.misc;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import com.google.common.eventbus.EventBus;
-
-import de.damios.guacamole.annotations.GwtIncompatible;
-
 /**
- * This event bus queues events and only posts them to the subscribers when
- * {@link #distributeEvents()} is called. This can be useful if events have to
- * get handled in a certain thread.
+ * An event bus supporting queueing.
+ * <p>
+ * After events got {@link #post(Object) posted}, they have to be dispatched to
+ * the consumers via {@link #dispatchEvents()}. This can be useful if events
+ * have to get handled in a certain thread.
  * 
  * @author damios
  */
-@GwtIncompatible
 public class EventQueueBus extends EventBus {
 
 	/**
-	 * Queue of posted events. Is taken care of when {@link #distributeEvents()}
+	 * Queue of posted events. Is taken care of when {@link #dispatchEvents()()}
 	 * is called.
 	 */
 	private Queue<Object> eventQueue = new ConcurrentLinkedQueue<>();
 
 	/**
-	 * After this method is called the {@linkplain #eventQueue queued events}
-	 * get posted to their respective subscribers.
+	 * Posts an event to all registered consumers. The events get queued until
+	 * {@link #dispatchEvents()} is called. This method will return successfully
+	 * regardless of any exceptions thrown by consumers.
+	 * 
+	 * @param event
 	 */
-	public void distributeEvents() {
+	public void post(Object event) {
+		this.eventQueue.add(event);
+	}
+
+	/**
+	 * Dispatches the events. After this method is called the
+	 * {@linkplain #eventQueue queued events} get distributed to their
+	 * respective consumers.
+	 */
+	public void dispatchEvents() {
 		Object event = eventQueue.poll();
 		while (event != null) {
-			super.post(event);
+			dispatch(event);
 			event = eventQueue.poll();
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 * <p>
-	 * The events get queued until {@link #distributeEvents()} is called.
-	 */
 	@Override
-	public void post(Object event) {
-		this.eventQueue.add(event);
+	public void clear() {
+		super.clear();
+		eventQueue.clear();
 	}
 
 }
