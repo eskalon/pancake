@@ -135,6 +135,7 @@ public abstract class EskalonApplication
 		LOG.debug("GL30 Available: '%b' | Renderer: '%s'",
 				Gdx.graphics.isGL30Available(),
 				Gdx.graphics.getGLVersion().getRendererString());
+		LOG.debug("Java Version: '%s'", System.getProperty("java.version"));
 
 		// Initialize managed game
 		super.create();

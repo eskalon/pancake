@@ -2,6 +2,7 @@ package de.eskalon;
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
+import com.badlogic.gdx.graphics.Color;
 
 import de.damios.guacamole.gdx.StartOnFirstThreadHelper;
 import de.damios.guacamole.gdx.log.Logger;
@@ -33,6 +34,11 @@ public class RunnableTest extends EskalonApplication {
 			LOG.error("Test");
 			super.show();
 		}
+
+		@Override
+		public Color getClearColor() {
+			return Color.FIREBRICK;
+		}
 	}
 
 	public static void main(String[] args) {
@@ -42,7 +48,7 @@ public class RunnableTest extends EskalonApplication {
 			config.setWindowedMode(1280, 720);
 			config.setResizable(false);
 			config.useVsync(false);
-			// config.setForegroundFPS(60);
+			config.setForegroundFPS(60);
 
 			try {
 				new Lwjgl3Application(new RunnableTest(), config);

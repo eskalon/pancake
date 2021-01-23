@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 import org.reflections8.Reflections;
 import org.reflections8.scanners.FieldAnnotationsScanner;
 
-import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.reflect.ReflectionUtils;
 
 import de.damios.guacamole.annotations.GwtIncompatible;
@@ -98,10 +98,8 @@ public abstract class AbstractAssetLoadingScreen extends AbstractEskalonScreen {
 
 	@Override
 	public void render(float delta) {
-		progress = Interpolation.linear
-				.apply(application.getAssetManager().getProgress());
-		// Smooth the final loading progress
-		progress = progress > 0.98F ? 1 : progress + 0.02F;
+		progress = MathUtils.clamp(
+				application.getAssetManager().getProgress() + 0.02F, 0, 1);
 
 		// Check if the asset manager is done
 		if (!isDone && application.getAssetManager().update()) {
