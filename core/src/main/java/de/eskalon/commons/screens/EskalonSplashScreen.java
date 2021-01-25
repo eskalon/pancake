@@ -21,6 +21,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader.FreeTypeFontLoaderParameter;
 
 import de.eskalon.commons.core.EskalonApplication;
+import de.eskalon.commons.event.CommonsEvents.CommonsAssetsLoadedEvent;
 
 /**
  * This screen is the first screen shown to the user when he starts the game. It
@@ -31,7 +32,6 @@ import de.eskalon.commons.core.EskalonApplication;
 public class EskalonSplashScreen extends AbstractEskalonScreen {
 
 	private EskalonApplication game;
-	private Runnable finishedCallback;
 	private Texture titleImage;
 
 	private long startTime = -1;
@@ -42,15 +42,12 @@ public class EskalonSplashScreen extends AbstractEskalonScreen {
 	private int xPos;
 	private int yPos;
 
-	public EskalonSplashScreen(EskalonApplication game,
-			Runnable loadingFinishedCallback) {
-		this(game, loadingFinishedCallback, false);
+	public EskalonSplashScreen(EskalonApplication game) {
+		this(game, false);
 	}
 
-	public EskalonSplashScreen(EskalonApplication game,
-			Runnable loadingFinishedCallback, boolean skip) {
+	public EskalonSplashScreen(EskalonApplication game, boolean skip) {
 		this.game = game;
-		this.finishedCallback = loadingFinishedCallback;
 		this.skip = skip;
 	}
 
@@ -76,12 +73,12 @@ public class EskalonSplashScreen extends AbstractEskalonScreen {
 			this.startTime = System.currentTimeMillis();
 		}
 
-		if (!isDone && game.getAssetManager().update() && (skip
+		if (!isDone && game.getAssetManager().update(1000 / 30) && (skip
 				|| (startTime + duration) < System.currentTimeMillis())) {
 			isDone = true;
 			onCommonAssetsFinished();
 
-			finishedCallback.run();
+			game.getEventBus().dispatch(new CommonsAssetsLoadedEvent());
 		}
 
 		game.getSpriteBatch().end();

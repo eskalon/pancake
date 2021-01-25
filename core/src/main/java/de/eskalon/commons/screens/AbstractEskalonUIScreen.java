@@ -24,7 +24,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import de.eskalon.commons.core.EskalonApplication;
-import de.eskalon.commons.misc.ToggleableInputWrapper;
+import de.eskalon.commons.input.ToggleableInputWrapper;
 
 /**
  * The base class of all UI screens. It automatically loads the

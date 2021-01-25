@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 import de.eskalon.commons.LibgdxUnitTest;
+import de.eskalon.commons.event.EventQueueBus;
 
 public class EventQueueBusTest extends LibgdxUnitTest {
 

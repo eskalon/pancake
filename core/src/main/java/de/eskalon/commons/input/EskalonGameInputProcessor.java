@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package de.eskalon.commons.misc;
+package de.eskalon.commons.input;
 
 import com.badlogic.gdx.Input.Keys;
 
@@ -58,12 +58,13 @@ public class EskalonGameInputProcessor implements DefaultInputProcessor {
 		return overlayEnabled;
 	}
 
-	public boolean takeScreenshot() {
-		return takeScreenshot;
-	}
-
-	public void setTakeScreenshot(boolean takeScreenshot) {
-		this.takeScreenshot = takeScreenshot;
+	public boolean pollTakeScreenshot() {
+		if (takeScreenshot) {
+			takeScreenshot = false;
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public void enable() {

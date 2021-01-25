@@ -42,9 +42,10 @@ import de.eskalon.commons.asset.PlaylistDefinitionLoader;
 import de.eskalon.commons.asset.SkinAssetLoaderParametersFactory;
 import de.eskalon.commons.audio.DefaultSoundManager;
 import de.eskalon.commons.audio.ISoundManager;
+import de.eskalon.commons.event.CommonsEvents.CommonsAssetsLoadedEvent;
+import de.eskalon.commons.event.EventQueueBus;
+import de.eskalon.commons.input.EskalonGameInputProcessor;
 import de.eskalon.commons.misc.DebugInfoRenderer;
-import de.eskalon.commons.misc.EskalonGameInputProcessor;
-import de.eskalon.commons.misc.EventQueueBus;
 import de.eskalon.commons.screen.transition.ScreenTransition;
 import de.eskalon.commons.screen.transition.impl.BlankTimedTransition;
 import de.eskalon.commons.screen.transition.impl.BlendingTransition;
@@ -189,19 +190,19 @@ public abstract class EskalonApplication
 
 		// Splash Screen
 		this.screenManager.addScreen("blank", new BlankEskalonScreen(this));
-		this.screenManager.addScreen("splash",
-				new EskalonSplashScreen(this, () -> {
-					// Enable stuff depending on commons assets
-					applicationInputProcessor.enable();
-					debugInfoRenderer.initialize(getWidth(), getHeight(),
-							assetManager.get(
-									EskalonCommonsAssets.DEFAULT_FONT_NAME));
+		this.screenManager.addScreen("splash", new EskalonSplashScreen(this));
 
-					// Push second screen (usually asset loading)
-					screenManager.pushScreen("blank", "splashOutTransition1");
-					screenManager.pushScreen("blank", "splashOutTransition2");
-					screenManager.pushScreen(initApp(), "splashOutTransition3");
-				}));
+		eventBus.on(CommonsAssetsLoadedEvent.class, () -> {
+			// Enable stuff depending on commons assets
+			applicationInputProcessor.enable();
+			debugInfoRenderer.initialize(getWidth(), getHeight(),
+					assetManager.get(EskalonCommonsAssets.DEFAULT_FONT_NAME));
+
+			// Push second screen (usually asset loading)
+			screenManager.pushScreen("blank", "splashOutTransition1");
+			screenManager.pushScreen("blank", "splashOutTransition2");
+			screenManager.pushScreen(initApp(), "splashOutTransition3");
+		});
 
 		BlendingTransition splashBlendingTransition = new BlendingTransition(
 				batch, 0.25F, Interpolation.exp10In);
@@ -258,11 +259,10 @@ public abstract class EskalonApplication
 		/*
 		 * Take a screenshot
 		 */
-		if (applicationInputProcessor.takeScreenshot()) {
+		if (applicationInputProcessor.pollTakeScreenshot()) {
 			ScreenshotUtils.takeAndSaveScreenshot();
 			soundManager
 					.playSoundEffect(EskalonCommonsAssets.SHUTTER_SOUND_NAME);
-			applicationInputProcessor.setTakeScreenshot(false);
 		}
 	}
 

@@ -25,11 +25,19 @@ import de.eskalon.commons.screen.ManagedScreen;
  */
 public abstract class AbstractEskalonScreen extends ManagedScreen {
 
+	protected boolean isVisible = false;
+
 	protected abstract EskalonApplication getApplication();
 
 	@Override
+	public void show() {
+		isVisible = true;
+		super.show();
+	}
+
+	@Override
 	public void hide() {
-		// empty default method
+		isVisible = false;
 	}
 
 	@Override

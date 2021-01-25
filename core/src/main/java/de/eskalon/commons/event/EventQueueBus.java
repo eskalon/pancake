@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 eskalon
+ * Copyright 2021 eskalon
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package de.eskalon.commons.misc;
+package de.eskalon.commons.event;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
