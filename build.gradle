@@ -51,9 +51,9 @@ project(":core") {
 		api("com.github.crykn:libgdx-screenmanager:$screenmanagerVersion") {
 			exclude group: "com.github.crykn.guacamole", module: "gdx" 
 		}
-		api( "com.github.crykn.guacamole:gdx:$guacamoleVersion")
+		api "com.github.crykn.guacamole:gdx:$guacamoleVersion"
 		implementation "com.github.acanthite:freetype-skin:$freetypeSkinVersion"
-		implementation "com.github.crykn.gdx-vfx:gdx-vfx-core:$vfxVersion"
+		api "com.github.crykn.gdx-vfx:gdx-vfx-core:$vfxVersion"
 
 		testImplementation "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
 		testImplementation "org.mockito:mockito-core:$mockitoVersion"
