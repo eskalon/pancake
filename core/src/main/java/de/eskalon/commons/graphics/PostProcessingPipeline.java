@@ -38,7 +38,7 @@ import de.eskalon.commons.screen.ScreenManager;
  * postProcessor.beginCapture();
  * render(); // the actual rendering
  * postProcessor.endCapture();
- * postProcessor.renderEffectsOntoBatch(batch);
+ * postProcessor.renderEffectsOntoScreen(Gdx.graphics.getDeltaTime());
  * </pre>
  * 
  * @author damios
@@ -84,12 +84,22 @@ public class PostProcessingPipeline implements Disposable {
 		vfxManager.addEffect(effect);
 	}
 
+	public void addEffects(ChainVfxEffect... effects) {
+		for (ChainVfxEffect effect : effects) {
+			addEffect(effect);
+		}
+	}
+
 	public void removeEffect(ChainVfxEffect effect) {
 		vfxManager.removeEffect(effect);
 	}
 
 	public void removeAllEffects() {
 		vfxManager.removeAllEffects();
+	}
+
+	public boolean hasEffects() {
+		return vfxManager.hasEffects();
 	}
 
 	public void resize(int width, int height) {

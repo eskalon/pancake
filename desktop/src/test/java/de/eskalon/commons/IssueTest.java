@@ -1,4 +1,4 @@
-package de.eskalon;
+package de.eskalon.commons;
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
@@ -8,12 +8,17 @@ import de.damios.guacamole.gdx.StartOnFirstThreadHelper;
 import de.damios.guacamole.gdx.log.Logger;
 import de.damios.guacamole.gdx.log.LoggerService;
 import de.eskalon.commons.core.EskalonApplication;
+import de.eskalon.commons.core.EskalonApplicationConfiguration;
 import de.eskalon.commons.screens.BlankEskalonScreen;
 
-public class RunnableTest extends EskalonApplication {
+/**
+ * A simple runnable app to test issues.
+ */
+public class IssueTest extends EskalonApplication {
 
-	public RunnableTest() {
-		super(true, false);
+	@Override
+	protected EskalonApplicationConfiguration getAppConfig() {
+		return super.getAppConfig().enableDebugLoggingOnStartup();
 	}
 
 	@Override
@@ -31,8 +36,12 @@ public class RunnableTest extends EskalonApplication {
 
 		@Override
 		public void show() {
-			LOG.error("Test");
 			super.show();
+			LOG.error("Test");
+		}
+
+		@Override
+		public void render(float delta) {
 		}
 
 		@Override
@@ -51,10 +60,10 @@ public class RunnableTest extends EskalonApplication {
 			config.setForegroundFPS(60);
 
 			try {
-				new Lwjgl3Application(new RunnableTest(), config);
+				new Lwjgl3Application(new IssueTest(), config);
 			} catch (Exception e) {
 				System.err.println(
-						"An unexpected error occurred while starting the game:");
+						"An unexpected error occurred while starting the app:");
 				e.printStackTrace();
 				System.exit(-1);
 			}

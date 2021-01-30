@@ -46,8 +46,7 @@ import de.eskalon.commons.core.EskalonApplication;
 public abstract class AbstractAssetLoadingScreen extends AbstractEskalonScreen {
 
 	protected EskalonApplication application;
-	@Nullable
-	private String packageRoot;
+	private @Nullable String packageRoot;
 
 	private int loadingFps;
 	private float progress;

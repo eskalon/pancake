@@ -50,10 +50,8 @@ public class DefaultSoundManager implements ISoundManager, Disposable {
 	protected float musicFadeStep = 0.06F;
 	protected float musicFadeInterval = 0.55F;
 
-	@Nullable
-	protected Playlist currentPlaylist;
-	@Nullable
-	protected Pair<Music, String> currentSong;
+	protected @Nullable Playlist currentPlaylist;
+	protected @Nullable Pair<Music, String> currentSong;
 
 	@Override
 	public ISoundInstance playSoundEffect(String name, boolean stopIfPlaying,

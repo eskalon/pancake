@@ -15,11 +15,12 @@
 
 package de.eskalon.commons.core;
 
+import javax.annotation.Nullable;
+
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.ApplicationLogger;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -44,6 +45,7 @@ import de.eskalon.commons.audio.DefaultSoundManager;
 import de.eskalon.commons.audio.ISoundManager;
 import de.eskalon.commons.event.CommonsEvents.CommonsAssetsLoadedEvent;
 import de.eskalon.commons.event.EventQueueBus;
+import de.eskalon.commons.graphics.PostProcessingPipeline;
 import de.eskalon.commons.input.EskalonGameInputProcessor;
 import de.eskalon.commons.misc.DebugInfoRenderer;
 import de.eskalon.commons.screen.transition.ScreenTransition;
@@ -61,8 +63,9 @@ import de.eskalon.commons.utils.graphics.GL32CMacIssueHandler;
  * and constants. Furthermore, adds:
  * <ul>
  * <li>an {@linkplain #getAssetManager() asset manager}</li>
- * <li>a {@linkplain #getSoundManager() sound manager}</li>
  * <li>an {@linkplain #getEventBus() event bus}</li>
+ * <li>a {@linkplain #getPostProcessor() post processor}</li>
+ * <li>a {@linkplain #getSoundManager() sound manager}</li>
  * <li>a {@linkplain #getSpriteBatch() batch} and an {@linkplain #getUICamera()
  * ui camera}</li>
  * <li>support for setting an {@linkplain #uiSkin UI skin}</li>
@@ -77,9 +80,6 @@ import de.eskalon.commons.utils.graphics.GL32CMacIssueHandler;
 public abstract class EskalonApplication
 		extends ManagedGame<AbstractEskalonScreen, ScreenTransition> {
 
-	private static final Logger LOG = LoggerService
-			.getLogger(EskalonApplication.class);
-
 	@GwtIncompatible
 	public final boolean IN_DEV_ENV = EskalonApplication.class.getPackage()
 			.getImplementationVersion() == null;
@@ -87,44 +87,50 @@ public abstract class EskalonApplication
 	public final String VERSION = IN_DEV_ENV ? "Development Build"
 			: EskalonApplication.class.getPackage().getImplementationVersion();
 
+	private static final Logger LOG = LoggerService
+			.getLogger(EskalonApplication.class);
+
+	private final EskalonApplicationConfiguration config;
+
+	// Misc
+	private EskalonGameInputProcessor applicationInputProcessor = new EskalonGameInputProcessor();
 	private DebugInfoRenderer debugInfoRenderer;
 
+	// Asset manager
 	protected AnnotationAssetManager assetManager = new AnnotationAssetManager(
 			new InternalFileHandleResolver());
 
+	// Sound
 	protected ISoundManager soundManager;
 
-	private EskalonGameInputProcessor applicationInputProcessor = new EskalonGameInputProcessor();
+	// Graphics & UI
+	protected SpriteBatch batch;
+	protected Skin uiSkin;
+	protected @Nullable PostProcessingPipeline postProcessor;
 
+	// Events
 	protected EventQueueBus eventBus = new EventQueueBus();
 
-	protected SpriteBatch batch;
-	protected OrthographicCamera uiCamera;
-
-	protected Skin uiSkin;
-
-	private boolean debugLogging;
-	private boolean hasDepth;
-
 	protected EskalonApplication() {
-		this(false, false);
+		this.config = getAppConfig();
 	}
 
-	protected EskalonApplication(boolean debugLogging, boolean hasDepth) {
-		this.debugLogging = debugLogging;
-		this.hasDepth = hasDepth;
+	protected EskalonApplicationConfiguration getAppConfig() {
+		return new EskalonApplicationConfiguration();
 	}
 
 	@Override
 	public final void create() {
-		// Log stuff
+		/*
+		 * LOG STUFF
+		 */
 		if (Gdx.app.getType() == ApplicationType.Desktop
 				|| Gdx.app.getType() == ApplicationType.HeadlessDesktop)
 			Gdx.app.setApplicationLogger(ReflectionUtils.newInstance(
 					"de.eskalon.commons.log.EskalonDesktopLogger",
 					ApplicationLogger.class));
 
-		if (debugLogging)
+		if (config.enableDebugLoggingOnStartup)
 			LoggerService.showAll();
 		else
 			LoggerService.showInfoAndErrors();
@@ -136,13 +142,14 @@ public abstract class EskalonApplication
 				Gdx.graphics.getGLVersion().getRendererString());
 		LOG.debug("Java Version: '%s'", System.getProperty("java.version"));
 
-		// Initialize managed game
+		/*
+		 * INITIALIZE MANAGED GAME
+		 */
 		super.create();
 
-		// Add input listener
-		getInputMultiplexer().addProcessor(applicationInputProcessor);
-
-		// Configure asset manager
+		/*
+		 * CONFIGURE ASSET MANAGER
+		 */
 		this.assetManager.setLoader(FreeTypeFontGenerator.class,
 				new FreeTypeFontGeneratorLoader(
 						this.assetManager.getFileHandleResolver()));
@@ -162,7 +169,9 @@ public abstract class EskalonApplication
 		this.assetManager.registerAssetLoaderParametersFactory(Skin.class,
 				new SkinAssetLoaderParametersFactory());
 
-		// Sound manager
+		/*
+		 * SOUND MANAGER
+		 */
 		if (Gdx.app.getType() == ApplicationType.Desktop
 				|| Gdx.app.getType() == ApplicationType.HeadlessDesktop)
 			this.soundManager = ReflectionUtils.newInstance(
@@ -172,25 +181,42 @@ public abstract class EskalonApplication
 		if (this.soundManager == null)
 			this.soundManager = new DefaultSoundManager();
 
-		// Create sprite batch & camera
+		/*
+		 * SPRITEBATCH
+		 */
 		this.batch = new SpriteBatch(1000,
 				GL32CMacIssueHandler.doUse32CShader()
 						? GL32CMacIssueHandler.createSpriteBatchShader()
 						: null);
 
-		this.uiCamera = new OrthographicCamera(viewportWidth, viewportHeight);
-		this.uiCamera.combined.setToOrtho2D(0, 0, getWidth(), getHeight());
+		/*
+		 * SCREEN MANAGER
+		 */
+		this.getScreenManager().setHasDepth(config.provideDepthBuffers);
 
-		// Configure screen manager
-		this.getScreenManager().setHasDepth(hasDepth);
+		/*
+		 * POST PROCESSOR
+		 */
+		if (config.createPostProcessor) {
+			this.postProcessor = new PostProcessingPipeline(getScreenManager(),
+					Gdx.graphics.getBackBufferWidth(),
+					Gdx.graphics.getBackBufferHeight(),
+					config.provideDepthBuffers);
+		}
 
-		// Debug info renderer
-		debugInfoRenderer = new DebugInfoRenderer(batch, debugLogging, VERSION,
-				soundManager);
+		/*
+		 * MISC
+		 */
+		getInputMultiplexer().addProcessor(applicationInputProcessor);
+		debugInfoRenderer = new DebugInfoRenderer(batch,
+				config.enableDebugLoggingOnStartup, VERSION, soundManager);
 
-		// Splash Screen
+		/*
+		 * SPLASH SCREEN
+		 */
 		this.screenManager.addScreen("blank", new BlankEskalonScreen(this));
-		this.screenManager.addScreen("splash", new EskalonSplashScreen(this));
+		this.screenManager.addScreen("splash",
+				new EskalonSplashScreen(this, config.skipSplashScreen));
 
 		eventBus.on(CommonsAssetsLoadedEvent.class, () -> {
 			// Enable stuff depending on commons assets
@@ -199,30 +225,37 @@ public abstract class EskalonApplication
 					assetManager.get(EskalonCommonsAssets.DEFAULT_FONT_NAME));
 
 			// Push second screen (usually asset loading)
-			screenManager.pushScreen("blank", "splashOutTransition1");
-			screenManager.pushScreen("blank", "splashOutTransition2");
-			screenManager.pushScreen(initApp(), "splashOutTransition3");
+			if (!config.skipSplashScreen) {
+				screenManager.pushScreen("blank", "splashOutTransition1");
+				screenManager.pushScreen("blank", "splashOutTransition2");
+				screenManager.pushScreen(initApp(), "splashOutTransition3");
+			} else {
+				screenManager.pushScreen(initApp(), null);
+			}
 		});
 
-		BlendingTransition splashBlendingTransition = new BlendingTransition(
-				batch, 0.25F, Interpolation.exp10In);
-		screenManager.addScreenTransition("splashInTransition",
-				splashBlendingTransition);
-		BlendingTransition splashOutTransition1 = new BlendingTransition(batch,
-				0.18F, Interpolation.fade);
-		screenManager.addScreenTransition("splashOutTransition1",
-				splashOutTransition1);
-		BlankTimedTransition splashOutTransition2 = new BlankTimedTransition(
-				0.22F);
-		screenManager.addScreenTransition("splashOutTransition2",
-				splashOutTransition2);
-		BlendingTransition splashOutTransition3 = new BlendingTransition(batch,
-				0.35F, Interpolation.pow2In);
-		screenManager.addScreenTransition("splashOutTransition3",
-				splashOutTransition3);
+		if (!config.skipSplashScreen) {
+			BlendingTransition splashBlendingTransition = new BlendingTransition(
+					batch, 0.25F, Interpolation.exp10In);
+			screenManager.addScreenTransition("splashInTransition",
+					splashBlendingTransition);
+			BlendingTransition splashOutTransition1 = new BlendingTransition(
+					batch, 0.18F, Interpolation.fade);
+			screenManager.addScreenTransition("splashOutTransition1",
+					splashOutTransition1);
+			BlankTimedTransition splashOutTransition2 = new BlankTimedTransition(
+					0.22F);
+			screenManager.addScreenTransition("splashOutTransition2",
+					splashOutTransition2);
+			BlendingTransition splashOutTransition3 = new BlendingTransition(
+					batch, 0.35F, Interpolation.pow2In);
+			screenManager.addScreenTransition("splashOutTransition3",
+					splashOutTransition3);
+		}
 
 		// Push the splash screen
-		screenManager.pushScreen("splash", "splashInTransition");
+		screenManager.pushScreen("splash",
+				config.skipSplashScreen ? null : "splashInTransition");
 	}
 
 	/**
@@ -270,8 +303,10 @@ public abstract class EskalonApplication
 	public void resize(int width, int height) {
 		super.resize(width, height);
 
+		if (postProcessor != null)
+			postProcessor.resize(width, height);
+
 		debugInfoRenderer.resize(width, height);
-		uiCamera.combined.setToOrtho2D(0, 0, getWidth(), getHeight());
 	}
 
 	/**
@@ -279,6 +314,24 @@ public abstract class EskalonApplication
 	 */
 	public AnnotationAssetManager getAssetManager() {
 		return this.assetManager;
+	}
+
+	/**
+	 * @return the events bus; events are queued first and then processed in the
+	 *         rendering thread; see {@link EventQueueBus}
+	 */
+	public EventQueueBus getEventBus() {
+		return eventBus;
+	}
+
+	/**
+	 * @return the post processing pipeline for this application; has to be
+	 *         activated via
+	 *         {@linkplain EskalonApplicationConfiguration#createPostProcessor()};
+	 *         otherwise it is {@code null}
+	 */
+	public @Nullable PostProcessingPipeline getPostProcessor() {
+		return postProcessor;
 	}
 
 	/**
@@ -293,21 +346,6 @@ public abstract class EskalonApplication
 	 */
 	public SpriteBatch getSpriteBatch() {
 		return batch;
-	}
-
-	/**
-	 * @return the camera used by the UI screens
-	 */
-	public OrthographicCamera getUICamera() {
-		return this.uiCamera;
-	}
-
-	/**
-	 * @return the events bus; events are queued first and then processed in the
-	 *         rendering thread; see {@link EventQueueBus}
-	 */
-	public EventQueueBus getEventBus() {
-		return eventBus;
 	}
 
 	public void setUISkin(Skin skin) {
@@ -325,11 +363,12 @@ public abstract class EskalonApplication
 	@Override
 	public void dispose() {
 		super.dispose();
+
 		assetManager.dispose();
 		batch.dispose();
 
-		// if (uiSkin != null)
-		// uiSkin.dispose();
+		if (postProcessor != null)
+			postProcessor.dispose();
 	}
 
 }

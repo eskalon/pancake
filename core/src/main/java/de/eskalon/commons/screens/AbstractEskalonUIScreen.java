@@ -83,8 +83,7 @@ public abstract class AbstractEskalonUIScreen extends AbstractImageScreen {
 	public void render(float delta) {
 		renderBackground(delta);
 
-		stage.getBatch()
-				.setProjectionMatrix(getApplication().getUICamera().combined);
+		stage.getViewport().apply();
 		stage.act(delta);
 		stage.draw();
 
@@ -106,6 +105,12 @@ public abstract class AbstractEskalonUIScreen extends AbstractImageScreen {
 		stage.touchUp(1, 1, 0, 0);
 
 		setUIValues();
+	}
+
+	@Override
+	public void resize(int width, int height) {
+		super.resize(width, height);
+		stage.getViewport().update(width, height, true);
 	}
 
 	@Override

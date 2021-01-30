@@ -23,7 +23,7 @@ allprojects {
 		guacamoleVersion = "dca856e647" // = 0.2.5
 		reflectionsVersion = "0.11.5"
 		screenmanagerVersion = "36796fc286" // = 0.6.6
-		vfxVersion = "4db3cd1890" // 0.6.0
+		vfxVersion = "1dfade048f" // 0.6.0
 		
 		// Test dependencies:
 		junitVersion = "5.6.0"
@@ -92,5 +92,9 @@ project(":desktop") {
 		testImplementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
 		testImplementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
 		testImplementation "com.github.crykn.gdx-vfx:gdx-vfx-effects:$vfxVersion"
+	}
+	
+	sourceSets.test {
+		resources.srcDirs = ["src/test/assets"]
 	}
 }

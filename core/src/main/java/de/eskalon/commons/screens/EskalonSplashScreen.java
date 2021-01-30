@@ -19,6 +19,8 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader.FreeTypeFontLoaderParameter;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 import de.eskalon.commons.core.EskalonApplication;
 import de.eskalon.commons.event.CommonsEvents.CommonsAssetsLoadedEvent;
@@ -26,12 +28,15 @@ import de.eskalon.commons.event.CommonsEvents.CommonsAssetsLoadedEvent;
 /**
  * This screen is the first screen shown to the user when he starts the game. It
  * shows the eskalon logo and loads some internal assets.
+ * <p>
+ * Upon completion, a {@link CommonsAssetsLoadedEvent} is posted.
  * 
  * @author damios
  */
 public class EskalonSplashScreen extends AbstractEskalonScreen {
 
 	private EskalonApplication game;
+	private Viewport viewport;
 	private Texture titleImage;
 
 	private long startTime = -1;
@@ -49,6 +54,7 @@ public class EskalonSplashScreen extends AbstractEskalonScreen {
 	public EskalonSplashScreen(EskalonApplication game, boolean skip) {
 		this.game = game;
 		this.skip = skip;
+		this.viewport = new ScreenViewport();
 	}
 
 	@Override
@@ -59,13 +65,28 @@ public class EskalonSplashScreen extends AbstractEskalonScreen {
 		titleImage = game.getAssetManager()
 				.finishLoadingAsset(EskalonCommonsAssets.LOGO_TEXTURE_PATH);
 
-		addCommonAssets();
+		/*
+		 * Add common assets to loading queue
+		 */
+		// Default font
+		FreeTypeFontLoaderParameter fontParam = new FreeTypeFontLoaderParameter();
+		fontParam.fontFileName = EskalonCommonsAssets.DEFAULT_FONT_PATH;
+		fontParam.fontParameters.size = 14;
+		game.getAssetManager().load(EskalonCommonsAssets.DEFAULT_FONT_NAME,
+				BitmapFont.class, fontParam);
+
+		// Shutter sound
+		game.getAssetManager().load(EskalonCommonsAssets.SHUTTER_SOUND_PATH,
+				Sound.class);
 	}
 
 	@Override
 	public void render(float delta) {
+		viewport.apply();
+		game.getSpriteBatch()
+				.setProjectionMatrix(viewport.getCamera().combined);
 		game.getSpriteBatch().begin();
-		game.getSpriteBatch().setProjectionMatrix(game.getUICamera().combined);
+
 		if (!skip)
 			game.getSpriteBatch().draw(this.titleImage, xPos, yPos);
 
@@ -82,19 +103,6 @@ public class EskalonSplashScreen extends AbstractEskalonScreen {
 		}
 
 		game.getSpriteBatch().end();
-	}
-
-	private void addCommonAssets() {
-		// Default font
-		FreeTypeFontLoaderParameter fontParam = new FreeTypeFontLoaderParameter();
-		fontParam.fontFileName = EskalonCommonsAssets.DEFAULT_FONT_PATH;
-		fontParam.fontParameters.size = 14;
-		game.getAssetManager().load(EskalonCommonsAssets.DEFAULT_FONT_NAME,
-				BitmapFont.class, fontParam);
-
-		// Shutter sound
-		game.getAssetManager().load(EskalonCommonsAssets.SHUTTER_SOUND_PATH,
-				Sound.class);
 	}
 
 	private void onCommonAssetsFinished() {
@@ -121,8 +129,7 @@ public class EskalonSplashScreen extends AbstractEskalonScreen {
 	}
 
 	/**
-	 * The assets used by pancake itself. They are
-	 * {@link EskalonSplashScreen#addCommonAssets() loaded}, while the splash
+	 * The assets used by pancake itself. They are loaded, while the splash
 	 * screen is shown.
 	 */
 	public static class EskalonCommonsAssets {

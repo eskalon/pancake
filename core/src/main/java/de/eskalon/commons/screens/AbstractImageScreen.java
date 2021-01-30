@@ -19,6 +19,8 @@ import javax.annotation.Nullable;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 import de.damios.guacamole.Preconditions;
 
@@ -56,17 +58,18 @@ public abstract class AbstractImageScreen extends AbstractEskalonScreen {
 
 	public static final ImageScreenMode DEFAULT_SCREEN_MODE = ImageScreenMode.STRETCH;
 
-	@Nullable
-	private Texture image;
+	private @Nullable Texture image;
 	private Vector2 dimensions;
 	private Vector2 position;
 
+	private Viewport viewport;
 	private ImageScreenMode mode;
 
 	public AbstractImageScreen(int screenWidth, int screenHeight) {
 		this.dimensions = new Vector2(screenWidth, screenHeight);
 		this.position = new Vector2(0, 0);
 		this.mode = DEFAULT_SCREEN_MODE;
+		this.viewport = new ScreenViewport();
 	}
 
 	@Override
@@ -77,8 +80,9 @@ public abstract class AbstractImageScreen extends AbstractEskalonScreen {
 	@Override
 	public void render(float delta) {
 		if (image != null) {
-			getApplication().getSpriteBatch().setProjectionMatrix(
-					this.getApplication().getUICamera().combined);
+			viewport.apply();
+			getApplication().getSpriteBatch()
+					.setProjectionMatrix(viewport.getCamera().combined);
 
 			getApplication().getSpriteBatch().begin();
 			getApplication().getSpriteBatch().draw(this.image, this.position.x,
@@ -89,11 +93,11 @@ public abstract class AbstractImageScreen extends AbstractEskalonScreen {
 
 	@Override
 	public void resize(int width, int height) {
+		viewport.update(width, height, true);
 		calculateDimensions();
 	}
 
-	@Nullable
-	public Texture getImage() {
+	public @Nullable Texture getImage() {
 		return this.image;
 	}
 

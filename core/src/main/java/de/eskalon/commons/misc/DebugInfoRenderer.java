@@ -22,6 +22,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 import de.damios.guacamole.Preconditions;
 import de.damios.guacamole.concurrent.ThreadHandler;
@@ -33,8 +35,8 @@ import de.eskalon.commons.utils.graphics.GL32CMacIssueHandler;
  * Prints the current fps count, a corresponding graph and some other debug
  * information on screen.
  * <p>
- * Has to be continuously {@linkplain #update(float) updated} for the fps counter
- * to work.
+ * Has to be continuously {@linkplain #update(float) updated} for the fps
+ * counter to work.
  * 
  * @author damios
  */
@@ -42,6 +44,7 @@ public class DebugInfoRenderer {
 
 	private static int MAX_SNAPSHOT_COUNT = 2 * 20;
 
+	private Viewport viewport;
 	private SpriteBatch batch;
 	private BitmapFont font;
 	private ShapeRenderer shapeRenderer;
@@ -67,6 +70,7 @@ public class DebugInfoRenderer {
 	 */
 	public DebugInfoRenderer(SpriteBatch batch, boolean debugLogging,
 			String gameVersion, ISoundManager soundManager) {
+		this.viewport = new ScreenViewport();
 		this.batch = batch;
 
 		this.gameVersion = gameVersion;
@@ -93,6 +97,7 @@ public class DebugInfoRenderer {
 	}
 
 	public void resize(int width, int height) {
+		viewport.update(width, height, true);
 		this.width = width;
 		this.height = height;
 
@@ -104,6 +109,8 @@ public class DebugInfoRenderer {
 		Preconditions.checkState(font != null,
 				"The debug renderer has to be initialized first!");
 
+		viewport.apply();
+		batch.setProjectionMatrix(viewport.getCamera().combined);
 		batch.begin();
 		/*
 		 * INFO
@@ -155,6 +162,7 @@ public class DebugInfoRenderer {
 				fpsGraphX, fpsGraphY + 43 - 30);
 		batch.end();
 
+		shapeRenderer.setProjectionMatrix(viewport.getCamera().combined);
 		shapeRenderer.begin(ShapeType.Line);
 		shapeRenderer.setColor(Color.LIGHT_GRAY);
 		// Horizontal bottom

@@ -1,50 +1,63 @@
-package de.eskalon;
+package de.eskalon.commons.examples;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
-import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
-import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.crashinvaders.vfx.effects.BloomEffect;
 import com.crashinvaders.vfx.effects.MotionBlurEffect;
 import com.crashinvaders.vfx.effects.util.MixEffect.Method;
 
-import de.damios.guacamole.gdx.StartOnFirstThreadHelper;
+import de.damios.guacamole.gdx.DefaultInputProcessor;
 import de.eskalon.commons.core.EskalonApplication;
+import de.eskalon.commons.core.EskalonApplicationConfiguration;
 import de.eskalon.commons.graphics.PostProcessingPipeline;
 import de.eskalon.commons.input.EskalonGameInputProcessor;
 import de.eskalon.commons.screens.BlankEskalonScreen;
 
-public class PostProcTest extends EskalonApplication {
+public class PostProcessingExample extends AbstractEskalonExample {
 
-	private static final int WIDTH = 1280, HEIGHT = 720;
-
-	public PostProcTest() {
-		super(true, false);
+	@Override
+	protected EskalonApplicationConfiguration getAppConfig() {
+		return super.getAppConfig().createPostProcessor();
 	}
 
 	@Override
 	protected String initApp() {
-		screenManager.addScreen("test", new TestScreen(this));
+		screenManager.addScreen("test-screen", new TestScreen(this));
 		Gdx.input.getInputProcessor()
 				.keyDown(EskalonGameInputProcessor.toggleOverlayKey);
-		return "test";
+		return "test-screen";
 	}
 
 	public class TestScreen extends BlankEskalonScreen {
-		private PostProcessingPipeline postProcessor = new PostProcessingPipeline(
-				getScreenManager(), WIDTH, HEIGHT, false);
+
 		private ShapeRenderer shapeRenderer = new ShapeRenderer();
-		private Viewport viewport = new FitViewport(WIDTH, HEIGHT);
+		private Viewport viewport = new ScreenViewport();
 
 		public TestScreen(EskalonApplication app) {
 			super(app);
 
-			postProcessor.addEffect(new BloomEffect());
-			postProcessor.addEffect(new MotionBlurEffect(Method.MAX, 0.9F));
+			BloomEffect effect1 = new BloomEffect();
+			MotionBlurEffect effect2 = new MotionBlurEffect(Method.MAX, 0.9F);
+			postProcessor.addEffects(effect1, effect2);
+
+			// Toggle effects via 'M'
+			addInputProcessor(new DefaultInputProcessor() {
+				@Override
+				public boolean keyDown(int keycode) {
+					if (keycode == Keys.M) {
+						if (postProcessor.hasEffects())
+							postProcessor.removeAllEffects();
+						else
+							postProcessor.addEffects(effect1, effect2);
+					}
+					return false;
+				}
+			});
 		}
 
 		@Override
@@ -53,7 +66,7 @@ public class PostProcTest extends EskalonApplication {
 
 			/**********************/
 
-			viewport.apply(); // you need to apply your viewport first
+			viewport.apply();
 			shapeRenderer.setProjectionMatrix(viewport.getCamera().combined);
 
 			shapeRenderer.begin(ShapeType.Filled);
@@ -71,39 +84,18 @@ public class PostProcTest extends EskalonApplication {
 		@Override
 		public void resize(int width, int height) {
 			viewport.update(width, height, true);
-			postProcessor.resize(width, height);
 		}
 
 		@Override
 		public void dispose() {
-			postProcessor.dispose();
 			shapeRenderer.dispose();
 		}
 
 		@Override
 		public Color getClearColor() {
-			return Color.FIREBRICK;
+			return Color.DARK_GRAY;
 		}
-	}
 
-	public static void main(String[] args) {
-		StartOnFirstThreadHelper.executeIfJVMValid(() -> {
-			Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
-			config.setTitle("Test App");
-			config.setWindowedMode(WIDTH, HEIGHT);
-			config.setResizable(true);
-			config.useVsync(false);
-			config.setForegroundFPS(144);
-
-			try {
-				new Lwjgl3Application(new PostProcTest(), config);
-			} catch (Exception e) {
-				System.err.println(
-						"An unexpected error occurred while starting the game:");
-				e.printStackTrace();
-				System.exit(-1);
-			}
-		});
 	}
 
 }

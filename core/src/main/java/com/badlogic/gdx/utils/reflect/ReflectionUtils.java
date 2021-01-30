@@ -49,8 +49,8 @@ public class ReflectionUtils {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	@Nullable
-	public static <T> T newInstance(String className, Class<T> clazz) {
+	public static @Nullable <T> T newInstance(String className,
+			Class<T> clazz) {
 		try {
 			return (T) ClassReflection
 					.newInstance(ClassReflection.forName(className));

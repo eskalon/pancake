@@ -126,8 +126,7 @@ public class AnnotationAssetManager extends AssetManager {
 		}
 	}
 
-	@Nullable
-	private AssetLoaderParameters<?> getAssetLoaderParameters(Asset asset,
+	private @Nullable AssetLoaderParameters<?> getAssetLoaderParameters(Asset asset,
 			Field field) {
 		if (asset.params() == null || asset.params().length() == 0)
 			return null;
