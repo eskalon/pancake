@@ -18,6 +18,11 @@ public class ImageScreenExample extends AbstractEskalonExample {
 		return "test-screen";
 	}
 
+	@Override
+	public boolean isResizable() {
+		return true;
+	}
+
 	public class TestScreen extends AbstractImageScreen {
 
 		private BitmapFont font;
@@ -33,7 +38,7 @@ public class ImageScreenExample extends AbstractEskalonExample {
 			addInputProcessor(new DefaultInputProcessor() {
 				@Override
 				public boolean keyDown(int keycode) {
-					if (keycode == Keys.M) {
+					if (keycode == Keys.SPACE || keycode == Keys.M) {
 						setMode(ImageScreenMode
 								.values()[(getMode().ordinal() + 1)
 										% ImageScreenMode.values().length]);

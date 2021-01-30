@@ -114,6 +114,7 @@ public class EskalonSplashScreen extends AbstractEskalonScreen {
 
 	@Override
 	public void resize(int width, int height) {
+		viewport.update(width, height, true);
 		xPos = (width - titleImage.getWidth()) / 2;
 		yPos = (height - titleImage.getHeight()) / 2 + 40;
 	}
