@@ -24,6 +24,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -104,7 +105,10 @@ public class DebugLightPass extends LightPass {
 
 	public DebugLightPass(DeferredRenderer renderer) {
 		super(renderer);
-		this.orthoCam = this.renderer.game.getUICamera();
+		this.orthoCam = new OrthographicCamera(renderer.game.getWidth(),
+				renderer.game.getHeight());
+		this.orthoCam.combined.setToOrtho2D(0, 0, renderer.game.getWidth(),
+				renderer.game.getHeight());
 		this.sBatch = this.renderer.game.getSpriteBatch();
 		this.shapeRenderer = new ShapeRenderer(5000, GL32CMacIssueHandler
 				.createImmediateModeRenderer20DefaultShader(false, true, 0));
