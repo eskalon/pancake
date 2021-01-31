@@ -56,6 +56,8 @@ public class DesktopSoundManager extends DefaultSoundManager {
 	@Override
 	public void setListenerOrientation(float lookX, float lookY, float lookZ,
 			float upX, float upY, float upZ) {
+		// By default: look = (0.0, 0.0, -1.0); up = 0.0, 1.0, 0.0
+		// --> x = left/right; y = up/down; z = front/back
 		AL10.alListenerfv(AL10.AL_ORIENTATION,
 				(FloatBuffer) BufferUtils.createFloatBuffer(6)
 						.put(new float[] { lookX, lookY, lookZ, upX, upY, upZ })

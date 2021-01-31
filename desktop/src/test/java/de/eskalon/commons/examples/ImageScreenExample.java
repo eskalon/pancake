@@ -55,9 +55,6 @@ public class ImageScreenExample extends AbstractEskalonExample {
 			super.render(delta);
 
 			batch.begin();
-			/*
-			 * INFO
-			 */
 			font.draw(batch, getMode().toString(), 5, 15);
 			batch.end();
 		}
