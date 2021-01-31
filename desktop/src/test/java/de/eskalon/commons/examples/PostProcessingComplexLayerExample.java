@@ -45,6 +45,10 @@ public class PostProcessingComplexLayerExample extends AbstractEskalonExample {
 			super(getPrefWidth(), getPrefHeight());
 
 			postProcessor.addEffects(a, b, c);
+
+			a.setDisabled(true);
+			b.setDisabled(true);
+			c.setDisabled(true);
 		}
 
 		@Override
