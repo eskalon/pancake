@@ -9,6 +9,8 @@ import javax.annotation.Nullable;
 import de.eskalon.commons.examples.AbstractEskalonExample;
 import de.eskalon.commons.examples.ImageScreenExample;
 import de.eskalon.commons.examples.PostProcessingExample;
+import de.eskalon.commons.examples.PostProcessingSimpleLayerExample;
+import de.eskalon.commons.examples.PostProcessingComplexLayerExample;
 
 //Based on libGDX's GdxTests
 public class EskalonExamples {
@@ -17,7 +19,9 @@ public class EskalonExamples {
 			Arrays.asList(
 			// @formatter:off
 					ImageScreenExample.class,
-					PostProcessingExample.class
+					PostProcessingExample.class,
+					PostProcessingSimpleLayerExample.class,
+					PostProcessingComplexLayerExample.class
 			// @formatter:on
 			));
 

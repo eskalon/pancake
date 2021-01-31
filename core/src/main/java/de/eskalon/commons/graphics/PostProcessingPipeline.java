@@ -19,7 +19,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.crashinvaders.vfx.VfxManager;
 import com.crashinvaders.vfx.effects.ChainVfxEffect;
 
-import de.eskalon.commons.screen.ScreenManager;
+import de.damios.guacamole.gdx.graphics.NestableFrameBuffer;
 
 /**
  * A post processing pipeline.
@@ -38,7 +38,7 @@ import de.eskalon.commons.screen.ScreenManager;
  * postProcessor.beginCapture();
  * render(); // the actual rendering
  * postProcessor.endCapture();
- * postProcessor.renderEffectsOntoScreen(Gdx.graphics.getDeltaTime());
+ * postProcessor.renderEffectsToScreen(Gdx.graphics.getDeltaTime());
  * </pre>
  * 
  * @author damios
@@ -47,22 +47,25 @@ import de.eskalon.commons.screen.ScreenManager;
 public class PostProcessingPipeline implements Disposable {
 
 	private VfxManager vfxManager;
-	private ScreenManager screenManager; // needed for the clear color
+	private boolean disabled = false;
 	private boolean hasDepth; // needed for resize()
 	private boolean doPostProcessing;
 
-	public PostProcessingPipeline(ScreenManager screenManager, int screenWidth,
-			int screenHeight, boolean hasDepth) {
+	public PostProcessingPipeline(int screenWidth, int screenHeight,
+			boolean hasDepth) {
 		this.vfxManager = new VfxManager(screenWidth, screenHeight, hasDepth);
-		this.screenManager = screenManager;
+		this.vfxManager.setBlendingEnabled(true); // this is useful if effects
+													// should only be applied to
+													// one layer, but not the
+													// background.
 		this.hasDepth = hasDepth;
 	}
 
 	public void beginCapture() {
-		doPostProcessing = vfxManager.hasEffects();
+		doPostProcessing = !disabled && vfxManager.hasEffects();
 
 		if (doPostProcessing) {
-			vfxManager.clear(screenManager.getCurrentScreen().getClearColor());
+			vfxManager.clear();
 			vfxManager.beginCapture();
 		}
 	}
@@ -72,11 +75,19 @@ public class PostProcessingPipeline implements Disposable {
 			vfxManager.endCapture();
 	}
 
-	public void renderEffectsOntoScreen(float delta) {
+	public void renderEffectsToScreen(float delta) {
 		if (doPostProcessing) {
 			vfxManager.update(delta);
 			vfxManager.applyEffects();
 			vfxManager.renderToScreen();
+		}
+	}
+
+	public void renderEffectsToFbo(NestableFrameBuffer fbo, float delta) {
+		if (doPostProcessing) {
+			vfxManager.update(delta);
+			vfxManager.applyEffects();
+			vfxManager.renderToFbo(fbo);
 		}
 	}
 
@@ -94,12 +105,26 @@ public class PostProcessingPipeline implements Disposable {
 		vfxManager.removeEffect(effect);
 	}
 
+	public void removeEffects(ChainVfxEffect... effects) {
+		for (ChainVfxEffect effect : effects) {
+			removeEffect(effect);
+		}
+	}
+
 	public void removeAllEffects() {
 		vfxManager.removeAllEffects();
 	}
 
 	public boolean hasEffects() {
 		return vfxManager.hasEffects();
+	}
+
+	public void setDisabled(boolean disabled) {
+		this.disabled = disabled;
+	}
+
+	public boolean isDisabled() {
+		return disabled;
 	}
 
 	public void resize(int width, int height) {

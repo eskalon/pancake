@@ -198,7 +198,7 @@ public abstract class EskalonApplication
 		 * POST PROCESSOR
 		 */
 		if (config.createPostProcessor) {
-			this.postProcessor = new PostProcessingPipeline(getScreenManager(),
+			this.postProcessor = new PostProcessingPipeline(
 					Gdx.graphics.getBackBufferWidth(),
 					Gdx.graphics.getBackBufferHeight(),
 					config.provideDepthBuffers);

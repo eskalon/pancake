@@ -3,22 +3,20 @@ package de.eskalon.commons.examples;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.crashinvaders.vfx.effects.BloomEffect;
-import com.crashinvaders.vfx.effects.MotionBlurEffect;
-import com.crashinvaders.vfx.effects.util.MixEffect.Method;
+import com.crashinvaders.vfx.effects.WaterDistortionEffect;
 
 import de.damios.guacamole.gdx.DefaultInputProcessor;
 import de.eskalon.commons.core.EskalonApplication;
 import de.eskalon.commons.core.EskalonApplicationConfiguration;
-import de.eskalon.commons.input.EskalonGameInputProcessor;
-import de.eskalon.commons.screens.BlankEskalonScreen;
+import de.eskalon.commons.screens.AbstractImageScreen;
 
-public class PostProcessingExample extends AbstractEskalonExample {
+public class PostProcessingSimpleLayerExample extends AbstractEskalonExample {
 
 	@Override
 	protected EskalonApplicationConfiguration getAppConfig() {
@@ -28,22 +26,20 @@ public class PostProcessingExample extends AbstractEskalonExample {
 	@Override
 	protected String initApp() {
 		screenManager.addScreen("test-screen", new TestScreen(this));
-		Gdx.input.getInputProcessor()
-				.keyDown(EskalonGameInputProcessor.toggleOverlayKey);
 		return "test-screen";
 	}
 
-	public class TestScreen extends BlankEskalonScreen {
+	public class TestScreen extends AbstractImageScreen {
 
 		private ShapeRenderer shapeRenderer = new ShapeRenderer();
-		private Viewport viewport = new ScreenViewport();
+		private Viewport viewport2 = new ScreenViewport();
 
 		public TestScreen(EskalonApplication app) {
-			super(app);
+			super(getPrefWidth(), getPrefHeight());
 
-			BloomEffect effect1 = new BloomEffect();
-			MotionBlurEffect effect2 = new MotionBlurEffect(Method.MAX, 0.9F);
-			postProcessor.addEffects(effect1, effect2);
+			WaterDistortionEffect effect = new WaterDistortionEffect(3.5F,
+					2.5F);
+			postProcessor.addEffect(effect);
 
 			// Toggle effects via 'M'
 			addInputProcessor(new DefaultInputProcessor() {
@@ -58,32 +54,27 @@ public class PostProcessingExample extends AbstractEskalonExample {
 		}
 
 		@Override
+		protected void create() {
+			setImage(new Texture(Gdx.files.internal("test.png")));
+		}
+
+		@Override
 		public void render(float delta) {
+			super.render(delta); // Render the background image
+
 			postProcessor.beginCapture();
 
-			// Motion blur and bloom both require the screen to be cleared with
-			// a solid color, otherwise there will be ugly artifacts!
-			// Alternatively, a background image etc. can be rendered.
-			//
-			// This is also the reason, why those two effects cannot be used for
-			// layers which are only part of a screen. In those cases, the rest
-			// of the screen, which is not part of the layer, would have to be
-			// cleared with a solid color, making the layer useless.
-			Gdx.gl.glClearColor(0.25F, 0.25F, 0.25F, 1F);
-			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+			viewport2.apply();
+			shapeRenderer.setProjectionMatrix(viewport2.getCamera().combined);
 
-			/** RENDER THE ACTUAL SCENE **/
-
-			viewport.apply();
-			shapeRenderer.setProjectionMatrix(viewport.getCamera().combined);
-
+			/**
+			 * Apply the post processing effect only to the green circle.
+			 */
 			shapeRenderer.begin(ShapeType.Filled);
 			shapeRenderer.setColor(Color.GREEN);
 			shapeRenderer.circle(Gdx.input.getX(),
 					Gdx.graphics.getHeight() - Gdx.input.getY(), 75);
 			shapeRenderer.end();
-
-			/**********************/
 
 			postProcessor.endCapture();
 			postProcessor.renderEffectsToScreen(delta);
@@ -91,12 +82,23 @@ public class PostProcessingExample extends AbstractEskalonExample {
 
 		@Override
 		public void resize(int width, int height) {
-			viewport.update(width, height, true);
+			super.resize(width, height);
+			viewport2.update(width, height, true);
 		}
 
 		@Override
 		public void dispose() {
 			shapeRenderer.dispose();
+		}
+
+		@Override
+		public Color getClearColor() {
+			return Color.DARK_GRAY;
+		}
+
+		@Override
+		protected EskalonApplication getApplication() {
+			return PostProcessingSimpleLayerExample.this;
 		}
 
 	}
