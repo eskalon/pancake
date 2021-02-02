@@ -10,6 +10,8 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.crashinvaders.vfx.effects.ChainVfxEffect;
 import com.crashinvaders.vfx.effects.CrtEffect;
+import com.crashinvaders.vfx.effects.CrtEffect.LineStyle;
+import com.crashinvaders.vfx.effects.CrtEffect.SizeSource;
 import com.crashinvaders.vfx.effects.MotionBlurEffect;
 import com.crashinvaders.vfx.effects.VignettingEffect;
 import com.crashinvaders.vfx.effects.util.MixEffect.Method;
@@ -17,6 +19,7 @@ import com.crashinvaders.vfx.effects.util.MixEffect.Method;
 import de.damios.guacamole.gdx.graphics.NestableFrameBuffer;
 import de.eskalon.commons.core.EskalonApplication;
 import de.eskalon.commons.core.EskalonApplicationConfiguration;
+import de.eskalon.commons.input.EskalonGameInputProcessor;
 import de.eskalon.commons.screens.AbstractImageScreen;
 
 public class PostProcessingComplexLayerExample extends AbstractEskalonExample {
@@ -29,6 +32,8 @@ public class PostProcessingComplexLayerExample extends AbstractEskalonExample {
 	@Override
 	protected String initApp() {
 		screenManager.addScreen("test-screen", new TestScreen(this));
+		Gdx.input.getInputProcessor()
+				.keyDown(EskalonGameInputProcessor.toggleOverlayKey);
 		return "test-screen";
 	}
 
@@ -37,7 +42,8 @@ public class PostProcessingComplexLayerExample extends AbstractEskalonExample {
 		private ShapeRenderer shapeRenderer = new ShapeRenderer();
 		private Viewport viewport2 = new ScreenViewport();
 
-		private ChainVfxEffect a = new CrtEffect();
+		private CrtEffect a = new CrtEffect(LineStyle.HORIZONTAL_HARD, 2.3f,
+				0.1f);
 		private ChainVfxEffect b = new VignettingEffect(false);
 		private ChainVfxEffect c = new MotionBlurEffect(Method.MIX, 0.8F);
 
@@ -46,6 +52,7 @@ public class PostProcessingComplexLayerExample extends AbstractEskalonExample {
 
 			postProcessor.addEffects(a, b, c);
 
+			a.setSizeSource(SizeSource.SCREEN);
 			a.setDisabled(true);
 			b.setDisabled(true);
 			c.setDisabled(true);

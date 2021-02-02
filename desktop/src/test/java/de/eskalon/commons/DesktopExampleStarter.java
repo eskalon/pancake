@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
-import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3WindowConfiguration;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -64,7 +63,7 @@ public class DesktopExampleStarter {
 
 			int tableSpace = 4;
 			table.pad(10).defaults().expandX().space(tableSpace);
-			for (final Class testClass : EskalonExamples.TESTS) {
+			for (final Class<?> testClass : EskalonExamples.TESTS) {
 				String testName = testClass.getSimpleName();
 				final TextButton testButton = new TextButton(testName, skin);
 				// testButton.setDisabled(!options.isTestCompatible(testName));

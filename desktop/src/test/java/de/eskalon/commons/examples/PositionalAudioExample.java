@@ -1,26 +1,13 @@
 package de.eskalon.commons.examples;
 
-import java.nio.FloatBuffer;
-import java.util.Arrays;
-
-import org.lwjgl.BufferUtils;
-import org.lwjgl.openal.AL10;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
-import com.badlogic.gdx.backends.lwjgl3.audio.Wav.Sound;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
 
 import de.damios.guacamole.gdx.DefaultInputProcessor;
 import de.eskalon.commons.core.EskalonApplication;
 import de.eskalon.commons.screens.BlankEskalonScreen;
 import de.eskalon.commons.screens.EskalonSplashScreen.EskalonCommonsAssets;
-import de.eskalon.commons.utils.MathStuffUtils;
 
 public class PositionalAudioExample extends AbstractEskalonExample {
 
@@ -63,9 +50,6 @@ public class PositionalAudioExample extends AbstractEskalonExample {
 
 		@Override
 		public void render(float delta) {
-			float halfWidth = getPrefWidth() / 2;
-			float halfHeight = getPrefHeight() / 2;
-
 			batch.begin();
 			font.draw(batch, "BOTTOM", 640, 20);
 			font.draw(batch, "TOP", 640, 710);

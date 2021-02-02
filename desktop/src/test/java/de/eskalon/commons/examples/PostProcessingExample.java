@@ -3,9 +3,9 @@ package de.eskalon.commons.examples;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.crashinvaders.vfx.effects.BloomEffect;
@@ -69,8 +69,7 @@ public class PostProcessingExample extends AbstractEskalonExample {
 			// layers which are only part of a screen. In those cases, the rest
 			// of the screen, which is not part of the layer, would have to be
 			// cleared with a solid color, making the layer useless.
-			Gdx.gl.glClearColor(0.25F, 0.25F, 0.25F, 1F);
-			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+			ScreenUtils.clear(0.25F, 0.25F, 0.25F, 1F);
 
 			/** RENDER THE ACTUAL SCENE **/
 

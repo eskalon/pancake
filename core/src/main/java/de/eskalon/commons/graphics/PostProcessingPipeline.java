@@ -26,7 +26,7 @@ import de.damios.guacamole.gdx.graphics.NestableFrameBuffer;
  * <p>
  * Capture a screen with {@link #beginCapture()} and {@link #endCapture()} and
  * then render the effects onto the screen via
- * {@link #renderEffectsOntoScreen(float)}. Effects can be added via
+ * {@link #renderEffectsToScreen(float)}. Effects can be added via
  * {@link #addEffect(PostProcessingEffect)}.
  * <p>
  * If there are no active effects when {@link #beginCapture()} is called, the
@@ -48,7 +48,6 @@ public class PostProcessingPipeline implements Disposable {
 
 	private VfxManager vfxManager;
 	private boolean disabled = false;
-	private boolean hasDepth; // needed for resize()
 	private boolean doPostProcessing;
 
 	public PostProcessingPipeline(int screenWidth, int screenHeight,
@@ -58,7 +57,6 @@ public class PostProcessingPipeline implements Disposable {
 													// should only be applied to
 													// one layer, but not the
 													// background.
-		this.hasDepth = hasDepth;
 	}
 
 	public void beginCapture() {

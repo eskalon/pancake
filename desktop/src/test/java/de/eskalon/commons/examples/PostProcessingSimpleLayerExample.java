@@ -8,12 +8,12 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.crashinvaders.vfx.effects.BloomEffect;
 import com.crashinvaders.vfx.effects.WaterDistortionEffect;
 
 import de.damios.guacamole.gdx.DefaultInputProcessor;
 import de.eskalon.commons.core.EskalonApplication;
 import de.eskalon.commons.core.EskalonApplicationConfiguration;
+import de.eskalon.commons.input.EskalonGameInputProcessor;
 import de.eskalon.commons.screens.AbstractImageScreen;
 
 public class PostProcessingSimpleLayerExample extends AbstractEskalonExample {
@@ -26,6 +26,8 @@ public class PostProcessingSimpleLayerExample extends AbstractEskalonExample {
 	@Override
 	protected String initApp() {
 		screenManager.addScreen("test-screen", new TestScreen(this));
+		Gdx.input.getInputProcessor()
+				.keyDown(EskalonGameInputProcessor.toggleOverlayKey);
 		return "test-screen";
 	}
 

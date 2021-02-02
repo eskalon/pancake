@@ -19,11 +19,11 @@ allprojects {
 		appName = "pancake"
 		
 		freetypeSkinVersion = "0.4"
-		gdxVersion = "1.9.13"
-		guacamoleVersion = "dca856e647" // = 0.2.5
+		gdxVersion = "1.9.14"
+		guacamoleVersion = "0.3.0"
 		reflectionsVersion = "0.11.5"
-		screenmanagerVersion = "36796fc286" // = 0.6.6
-		vfxVersion = "d9f78263e6" // 0.6.0
+		screenmanagerVersion = "0.6.6"
+		vfxVersion = "0.6.0"
 		
 		// Test dependencies:
 		junitVersion = "5.6.0"

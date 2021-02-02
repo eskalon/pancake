@@ -9,9 +9,9 @@ import javax.annotation.Nullable;
 import de.eskalon.commons.examples.AbstractEskalonExample;
 import de.eskalon.commons.examples.ImageScreenExample;
 import de.eskalon.commons.examples.PositionalAudioExample;
+import de.eskalon.commons.examples.PostProcessingComplexLayerExample;
 import de.eskalon.commons.examples.PostProcessingExample;
 import de.eskalon.commons.examples.PostProcessingSimpleLayerExample;
-import de.eskalon.commons.examples.PostProcessingComplexLayerExample;
 
 //Based on libGDX's GdxTests
 public class EskalonExamples {
@@ -36,9 +36,9 @@ public class EskalonExamples {
 		return null;
 	}
 
-	public static @Nullable Class<? extends AbstractEskalonExample> forName(
+	private static @Nullable Class<? extends AbstractEskalonExample> forName(
 			String name) {
-		for (Class clazz : TESTS) {
+		for (Class<? extends AbstractEskalonExample> clazz : TESTS) {
 			if (clazz.getSimpleName().equals(name))
 				return clazz;
 		}
