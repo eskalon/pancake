@@ -25,7 +25,8 @@ public class PostProcessingSimpleLayerExample extends AbstractEskalonExample {
 
 	@Override
 	protected String initApp() {
-		screenManager.addScreen("test-screen", new TestScreen(this));
+		Gdx.graphics.setVSync(false);
+		screenManager.addScreen("test-screen", new TestScreen());
 		Gdx.input.getInputProcessor()
 				.keyDown(EskalonGameInputProcessor.toggleOverlayKey);
 		return "test-screen";
@@ -36,7 +37,7 @@ public class PostProcessingSimpleLayerExample extends AbstractEskalonExample {
 		private ShapeRenderer shapeRenderer = new ShapeRenderer();
 		private Viewport viewport2 = new ScreenViewport();
 
-		public TestScreen(EskalonApplication app) {
+		public TestScreen() {
 			super(getPrefWidth(), getPrefHeight());
 
 			WaterDistortionEffect effect = new WaterDistortionEffect(3.5F,

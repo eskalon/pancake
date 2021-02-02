@@ -27,6 +27,7 @@ public class PostProcessingExample extends AbstractEskalonExample {
 
 	@Override
 	protected String initApp() {
+		Gdx.graphics.setVSync(false);
 		screenManager.addScreen("test-screen", new TestScreen(this));
 		Gdx.input.getInputProcessor()
 				.keyDown(EskalonGameInputProcessor.toggleOverlayKey);

@@ -31,7 +31,8 @@ public class PostProcessingComplexLayerExample extends AbstractEskalonExample {
 
 	@Override
 	protected String initApp() {
-		screenManager.addScreen("test-screen", new TestScreen(this));
+		Gdx.graphics.setVSync(false);
+		screenManager.addScreen("test-screen", new TestScreen());
 		Gdx.input.getInputProcessor()
 				.keyDown(EskalonGameInputProcessor.toggleOverlayKey);
 		return "test-screen";
@@ -47,7 +48,7 @@ public class PostProcessingComplexLayerExample extends AbstractEskalonExample {
 		private ChainVfxEffect b = new VignettingEffect(false);
 		private ChainVfxEffect c = new MotionBlurEffect(Method.MIX, 0.8F);
 
-		public TestScreen(EskalonApplication app) {
+		public TestScreen() {
 			super(getPrefWidth(), getPrefHeight());
 
 			postProcessor.addEffects(a, b, c);
