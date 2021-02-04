@@ -3,7 +3,6 @@ buildscript {
 		mavenLocal()
 		mavenCentral()
 		maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-		jcenter()
 	}
 	dependencies {
 	}
@@ -20,7 +19,7 @@ allprojects {
 		
 		freetypeSkinVersion = "0.4"
 		gdxVersion = "1.9.14"
-		guacamoleVersion = "0.3.0"
+		guacamoleVersion = "f0f50a32cb" // = 0.3.1
 		reflectionsVersion = "0.11.5"
 		screenmanagerVersion = "0.6.6"
 		vfxVersion = "0.6.0"
@@ -36,7 +35,6 @@ allprojects {
 		maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
 		maven { url "https://oss.sonatype.org/content/repositories/releases/" }
 		maven { url "https://jitpack.io" }
-		jcenter()
     }
 }
 
@@ -51,9 +49,11 @@ project(":core") {
 		api("com.github.crykn:libgdx-screenmanager:$screenmanagerVersion") {
 			exclude group: "com.github.crykn.guacamole", module: "gdx" 
 		}
+		api("com.github.crykn.gdx-vfx:gdx-vfx-core:$vfxVersion") {
+			exclude group: "com.github.crykn.guacamole", module: "gdx" 
+		}
 		api "com.github.crykn.guacamole:gdx:$guacamoleVersion"
 		implementation "com.github.acanthite:freetype-skin:$freetypeSkinVersion"
-		api "com.github.crykn.gdx-vfx:gdx-vfx-core:$vfxVersion"
 
 		testImplementation "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
 		testImplementation "org.mockito:mockito-core:$mockitoVersion"
