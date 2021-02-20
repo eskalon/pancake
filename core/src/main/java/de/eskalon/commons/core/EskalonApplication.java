@@ -34,6 +34,7 @@ import com.github.acanthite.gdx.graphics.g2d.FreeTypeSkinLoader;
 import de.damios.guacamole.annotations.GwtIncompatible;
 import de.damios.guacamole.gdx.assets.Text;
 import de.damios.guacamole.gdx.assets.TextLoader;
+import de.damios.guacamole.gdx.graphics.ShaderCompatibilityHelper;
 import de.damios.guacamole.gdx.log.Logger;
 import de.damios.guacamole.gdx.log.LoggerService;
 import de.eskalon.commons.asset.AnnotationAssetManager;
@@ -185,7 +186,7 @@ public abstract class EskalonApplication
 		 * SPRITEBATCH
 		 */
 		this.batch = new SpriteBatch(1000,
-				GL32CMacIssueHandler.doUse32CShader()
+				ShaderCompatibilityHelper.mustUse32CShader()
 						? GL32CMacIssueHandler.createSpriteBatchShader()
 						: null);
 

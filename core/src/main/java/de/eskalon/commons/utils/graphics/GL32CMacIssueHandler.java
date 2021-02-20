@@ -15,10 +15,7 @@
 
 package de.eskalon.commons.utils.graphics;
 
-import com.badlogic.gdx.Application.ApplicationType;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.scenes.scene2d.utils.UIUtils;
 
 import de.damios.guacamole.gdx.graphics.ShaderProgramFactory;
 
@@ -158,20 +155,6 @@ public final class GL32CMacIssueHandler {
 				hasNormals, hasColors, numTexCoords);
 		ShaderProgram program = new ShaderProgram(vertexShader, fragmentShader);
 		return program;
-	}
-
-	public static boolean doUse32CShader() {
-		return Gdx.gl30 != null && UIUtils.isMac;
-	}
-
-	public static String getDefaultShaderVersion() {
-		if (doUse32CShader())
-			return "150"; // Mac OS 3.2 core profile
-
-		if (Gdx.app.getType() == ApplicationType.Desktop
-				|| Gdx.app.getType() == ApplicationType.HeadlessDesktop)
-			return "120"; // Desktop
-		return "100"; // GLSL ES (Android, iOS, WebGL)
 	}
 
 }
