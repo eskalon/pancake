@@ -29,6 +29,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import de.damios.guacamole.Preconditions;
 import de.damios.guacamole.concurrent.ThreadHandler;
 import de.damios.guacamole.gdx.graphics.ShaderCompatibilityHelper;
+import de.damios.guacamole.gdx.utils.FPSCounter;
 import de.eskalon.commons.audio.ISoundManager;
 import de.eskalon.commons.utils.ColorUtils;
 import de.eskalon.commons.utils.graphics.GL32CMacIssueHandler;
