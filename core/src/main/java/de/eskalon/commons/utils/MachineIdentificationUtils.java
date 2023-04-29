@@ -16,47 +16,91 @@
 package de.eskalon.commons.utils;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.Scanner;
 
+import javax.annotation.Nullable;
+
 import de.damios.guacamole.annotations.GwtIncompatible;
+import de.damios.guacamole.gdx.log.Logger;
+import de.damios.guacamole.gdx.log.LoggerService;
 
 /**
- * Machine identification utils.
+ * Machine identification utilities.
  * 
  * @author damios
  */
 @GwtIncompatible
 public final class MachineIdentificationUtils {
 
+	public static void main(String... args) {
+		System.out.println(getMACAddress());
+		System.out.println(getHostname());
+		System.out.println(getSimpleIdentifier());
+	}
+
+	private static final Logger LOG = LoggerService
+			.getLogger(MachineIdentificationUtils.class);
+
 	private static final String HOSTNAME_COMMAND = "hostname";
-	private static final String UNKNOWN_HOST_PREFIX = "_u-";
+	private static final String UNKNOWN_HOST_PREFIX = "_unidentified";
 
 	private MachineIdentificationUtils() {
 		throw new UnsupportedOperationException();
 	}
 
 	/**
-	 * @return the (host)name of the machine. If the name cannot be found,
+	 * @return a simple identifier for the machine. Is usually the (host)name.
+	 *         If one cannot be determined, the MAC address of the first found
+	 *         network adapter is returned. If that doesn't work either,
 	 *         <code>{@value #UNKNOWN_HOST_PREFIX}</code> is returned followed
-	 *         by the {@linkplain System#currentTimeMillis() current time
-	 *         millis}.
+	 *         by the {@linkplain System#currentTimeMillis() current time}.
 	 */
-	public static String getHostname() {
-		try {
-			return getHostnameCommandResult().trim().toLowerCase()
-					.replace(".home", "");
-		} catch (IOException e) {
-			return UNKNOWN_HOST_PREFIX
-					+ String.valueOf(System.currentTimeMillis());
+	public static String getSimpleIdentifier() {
+		String id = getHostname();
+
+		if (id != null) {
+			id.trim().toLowerCase().replace(".home", "");
+		} else {
+			byte[] b = getMACAddress();
+
+			if (b != null)
+				id = String.valueOf(b);
 		}
+
+		if (id == null)
+			id = UNKNOWN_HOST_PREFIX
+					+ String.valueOf(System.currentTimeMillis());
+
+		return id;
 	}
 
-	private static String getHostnameCommandResult() throws IOException {
+	public static @Nullable String getHostname() {
 		try (Scanner s = new Scanner(Runtime.getRuntime().exec(HOSTNAME_COMMAND)
 				.getInputStream());) {
 			s.useDelimiter("\\A");
 			return s.hasNext() ? s.next() : "";
+		} catch (IOException e) {
+			LOG.debug(e.getLocalizedMessage());
+			return null;
 		}
+	}
+
+	public static @Nullable byte[] getMACAddress() {
+		try {
+			NetworkInterface nwi = NetworkInterface
+					.getByInetAddress(InetAddress.getLocalHost());
+
+			if (nwi != null)
+				return nwi.getHardwareAddress();
+
+		} catch (SocketException | UnknownHostException e) {
+			LOG.debug(e.getLocalizedMessage());
+		}
+		return null;
 	}
 
 }
