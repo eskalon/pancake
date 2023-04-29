@@ -78,6 +78,12 @@ import de.eskalon.commons.utils.graphics.GL32CMacIssueHandler;
  * @author damios
  * @see BasicScreenManager
  */
+
+// TODO make game static -> EskalonApplication.app; then remove those pesky
+// references and variables everywhere!
+// TODO null the reference upon app disposal
+// TODO make a proper input system (toggle bindings; axis bindings)
+
 public abstract class EskalonApplication
 		extends ManagedGame<AbstractEskalonScreen, ScreenTransition> {
 
@@ -209,8 +215,7 @@ public abstract class EskalonApplication
 		 * MISC
 		 */
 		getInputMultiplexer().addProcessor(applicationInputProcessor);
-		debugInfoRenderer = new DebugInfoRenderer(batch,
-				config.enableDebugLoggingOnStartup, VERSION, soundManager);
+		debugInfoRenderer = new DebugInfoRenderer(batch, VERSION, soundManager);
 
 		/*
 		 * SPLASH SCREEN
@@ -274,14 +279,15 @@ public abstract class EskalonApplication
 		 */
 		eventBus.dispatchEvents();
 
+		debugInfoRenderer.setProfilingEnabled(
+				applicationInputProcessor.isDebugOverlayEnabled());
+		debugInfoRenderer.resetProfiler();
+
 		/*
 		 * Render the screen
 		 */
 		super.render();
 
-		/*
-		 * Update fps counter
-		 */
 		debugInfoRenderer.update(Gdx.graphics.getDeltaTime());
 
 		/*
@@ -290,6 +296,7 @@ public abstract class EskalonApplication
 		if (applicationInputProcessor.isDebugOverlayEnabled()) {
 			debugInfoRenderer.render();
 		}
+
 		/*
 		 * Take a screenshot
 		 */

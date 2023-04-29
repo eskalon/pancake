@@ -22,21 +22,23 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.graphics.profiling.GLProfiler;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import de.damios.guacamole.Preconditions;
 import de.damios.guacamole.concurrent.ThreadHandler;
 import de.damios.guacamole.gdx.graphics.ShaderCompatibilityHelper;
+import de.damios.guacamole.gdx.utils.FPSCounter;
 import de.eskalon.commons.audio.ISoundManager;
 import de.eskalon.commons.utils.ColorUtils;
 import de.eskalon.commons.utils.graphics.GL32CMacIssueHandler;
 
 /**
- * Prints the current fps count, a corresponding graph and some other debug
+ * Prints the current FPS count, a corresponding graph and some other debug
  * information on screen.
  * <p>
- * Has to be continuously {@linkplain #update(float) updated} for the fps
+ * Has to be continuously {@linkplain #update(float) updated} for the FPS
  * counter to work.
  * 
  * @author damios
@@ -45,6 +47,7 @@ public class DebugInfoRenderer {
 
 	private static int MAX_SNAPSHOT_COUNT = 2 * 20;
 
+	// Internal rendering stuff
 	private Viewport viewport;
 	private SpriteBatch batch;
 	private BitmapFont font;
@@ -52,14 +55,18 @@ public class DebugInfoRenderer {
 	private int width;
 	private int height;
 
-	private ISoundManager soundManager;
-	private String gameVersion;
-	private String appType;
-	private String debugLogging;
-
+	// FPS graph
 	private FPSCounter fpsCounter;
 	private int fpsGraphY;
 	private int fpsGraphX;
+
+	// Data sources
+	private GLProfiler glProfiler;
+	private int glCalls, drawCalls, shaderSwitches, textureBindings;
+	private float vertexCount;
+	private ISoundManager soundManager;
+	private String gameVersion;
+	private String appType;
 
 	/**
 	 * Creates a debug info renderer.
@@ -69,15 +76,15 @@ public class DebugInfoRenderer {
 	 * 
 	 * @see #initilaize(int, int, BitmapFont)
 	 */
-	public DebugInfoRenderer(SpriteBatch batch, boolean debugLogging,
-			String gameVersion, ISoundManager soundManager) {
+	public DebugInfoRenderer(SpriteBatch batch, String gameVersion,
+			ISoundManager soundManager) {
 		this.viewport = new ScreenViewport();
 		this.batch = batch;
 
 		this.gameVersion = gameVersion;
 		this.appType = "App Type: " + Gdx.app.getType() + " ("
 				+ System.getProperty("os.name") + ")";
-		this.debugLogging = "Debug Logging: " + String.valueOf(debugLogging);
+		this.glProfiler = new GLProfiler(Gdx.graphics);
 		this.soundManager = soundManager;
 		this.fpsCounter = new FPSCounter(MAX_SNAPSHOT_COUNT);
 		this.shapeRenderer = new ShapeRenderer(5000,
@@ -86,6 +93,8 @@ public class DebugInfoRenderer {
 								.createImmediateModeRenderer20DefaultShader(
 										false, true, 0)
 						: null);
+
+		this.glProfiler.disable();
 	}
 
 	public void initialize(int width, int height, BitmapFont font) {
@@ -94,7 +103,24 @@ public class DebugInfoRenderer {
 	}
 
 	public void update(float delta) {
+		glCalls = glProfiler.getCalls();
+		drawCalls = glProfiler.getDrawCalls();
+		shaderSwitches = glProfiler.getShaderSwitches();
+		textureBindings = glProfiler.getTextureBindings();
+		vertexCount = glProfiler.getVertexCount().total;
+
 		fpsCounter.update(delta);
+	}
+
+	public void setProfilingEnabled(boolean doGLProfiling) {
+		if (doGLProfiling)
+			glProfiler.enable();
+		else
+			glProfiler.disable();
+	}
+
+	public void resetProfiler() {
+		glProfiler.reset();
 	}
 
 	public void resize(int width, int height) {
@@ -102,8 +128,8 @@ public class DebugInfoRenderer {
 		this.width = width;
 		this.height = height;
 
-		this.fpsGraphY = 5;
-		this.fpsGraphX = width - 356;
+		fpsGraphY = 5;
+		fpsGraphX = width - 356;
 	}
 
 	public void render() {
@@ -116,21 +142,32 @@ public class DebugInfoRenderer {
 		/*
 		 * INFO
 		 */
+		// Common
 		font.draw(batch, gameVersion, 6, height - 5);
 		font.draw(batch, appType, 6, height - 25);
-		font.draw(batch, debugLogging, 6, height - 45);
 
+		// GL Profiling
+		font.draw(batch, "GL Calls: " + glCalls + "", 6, height - 55);
+		font.draw(batch, "Draw Calls: " + drawCalls + "", 6, height - 75);
+		font.draw(batch, "Shader Switches: " + shaderSwitches + "", 6,
+				height - 95);
+		font.draw(batch, "Texture Bindings: " + textureBindings + "", 6,
+				height - 115);
+		font.draw(batch, "Vertex Count: " + vertexCount + "", 6, height - 135);
+
+		// Threads & Input
 		font.draw(batch,
 				"Threads in Pool: "
 						+ ThreadHandler.getInstance().getActiveThreadCount()
 						+ "/" + ThreadHandler.getInstance().getPoolSize(),
-				6, height - 75);
+				6, height - 165);
 		font.draw(batch, "Mouse Pos: (x) " + Gdx.input.getX() + " (y) "
-				+ Gdx.input.getY(), 6, height - 95);
+				+ Gdx.input.getY(), 6, height - 185);
 
+		// Sound
 		font.draw(batch,
 				"Music: \"" + soundManager.getCurrentMusicTitle() + "\"", 6,
-				height - 125);
+				height - 215);
 
 		/*
 		 * FPS COUNT
