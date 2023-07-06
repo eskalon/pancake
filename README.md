@@ -12,8 +12,7 @@ Pancake uses the following libraries and frameworks :
 - [libgdx-screenmanager](https://github.com/crykn/libgdx-screenmanager)
 - [guacamole](https://github.com/crykn/guacamole)
 - [gdx-vfx](https://github.com/crykn/gdx-vfx) (in a forked version)
-- [freetype-skin](https://github.com/acanthite/freetype-skin)
-- [gdx-guava-eventbus](https://github.com/crykn/gdx-guava-eventbus)
+- [freetype-skin](https://github.com/crykn/freetype-skin)
 - [reflections](https://github.com/ronmamo/reflections) (for the classpath scanning in AbstractAssetLoadingScreen)
 
 ## Content
@@ -53,7 +52,7 @@ A selection of what Pancake offers:
 - **AbstractEskalonUIScreen:** a screen rendering a background image & a stage
 - **AbstractImageScreen:** a simple screen rendering one image
 - **EskalonSplashScreen:** a splash screen showing the eskalon logo as well as loading some internal assets
-- **EskalonSettings & KeyBinding:** provides settings for different sound volumes & makes handling changeable key bindings very simple
+- **EskalonSettings:** handles settings via simple property objects
 - **RandomUtils:** contains various methods dealing with random values
 - **GL32CMacIssueHandler:** provides updated versions of the default shaders that are compatible with OpenGL 3.2
 

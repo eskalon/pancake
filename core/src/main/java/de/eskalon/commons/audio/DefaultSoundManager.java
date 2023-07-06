@@ -40,9 +40,9 @@ import de.eskalon.commons.utils.MathStuffUtils;
  */
 public class DefaultSoundManager implements ISoundManager, Disposable {
 
-	private static final String MASTER_VOLUME_SETTING = "volume_master";
-	private static final String EFFECT_VOLUME_SETTING = "volume_effect";
-	private static final String MUSIC_VOLUME_SETTING = "volume_music";
+	public static final String MASTER_VOLUME_SETTING = "volume_master";
+	public static final String EFFECT_VOLUME_SETTING = "volume_effect";
+	public static final String MUSIC_VOLUME_SETTING = "volume_music";
 
 	protected HashMap<String, Sound> soundEffects = new HashMap<>();
 	protected HashMap<String, Playlist> musicPlaylists = new HashMap<>();
@@ -62,7 +62,8 @@ public class DefaultSoundManager implements ISoundManager, Disposable {
 	public DefaultSoundManager(EskalonSettings settings) {
 		this.effectVolume = settings.getFloatProperty(EFFECT_VOLUME_SETTING,
 				0.7F);
-		this.musicVolume = settings.getFloatProperty(MUSIC_VOLUME_SETTING, 0.5F);
+		this.musicVolume = settings.getFloatProperty(MUSIC_VOLUME_SETTING,
+				0.5F);
 		this.musicVolume.addListener((f) -> {
 			if (currentSong != null)
 				currentSong.x.setVolume(getEffectiveVolume(musicVolume));

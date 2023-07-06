@@ -15,17 +15,13 @@
 
 package de.eskalon.commons.input;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-
-import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.utils.ArrayMap;
-import com.badlogic.gdx.utils.ObjectMap.Entry;
-
-import de.damios.guacamole.gdx.DefaultInputProcessor;
-
 public interface IInputHandler<E extends Enum<E>> {
+
+	public static interface AxisBindingListener<E> {
+
+		public boolean axisChanged(E id, float value);
+
+	}
 
 	public static interface BinaryBindingListener<E> {
 
@@ -35,9 +31,9 @@ public interface IInputHandler<E extends Enum<E>> {
 
 	}
 
-	public static interface AxisBindingListener<E> {
+	public static interface CursorMovementListener {
 
-		public boolean axisChanged(E id, float value);
+		public boolean moved(float screenX, float screenY);
 
 	}
 
@@ -49,17 +45,30 @@ public interface IInputHandler<E extends Enum<E>> {
 			/* int controllerButton, */int keycode, int mouseButton,
 			boolean toogleable);
 
+	// Since there is only one cursor position, we don't need to register any
+	// binding
+	// public void setCursorPositionBinding(int controllerAxis, int
+	// controllerButton);
+
 	public void addAxisBindingListener(AxisBindingListener<E> listener);
 
 	public void addBinaryBindingListener(BinaryBindingListener<E> listener);
+
+	public void addCursorMovementListener(CursorMovementListener listener);
 
 	public void removeAxisBindingListener(AxisBindingListener<E> listener);
 
 	public void removeBinaryBindingListener(BinaryBindingListener<E> listener);
 
+	public void removeCursorMovementListener(CursorMovementListener listener);
+
 	public boolean isOn(E e);
 
 	public float getAxisState(E e);
+
+	public float getCursorX();
+
+	public float getCursorY();
 
 	public void clear();
 

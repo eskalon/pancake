@@ -41,6 +41,7 @@ public class DefaultInputHandler<E extends Enum<E>>
 	private ArrayMap<E, BinaryBinding> binaryBindings = new ArrayMap<>();
 	private LinkedList<AxisBindingListener> axisListeners = new LinkedList<>();
 	private LinkedList<BinaryBindingListener> binaryListeners = new LinkedList<>();
+	private LinkedList<CursorMovementListener> cursorListeners = new LinkedList<>();
 
 	public DefaultInputHandler(EskalonSettings settings) {
 		this.settings = settings;
@@ -81,6 +82,11 @@ public class DefaultInputHandler<E extends Enum<E>>
 	}
 
 	@Override
+	public void addCursorMovementListener(CursorMovementListener listener) {
+		cursorListeners.add(listener);
+	}
+
+	@Override
 	public void removeAxisBindingListener(AxisBindingListener<E> listener) {
 		axisListeners.remove(listener);
 	}
@@ -88,6 +94,11 @@ public class DefaultInputHandler<E extends Enum<E>>
 	@Override
 	public void removeBinaryBindingListener(BinaryBindingListener<E> listener) {
 		binaryListeners.remove(listener);
+	}
+
+	@Override
+	public void removeCursorMovementListener(CursorMovementListener listener) {
+		cursorListeners.remove(listener);
 	}
 
 	@Override
@@ -289,6 +300,10 @@ public class DefaultInputHandler<E extends Enum<E>>
 
 	@Override
 	public boolean mouseMoved(int screenX, int screenY) {
+		for (CursorMovementListener l : cursorListeners) {
+			if (l.moved(screenX, screenY))
+				return true;
+		}
 		return false;
 	}
 
@@ -336,12 +351,6 @@ public class DefaultInputHandler<E extends Enum<E>>
 	@Override
 	public float getAxisState(E e) {
 		AxisBinding b = axisBindings.get(e);
-		if (b.mouseAxis.get() == AxisBinding.MOUSE_AXIS_X) {
-			return Gdx.input.getDeltaX();
-		}
-		if (b.mouseAxis.get() == AxisBinding.MOUSE_AXIS_Y) {
-			return Gdx.input.getDeltaX();
-		}
 		if (b.mouseAxis.get() == AxisBinding.SCROLL_AXIS_X
 				|| b.mouseAxis.get() == AxisBinding.SCROLL_AXIS_Y) {
 			// TODO add InputProcessor that keeps track of scroll wheel activity
@@ -350,6 +359,16 @@ public class DefaultInputHandler<E extends Enum<E>>
 					"libGDX does not support polling the scroll wheel state.");
 		}
 		return b.currentState;
+	}
+
+	@Override
+	public float getCursorX() {
+		return Gdx.input.getX();
+	}
+
+	@Override
+	public float getCursorY() {
+		return Gdx.input.getY();
 	}
 
 	@Override
@@ -362,8 +381,6 @@ public class DefaultInputHandler<E extends Enum<E>>
 
 	final class AxisBinding {
 		public static final int NOT_SET = -2; // ANY_KEY is already -1
-		public static final int MOUSE_AXIS_X = 0;
-		public static final int MOUSE_AXIS_Y = 1;
 		public static final int SCROLL_AXIS_X = 2;
 		public static final int SCROLL_AXIS_Y = 3;
 

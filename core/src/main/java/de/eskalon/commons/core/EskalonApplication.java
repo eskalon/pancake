@@ -82,6 +82,13 @@ import de.eskalon.commons.utils.graphics.GL32CMacIssueHandler;
 public abstract class EskalonApplication
 		extends ManagedGame<AbstractEskalonScreen, ScreenTransition> {
 
+	public static final String VERSION = DevUtils.IN_DEV_ENV
+			? "Development Build"
+			: (Gdx.app.getType() != ApplicationType.WebGL
+					? EskalonApplication.class.getPackage()
+							.getImplementationVersion()
+					: "Version undefined");
+
 	private static final Logger LOG = LoggerService
 			.getLogger(EskalonApplication.class);
 
@@ -133,7 +140,7 @@ public abstract class EskalonApplication
 		else
 			LoggerService.showInfoAndErrors();
 
-		LOG.info("Version: '%s' | App Type: '%s' | OS: '%s'", DevUtils.VERSION,
+		LOG.info("Version: '%s' | App Type: '%s' | OS: '%s'", VERSION,
 				Gdx.app.getType(), System.getProperty("os.name"));
 		LOG.debug("GL30 Available: '%b' | Renderer: '%s'",
 				Gdx.graphics.isGL30Available(),
@@ -217,8 +224,7 @@ public abstract class EskalonApplication
 		/*
 		 * MISC
 		 */
-		debugInfoRenderer = new DebugInfoRenderer(batch, DevUtils.VERSION,
-				soundManager);
+		debugInfoRenderer = new DebugInfoRenderer(batch, VERSION, soundManager);
 
 		/*
 		 * INPUT
@@ -372,6 +378,10 @@ public abstract class EskalonApplication
 	 */
 	public Skin getUISkin() {
 		return uiSkin;
+	}
+
+	public EskalonSettings getSettings() {
+		return settings;
 	}
 
 	@Override

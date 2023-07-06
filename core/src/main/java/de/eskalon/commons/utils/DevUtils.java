@@ -34,8 +34,4 @@ public final class DevUtils {
 	public final static boolean IN_DEV_ENV = EskalonApplication.class
 			.getPackage().getImplementationVersion() == null;
 
-	@GwtIncompatible
-	public final static String VERSION = IN_DEV_ENV ? "Development Build"
-			: EskalonApplication.class.getPackage().getImplementationVersion();
-
 }

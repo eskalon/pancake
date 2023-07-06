@@ -14,12 +14,11 @@ import de.eskalon.commons.input.IInputHandler;
 import de.eskalon.commons.input.IInputHandler.AxisBindingListener;
 import de.eskalon.commons.input.IInputHandler.BinaryBindingListener;
 import de.eskalon.commons.screens.BlankScreen;
-import de.eskalon.commons.settings.EskalonSettings;
 
 public class InputBindingsExample extends AbstractEskalonExample {
 
 	enum MyGameBinding {
-		CROUCH, X_AXIS;
+		SPEED_UP, X_AXIS;
 	}
 
 	@Override
@@ -44,8 +43,8 @@ public class InputBindingsExample extends AbstractEskalonExample {
 			inputHandler = new DefaultInputHandler<>(settings);
 			addInputProcessor((DefaultInputHandler) inputHandler);
 
-			inputHandler.registerBinaryBinding(MyGameBinding.CROUCH, Keys.SPACE,
-					-2, true);
+			inputHandler.registerBinaryBinding(MyGameBinding.SPEED_UP,
+					Keys.SPACE, -2, false);
 			inputHandler.registerAxisBinding(MyGameBinding.X_AXIS, Keys.A,
 					Keys.D, -2);
 
@@ -53,7 +52,7 @@ public class InputBindingsExample extends AbstractEskalonExample {
 					new BinaryBindingListener<MyGameBinding>() {
 						@Override
 						public boolean on(MyGameBinding id) {
-							if (id == MyGameBinding.CROUCH) {
+							if (id == MyGameBinding.SPEED_UP) {
 								vel = 175f;
 								return true;
 							}
@@ -62,7 +61,7 @@ public class InputBindingsExample extends AbstractEskalonExample {
 
 						@Override
 						public boolean off(MyGameBinding id) {
-							if (id == MyGameBinding.CROUCH) {
+							if (id == MyGameBinding.SPEED_UP) {
 								vel = 50f;
 								return true;
 							}
