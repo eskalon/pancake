@@ -15,6 +15,8 @@
 
 package de.eskalon.commons.screens;
 
+import java.util.function.Consumer;
+
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -23,7 +25,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import de.eskalon.commons.core.EskalonApplication;
-import de.eskalon.commons.event.CommonsEvents.CommonsAssetsLoadedEvent;
+import de.eskalon.commons.event.CommonsEvents;
 
 /**
  * This screen is the first screen shown to the user when he starts the game. It
@@ -97,19 +99,12 @@ public class EskalonSplashScreen extends AbstractEskalonScreen {
 		if (!isDone && game.getAssetManager().update(1000 / 30) && (skip
 				|| (startTime + duration) < System.currentTimeMillis())) {
 			isDone = true;
-			onCommonAssetsFinished();
 
-			game.getEventBus().dispatch(new CommonsAssetsLoadedEvent());
+			game.getEventBus()
+					.post(new CommonsEvents.CommonsAssetsLoadedEvent());
 		}
 
 		game.getSpriteBatch().end();
-	}
-
-	private void onCommonAssetsFinished() {
-		game.getSoundManager().addSoundEffect(
-				game.getAssetManager()
-						.get(EskalonCommonsAssets.SHUTTER_SOUND_PATH),
-				EskalonCommonsAssets.SHUTTER_SOUND_NAME);
 	}
 
 	@Override

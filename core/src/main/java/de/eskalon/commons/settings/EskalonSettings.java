@@ -16,24 +16,30 @@
 package de.eskalon.commons.settings;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import com.badlogic.gdx.Gdx;
 
 import de.damios.guacamole.Preconditions;
+import de.damios.guacamole.gdx.log.Logger;
+import de.damios.guacamole.gdx.log.LoggerService;
 
 /**
- * Manages the actual game settings.
+ * This class manages game settings via properties.
  */
 public class EskalonSettings {
 
-	protected final BetterPreferences preferences;
-	private static final String MASTER_VOLUME = "masterVolume";
-	private static final String EFFECT_VOLUME = "effectVolume";
-	private static final String MUSIC_VOLUME = "musicVolume";
-	private static final String KEYBINDING_PREFIX = "keybind_";
+	private static final String FIRST_STARTUP_SETTING = "is_first_startup";
 
-	private final Map<String, KeyBinding> keybinds;
+	private static final Logger LOG = LoggerService
+			.getLogger(EskalonSettings.class);
+
+	protected final AutoFlushingPreferences preferences;
+
+	private final HashMap<String, BooleanProperty> booleanProperties = new HashMap<>();
+	private final HashMap<String, FloatProperty> floatProperties = new HashMap<>();
+	private final HashMap<String, IntProperty> intProperties = new HashMap<>();
+
+	private final boolean isFirstStartup;
 
 	/**
 	 * @param fileName
@@ -41,76 +47,81 @@ public class EskalonSettings {
 	 */
 	public EskalonSettings(String fileName) {
 		Preconditions.checkNotNull(fileName);
-		this.preferences = BetterPreferences
+		this.preferences = AutoFlushingPreferences
 				.createInstance(Gdx.app.getPreferences(fileName));
 		this.preferences.setAutoFlushing(true);
 
-		this.keybinds = new HashMap<>();
+		this.isFirstStartup = this.preferences.getBoolean(FIRST_STARTUP_SETTING,
+				true);
+		if (this.isFirstStartup)
+			this.preferences.putBoolean(FIRST_STARTUP_SETTING, false); // set to
+																		// false
+																		// for
+																		// future
+																		// runs
 	}
 
-	// Master volume
-	public float getMasterVolume() {
-		return preferences.getFloat(MASTER_VOLUME, 0.5F);
+	// First Startup
+	/**
+	 * @return {@code true} when the game is started for the very first time
+	 */
+	public boolean isFirstStartup() {
+		return isFirstStartup;
 	}
 
-	public void setMasterVolume(float masterVolume) {
-		preferences.putFloat(MASTER_VOLUME, masterVolume);
+	/*
+	 * PROPERTIES
+	 */
+	// Boolean Properties
+	public BooleanProperty getBooleanProperty(String name) {
+		return getBooleanProperty(name, false);
 	}
 
-	// Effect volume
-	public float getEffectVolume() {
-		return preferences.getFloat(EFFECT_VOLUME, 0.7F);
+	public BooleanProperty getBooleanProperty(String name,
+			boolean defaultValue) {
+		return booleanProperties.computeIfAbsent(name, k -> {
+			boolean value = preferences.getBoolean(name, defaultValue);
+			return new BooleanProperty(value);
+		});
 	}
 
-	public void setEffectVolume(float effectVolume) {
-		preferences.putFloat(EFFECT_VOLUME, effectVolume);
+	public void setBooleanProperty(String name, boolean value) {
+		preferences.putBoolean(name, value);
+		getBooleanProperty(name, value).set(value);
 	}
 
-	// Music volume
-	public float getMusicVolume() {
-		return preferences.getFloat(MUSIC_VOLUME, 0.7F);
+	// Float Properties
+	public FloatProperty getFloatProperty(String name) {
+		return getFloatProperty(name, 0F);
 	}
 
-	public void setMusicVolume(float musicVolume) {
-		preferences.putFloat(MUSIC_VOLUME, musicVolume);
+	public FloatProperty getFloatProperty(String name, float defaultValue) {
+		return floatProperties.computeIfAbsent(name, k -> {
+			float value = preferences.getFloat(name, defaultValue);
+			return new FloatProperty(value);
+		});
 	}
 
-	// Keybinds
-	private KeyBinding getKeybind(String name, int defaultKey) {
-		if (keybinds.containsKey(name)) {
-			return keybinds.get(name);
-		} else {
-			KeyBinding k = new KeyBinding(defaultKey);
-			keybinds.put(name, k);
-			preferences.putInteger(KEYBINDING_PREFIX + name, defaultKey);
-
-			return k;
-		}
+	public void setFloatProperty(String name, float value) {
+		preferences.putFloat(name, value);
+		getFloatProperty(name, value).set(value);
 	}
 
-	public KeyBinding getKeybind(String name) {
-		return getKeybind(name, KeyBinding.KEYCODE_NOT_SET);
+	// Integer Properties
+	public IntProperty getIntProperty(String name) {
+		return getIntProperty(name, 0);
 	}
 
-	public void setKeybind(String name, int key) {
-		if (keybinds.containsKey(name)) {
-			keybinds.get(name).setKeycode(key);
-		} else {
-			KeyBinding k = new KeyBinding(key);
-			keybinds.put(name, k);
-		}
-
-		preferences.putInteger(KEYBINDING_PREFIX + name, key);
+	public IntProperty getIntProperty(String name, int defaultValue) {
+		return intProperties.computeIfAbsent(name, k -> {
+			int value = preferences.getInteger(name, defaultValue);
+			return new IntProperty(value);
+		});
 	}
 
-	public void setDefaultKeybind(String name, int defaultKey) {
-		if (!keybinds.containsKey(name)) {
-			int key = preferences.getInteger(KEYBINDING_PREFIX + name,
-					defaultKey);
-
-			KeyBinding k = new KeyBinding(key);
-			keybinds.put(name, k);
-		}
+	public void setIntProperty(String name, int value) {
+		preferences.putInteger(name, value);
+		getIntProperty(name, value).set(value);
 	}
 
 }

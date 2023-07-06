@@ -13,6 +13,7 @@ Pancake uses the following libraries and frameworks :
 - [guacamole](https://github.com/crykn/guacamole)
 - [gdx-vfx](https://github.com/crykn/gdx-vfx) (in a forked version)
 - [freetype-skin](https://github.com/acanthite/freetype-skin)
+- [gdx-guava-eventbus](https://github.com/crykn/gdx-guava-eventbus)
 - [reflections](https://github.com/ronmamo/reflections) (for the classpath scanning in AbstractAssetLoadingScreen)
 
 ## Content
@@ -42,11 +43,12 @@ A selection of what Pancake offers:
  }
  ```
 - **EskalonApplication:** the core application, which keeps a sprite batch, an asset manager, a sound manager, an event bus etc.
+- **EventBus:** a simple event bus system
 - **PostProcessingPipeline:** A simple post processing pipeline based on gdx-vfx
+- **DefaultInputHandler**
 - **Lang, ILocalizable & ILocalized**
 	- `Lang#get(String key, Object... args)`
 - **DebugInfoRenderer:** renders some debug information, including a neat fps graph
-- **EventBus, EventQueueBus** 
 - **AbstractAssetLoadingScreen:** a screen loading all assets annotated with `@Asset` in a specified package 
 - **AbstractEskalonUIScreen:** a screen rendering a background image & a stage
 - **AbstractImageScreen:** a simple screen rendering one image

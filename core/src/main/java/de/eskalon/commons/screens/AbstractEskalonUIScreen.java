@@ -24,7 +24,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import de.eskalon.commons.core.EskalonApplication;
-import de.eskalon.commons.input.ToggleableInputWrapper;
 
 /**
  * The base class of all UI screens. It automatically loads the
@@ -53,8 +52,6 @@ public abstract class AbstractEskalonUIScreen extends AbstractImageScreen {
 	 */
 	protected Skin skin;
 
-	protected ToggleableInputWrapper stageInputWrapper;
-
 	public AbstractEskalonUIScreen(int screenWidth, int screenHeight) {
 		super(screenWidth, screenHeight);
 		this.setMode(ImageScreenMode.CENTERED_ORIGINAL_SIZE);
@@ -73,8 +70,7 @@ public abstract class AbstractEskalonUIScreen extends AbstractImageScreen {
 		stage.addActor(mainTable);
 		mainTable.setFillParent(true);
 
-		stageInputWrapper = new ToggleableInputWrapper(stage);
-		addInputProcessor(stageInputWrapper);
+		addInputProcessor(stage);
 	}
 
 	protected abstract void setUIValues();

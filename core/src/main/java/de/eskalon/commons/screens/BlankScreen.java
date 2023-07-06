@@ -22,11 +22,11 @@ import de.eskalon.commons.core.EskalonApplication;
  * 
  * @author damios
  */
-public class BlankEskalonScreen extends AbstractEskalonScreen {
+public class BlankScreen extends AbstractEskalonScreen {
 
 	private EskalonApplication app;
 
-	public BlankEskalonScreen(EskalonApplication app) {
+	public BlankScreen(EskalonApplication app) {
 		this.app = app;
 	}
 

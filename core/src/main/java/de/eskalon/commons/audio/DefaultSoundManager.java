@@ -27,23 +27,29 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.Timer;
 
 import de.damios.guacamole.tuple.Pair;
+import de.eskalon.commons.settings.EskalonSettings;
+import de.eskalon.commons.settings.FloatProperty;
 import de.eskalon.commons.utils.MathStuffUtils;
 
 /**
- * The default implementation of a sound manager responsible for playing (a)
- * {@linkplain Sound sound effects} and (b) {@linkplain Music music} via
+ * The default implementation of a sound manager responsible for playing (a.)
+ * {@linkplain Sound sound effects} and (b.) {@linkplain Music music} via
  * playlists. Does not support spatial audio.
  * 
  * @author damios
  */
 public class DefaultSoundManager implements ISoundManager, Disposable {
 
+	private static final String MASTER_VOLUME_SETTING = "volume_master";
+	private static final String EFFECT_VOLUME_SETTING = "volume_effect";
+	private static final String MUSIC_VOLUME_SETTING = "volume_music";
+
 	protected HashMap<String, Sound> soundEffects = new HashMap<>();
 	protected HashMap<String, Playlist> musicPlaylists = new HashMap<>();
 
-	protected float effectVolume = 1F;
-	protected float musicVolume = 1F;
-	protected float masterVolume = 1F;
+	protected FloatProperty effectVolume;
+	protected FloatProperty musicVolume;
+	protected FloatProperty masterVolume;
 
 	protected MusicFadeOutTask fadeOutTask = new MusicFadeOutTask();
 	protected MusicFadeInTask fadeInTask = new MusicFadeInTask();
@@ -52,6 +58,22 @@ public class DefaultSoundManager implements ISoundManager, Disposable {
 
 	protected @Nullable Playlist currentPlaylist;
 	protected @Nullable Pair<Music, String> currentSong;
+
+	public DefaultSoundManager(EskalonSettings settings) {
+		this.effectVolume = settings.getFloatProperty(EFFECT_VOLUME_SETTING,
+				0.7F);
+		this.musicVolume = settings.getFloatProperty(MUSIC_VOLUME_SETTING, 0.5F);
+		this.musicVolume.addListener((f) -> {
+			if (currentSong != null)
+				currentSong.x.setVolume(getEffectiveVolume(musicVolume));
+		});
+		this.masterVolume = settings.getFloatProperty(MASTER_VOLUME_SETTING,
+				0.5F);
+		this.masterVolume.addListener((f) -> {
+			if (currentSong != null)
+				currentSong.x.setVolume(getEffectiveVolume(musicVolume));
+		});
+	}
 
 	@Override
 	public ISoundInstance playSoundEffect(String name, boolean stopIfPlaying,
@@ -172,27 +194,6 @@ public class DefaultSoundManager implements ISoundManager, Disposable {
 		musicPlaylists.get(paylistName).setRepeat(repeat);
 	}
 
-	@Override
-	public void setEffectVolume(float effectVolume) {
-		this.effectVolume = effectVolume;
-	}
-
-	@Override
-	public void setMusicVolume(float musicVolume) {
-		this.musicVolume = musicVolume;
-
-		if (currentSong != null)
-			currentSong.x.setVolume(getEffectiveVolume(musicVolume));
-	}
-
-	@Override
-	public void setMasterVolume(float masterVolume) {
-		this.masterVolume = masterVolume;
-
-		if (currentSong != null)
-			currentSong.x.setVolume(getEffectiveVolume(musicVolume));
-	}
-
 	/**
 	 * Converts the linear scale of the volume sliders to a logarithmic scale to
 	 * compensate for the human hearing being logarithmic rather than linear.
@@ -206,8 +207,9 @@ public class DefaultSoundManager implements ISoundManager, Disposable {
 	 *      "https://www.dr-lex.be/info-stuff/volumecontrols.html">Additional
 	 *      information on this issue</a>
 	 */
-	protected float getEffectiveVolume(float volumeValue) {
-		return (float) MathStuffUtils.linToExp(volumeValue * masterVolume, 2);
+	protected float getEffectiveVolume(FloatProperty volumeValue) {
+		return (float) MathStuffUtils
+				.linToExp(volumeValue.get() * masterVolume.get(), 2);
 	}
 
 	@Override

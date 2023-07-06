@@ -36,12 +36,6 @@ import de.damios.guacamole.gdx.log.LoggerService;
 @GwtIncompatible
 public final class MachineIdentificationUtils {
 
-	public static void main(String... args) {
-		System.out.println(getMACAddress());
-		System.out.println(getHostname());
-		System.out.println(getSimpleIdentifier());
-	}
-
 	private static final Logger LOG = LoggerService
 			.getLogger(MachineIdentificationUtils.class);
 

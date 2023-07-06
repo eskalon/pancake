@@ -25,9 +25,9 @@ import org.reflections8.scanners.FieldAnnotationsScanner;
 
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.utils.reflect.ReflectionUtils;
 
 import de.damios.guacamole.annotations.GwtIncompatible;
+import de.damios.guacamole.gdx.reflection.ReflectionUtils;
 import de.eskalon.commons.asset.AnnotationAssetManager;
 import de.eskalon.commons.asset.AnnotationAssetManager.Asset;
 import de.eskalon.commons.core.EskalonApplication;

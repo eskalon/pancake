@@ -22,6 +22,7 @@ package de.eskalon.commons.core;
  */
 public class EskalonApplicationConfiguration {
 
+	String appName = "Eskalon App";
 	boolean createPostProcessor;
 	boolean enableDebugLoggingOnStartup;
 	boolean provideDepthBuffers;
@@ -51,6 +52,11 @@ public class EskalonApplicationConfiguration {
 
 	public EskalonApplicationConfiguration skipSplashScreen() {
 		this.skipSplashScreen = true;
+		return this;
+	}
+
+	public EskalonApplicationConfiguration setAppName(String appName) {
+		this.appName = appName;
 		return this;
 	}
 

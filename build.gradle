@@ -17,20 +17,19 @@ allprojects {
 	ext {
 		appName = "pancake"
 		
-		freetypeSkinVersion = "0.4"
-		gdxVersion = "1.10.0"
-		guacamoleVersion = "0.3.1"
+		freetypeSkinVersion = "0.3.1"
+		gdxVersion = "1.12.0"
+		guacamoleVersion = "a025e601e3" // = 0.3.4
 		reflectionsVersion = "0.11.5"
-		screenmanagerVersion = "0.6.7"
+		screenmanagerVersion = "0.6.9"
 		vfxVersion = "0.6.1"
 		
 		// Test dependencies:
-		junitVersion = "5.6.0"
-		mockitoVersion = "3.5.13"
+		junitVersion = "5.9.3"
+		mockitoVersion = "3.12.4"
     }
 
     repositories {
-		mavenLocal()
 		mavenCentral()
 		maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
 		maven { url "https://oss.sonatype.org/content/repositories/releases/" }
@@ -47,14 +46,15 @@ project(":core") {
 		
 		implementation "net.oneandone.reflections8:reflections8:$reflectionsVersion" // alternative to org.reflections:reflections, see https://github.com/ronmamo/reflections/issues/273
 		api("com.github.crykn:libgdx-screenmanager:$screenmanagerVersion") {
-			exclude group: "com.github.crykn.guacamole", module: "gdx" 
+			exclude group: "com.github.crykn.guacamole", module: "gdx" // we want to set our own version
 		}
 		api("com.github.crykn.gdx-vfx:gdx-vfx-core:$vfxVersion") {
-			exclude group: "com.github.crykn.guacamole", module: "gdx" 
+			exclude group: "com.github.crykn.guacamole", module: "gdx" // we want to set our own version
 		}
 		api "com.github.crykn.guacamole:gdx:$guacamoleVersion"
-		implementation "com.github.acanthite:freetype-skin:$freetypeSkinVersion"
+		implementation "com.github.crykn:freetype-skin:$freetypeSkinVersion"
 
+		// Test dependencies
 		testImplementation "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
 		testImplementation "org.mockito:mockito-core:$mockitoVersion"
 		testImplementation "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
@@ -88,6 +88,7 @@ project(":desktop") {
 		api "com.github.crykn.guacamole:gdx-desktop:$guacamoleVersion"
 		implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
 		
+		// Test dependencies
 		testImplementation "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
 		testImplementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
 		testImplementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"

@@ -129,12 +129,6 @@ public interface ISoundManager {
 
 	public void setPlaylistRepeat(String paylistName, boolean repeat);
 
-	public void setEffectVolume(float effectVolume);
-
-	public void setMusicVolume(float musicVolume);
-
-	public void setMasterVolume(float masterVolume);
-
 	public void setListenerOrientation(float lookX, float lookY, float lookZ,
 			float upX, float upY, float upZ);
 

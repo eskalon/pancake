@@ -21,7 +21,7 @@ import com.badlogic.gdx.Preferences;
 
 /**
  * Wraps a {@link Preferences} instance to enable automatic flushing after every
- * set call.
+ * put call.
  * 
  * @author damios
  */

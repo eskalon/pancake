@@ -1,0 +1,44 @@
+package de.eskalon.commons.settings;
+
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
+import de.damios.guacamole.func.FloatConsumer;
+
+public final class FloatProperty {
+
+	private @Nullable List<FloatConsumer> listeners = null;
+	private float value;
+
+	FloatProperty(float value) {
+		this.value = value;
+	}
+
+	public float get() {
+		return value;
+	}
+
+	void set(float value) {
+		this.value = value;
+
+		if (listeners != null) {
+			for (FloatConsumer l : listeners) {
+				l.accept(value);
+			}
+		}
+	}
+
+	public void addListener(FloatConsumer listener) {
+		if (listeners == null)
+			listeners = new LinkedList<>();
+
+		listeners.add(listener);
+	}
+
+	public void removeListener(FloatConsumer listener) {
+		listeners.remove(listener);
+	}
+
+}

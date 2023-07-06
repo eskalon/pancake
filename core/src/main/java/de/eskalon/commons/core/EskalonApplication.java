@@ -28,15 +28,14 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.utils.reflect.ReflectionUtils;
 import com.github.acanthite.gdx.graphics.g2d.FreeTypeSkinLoader;
 
-import de.damios.guacamole.annotations.GwtIncompatible;
 import de.damios.guacamole.gdx.assets.Text;
 import de.damios.guacamole.gdx.assets.TextLoader;
 import de.damios.guacamole.gdx.graphics.ShaderCompatibilityHelper;
 import de.damios.guacamole.gdx.log.Logger;
 import de.damios.guacamole.gdx.log.LoggerService;
+import de.damios.guacamole.gdx.reflection.ReflectionUtils;
 import de.eskalon.commons.asset.AnnotationAssetManager;
 import de.eskalon.commons.asset.BitmapFontAssetLoaderParametersFactory;
 import de.eskalon.commons.asset.PlaylistDefinition;
@@ -45,6 +44,7 @@ import de.eskalon.commons.asset.SkinAssetLoaderParametersFactory;
 import de.eskalon.commons.audio.DefaultSoundManager;
 import de.eskalon.commons.audio.ISoundManager;
 import de.eskalon.commons.event.CommonsEvents.CommonsAssetsLoadedEvent;
+import de.eskalon.commons.event.EventBusLogger;
 import de.eskalon.commons.event.EventQueueBus;
 import de.eskalon.commons.graphics.PostProcessingPipeline;
 import de.eskalon.commons.input.EskalonGameInputProcessor;
@@ -53,9 +53,11 @@ import de.eskalon.commons.screen.transition.ScreenTransition;
 import de.eskalon.commons.screen.transition.impl.BlankTimedTransition;
 import de.eskalon.commons.screen.transition.impl.BlendingTransition;
 import de.eskalon.commons.screens.AbstractEskalonScreen;
-import de.eskalon.commons.screens.BlankEskalonScreen;
+import de.eskalon.commons.screens.BlankScreen;
 import de.eskalon.commons.screens.EskalonSplashScreen;
 import de.eskalon.commons.screens.EskalonSplashScreen.EskalonCommonsAssets;
+import de.eskalon.commons.settings.EskalonSettings;
+import de.eskalon.commons.utils.DevUtils;
 import de.eskalon.commons.utils.ScreenshotUtils;
 import de.eskalon.commons.utils.graphics.GL32CMacIssueHandler;
 
@@ -67,8 +69,7 @@ import de.eskalon.commons.utils.graphics.GL32CMacIssueHandler;
  * <li>an {@linkplain #getEventBus() event bus}</li>
  * <li>a {@linkplain #getPostProcessor() post processor}</li>
  * <li>a {@linkplain #getSoundManager() sound manager}</li>
- * <li>a {@linkplain #getSpriteBatch() batch} and an {@linkplain #getUICamera()
- * ui camera}</li>
+ * <li>a {@linkplain #getSpriteBatch() batch}</li>
  * <li>support for setting an {@linkplain #uiSkin UI skin}</li>
  * <li>a screenshot keybind (see {@link EskalonGameInputProcessor}) and a
  * {@linkplain DebugInfoRenderer debug overlay}</li>
@@ -78,45 +79,35 @@ import de.eskalon.commons.utils.graphics.GL32CMacIssueHandler;
  * @author damios
  * @see BasicScreenManager
  */
-
-// TODO make game static -> EskalonApplication.app; then remove those pesky
-// references and variables everywhere!
-// TODO null the reference upon app disposal
-// TODO make a proper input system (toggle bindings; axis bindings)
-
 public abstract class EskalonApplication
 		extends ManagedGame<AbstractEskalonScreen, ScreenTransition> {
-
-	@GwtIncompatible
-	public final boolean IN_DEV_ENV = EskalonApplication.class.getPackage()
-			.getImplementationVersion() == null;
-	@GwtIncompatible
-	public final String VERSION = IN_DEV_ENV ? "Development Build"
-			: EskalonApplication.class.getPackage().getImplementationVersion();
 
 	private static final Logger LOG = LoggerService
 			.getLogger(EskalonApplication.class);
 
 	private final EskalonApplicationConfiguration config;
 
-	// Misc
-	private EskalonGameInputProcessor applicationInputProcessor = new EskalonGameInputProcessor();
-	private DebugInfoRenderer debugInfoRenderer;
-
 	// Asset manager
 	protected AnnotationAssetManager assetManager = new AnnotationAssetManager(
 			new InternalFileHandleResolver());
 
-	// Sound
-	protected ISoundManager soundManager;
+	// Events
+	protected EventQueueBus eventBus = new EventQueueBus();
 
 	// Graphics & UI
 	protected SpriteBatch batch;
 	protected Skin uiSkin;
 	protected @Nullable PostProcessingPipeline postProcessor;
+	private DebugInfoRenderer debugInfoRenderer;
 
-	// Events
-	protected EventQueueBus eventBus = new EventQueueBus();
+	// Input
+	private EskalonGameInputProcessor applicationInputProcessor = new EskalonGameInputProcessor();
+
+	// Settings
+	protected EskalonSettings settings;
+
+	// Sound
+	protected ISoundManager soundManager;
 
 	protected EskalonApplication() {
 		this.config = getAppConfig();
@@ -129,11 +120,11 @@ public abstract class EskalonApplication
 	@Override
 	public final void create() {
 		/*
-		 * LOG STUFF
+		 * LOGGING
 		 */
 		if (Gdx.app.getType() == ApplicationType.Desktop
 				|| Gdx.app.getType() == ApplicationType.HeadlessDesktop)
-			Gdx.app.setApplicationLogger(ReflectionUtils.newInstance(
+			Gdx.app.setApplicationLogger(ReflectionUtils.newInstanceOrNull(
 					"de.eskalon.commons.log.EskalonDesktopLogger",
 					ApplicationLogger.class));
 
@@ -142,12 +133,18 @@ public abstract class EskalonApplication
 		else
 			LoggerService.showInfoAndErrors();
 
-		LOG.info("Version: '%s' | App Type: '%s' | OS: '%s'", VERSION,
+		LOG.info("Version: '%s' | App Type: '%s' | OS: '%s'", DevUtils.VERSION,
 				Gdx.app.getType(), System.getProperty("os.name"));
 		LOG.debug("GL30 Available: '%b' | Renderer: '%s'",
 				Gdx.graphics.isGL30Available(),
 				Gdx.graphics.getGLVersion().getRendererString());
 		LOG.debug("Java Version: '%s'", System.getProperty("java.version"));
+
+		/*
+		 * LOAD SETTINGS
+		 */
+		this.settings = new EskalonSettings(
+				config.appName.trim().replace(" ", "-").toLowerCase());
 
 		/*
 		 * INITIALIZE MANAGED GAME
@@ -177,16 +174,22 @@ public abstract class EskalonApplication
 				new SkinAssetLoaderParametersFactory());
 
 		/*
+		 * EVENT BUS
+		 */
+		this.eventBus.register(new EventBusLogger());
+
+		/*
 		 * SOUND MANAGER
 		 */
 		if (Gdx.app.getType() == ApplicationType.Desktop
 				|| Gdx.app.getType() == ApplicationType.HeadlessDesktop)
-			this.soundManager = ReflectionUtils.newInstance(
+			this.soundManager = ReflectionUtils.newInstanceWithParamsOrNull(
 					"de.eskalon.commons.audio.DesktopSoundManager",
-					ISoundManager.class);
+					ISoundManager.class, new Class[] { EskalonSettings.class },
+					new Object[] { settings });
 
 		if (this.soundManager == null)
-			this.soundManager = new DefaultSoundManager();
+			this.soundManager = new DefaultSoundManager(settings);
 
 		/*
 		 * SPRITEBATCH
@@ -214,18 +217,28 @@ public abstract class EskalonApplication
 		/*
 		 * MISC
 		 */
+		debugInfoRenderer = new DebugInfoRenderer(batch, DevUtils.VERSION,
+				soundManager);
+
+		/*
+		 * INPUT
+		 */
 		getInputMultiplexer().addProcessor(applicationInputProcessor);
-		debugInfoRenderer = new DebugInfoRenderer(batch, VERSION, soundManager);
 
 		/*
 		 * SPLASH SCREEN
 		 */
-		this.screenManager.addScreen("blank", new BlankEskalonScreen(this));
+		this.screenManager.addScreen("blank", new BlankScreen(this));
 		this.screenManager.addScreen("splash",
 				new EskalonSplashScreen(this, config.skipSplashScreen));
 
-		eventBus.on(CommonsAssetsLoadedEvent.class, () -> {
-			// Enable stuff depending on commons assets
+		eventBus.register(CommonsAssetsLoadedEvent.class, (ev) -> {
+			// Retrieve the loaded assets
+			soundManager.addSoundEffect(
+					assetManager.get(EskalonCommonsAssets.SHUTTER_SOUND_PATH),
+					EskalonCommonsAssets.SHUTTER_SOUND_NAME);
+
+			// Enable stuff that depends on eskalon's assets
 			applicationInputProcessor.enable();
 			debugInfoRenderer.initialize(getWidth(), getHeight(),
 					assetManager.get(EskalonCommonsAssets.DEFAULT_FONT_NAME));
@@ -274,32 +287,25 @@ public abstract class EskalonApplication
 
 	@Override
 	public void render() {
-		/*
-		 * Takes care of posting the events in the rendering thread
-		 */
+		// Take care of posting the events in the rendering thread
 		eventBus.dispatchEvents();
 
+		// Profile stuff
+		debugInfoRenderer.resetProfiler();
 		debugInfoRenderer.setProfilingEnabled(
 				applicationInputProcessor.isDebugOverlayEnabled());
-		debugInfoRenderer.resetProfiler();
 
-		/*
-		 * Render the screen
-		 */
+		// Render the screen
 		super.render();
 
 		debugInfoRenderer.update(Gdx.graphics.getDeltaTime());
 
-		/*
-		 * Debug overlay
-		 */
+		// Render debug overlay
 		if (applicationInputProcessor.isDebugOverlayEnabled()) {
 			debugInfoRenderer.render();
 		}
 
-		/*
-		 * Take a screenshot
-		 */
+		// Take a screenshot
 		if (applicationInputProcessor.pollTakeScreenshot()) {
 			ScreenshotUtils.takeAndSaveScreenshot();
 			soundManager

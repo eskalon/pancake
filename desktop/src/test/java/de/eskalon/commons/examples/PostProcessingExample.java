@@ -16,7 +16,7 @@ import de.damios.guacamole.gdx.DefaultInputProcessor;
 import de.eskalon.commons.core.EskalonApplication;
 import de.eskalon.commons.core.EskalonApplicationConfiguration;
 import de.eskalon.commons.input.EskalonGameInputProcessor;
-import de.eskalon.commons.screens.BlankEskalonScreen;
+import de.eskalon.commons.screens.BlankScreen;
 
 public class PostProcessingExample extends AbstractEskalonExample {
 
@@ -34,7 +34,7 @@ public class PostProcessingExample extends AbstractEskalonExample {
 		return "test-screen";
 	}
 
-	public class TestScreen extends BlankEskalonScreen {
+	public class TestScreen extends BlankScreen {
 
 		private ShapeRenderer shapeRenderer = new ShapeRenderer();
 		private Viewport viewport = new ScreenViewport();

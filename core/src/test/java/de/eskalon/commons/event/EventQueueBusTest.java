@@ -1,78 +1,90 @@
-package de.eskalon.commons.misc;
+package de.eskalon.commons.event;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
 import de.eskalon.commons.LibgdxUnitTest;
-import de.eskalon.commons.event.EventQueueBus;
 
 public class EventQueueBusTest extends LibgdxUnitTest {
 
-	int i;
-	boolean b;
+	int i = 0;
+	int j = 0;
 
 	@Test
-	public void testConsumer() {
+	public void testEventBus1() {
+		/* Register subscriber and create event */
 		EventQueueBus bus = new EventQueueBus();
+		TestSubscriber sub = new TestSubscriber() {
+
+			@Override
+			public void test(TestEvent ev) {
+				i++;
+				assertEquals(43, ev.integer);
+			}
+		};
 		TestEvent ev = new TestEvent();
 		ev.integer = 43;
-		bus.on(TestEvent.class, e -> {
-			i++;
-			assertEquals(43, ev.integer);
-		});
+		bus.register(sub);
 
-		// Post & Dispatch
-		i = 0;
+		/* First round */
 		bus.post(ev);
 		assertEquals(0, i);
-
 		bus.dispatchEvents();
 		assertEquals(1, i);
 
-		// Dispatch manually
-		bus.dispatch(ev);
+		/* Second round */
+		bus.post(ev);
+		assertEquals(1, i);
+		bus.dispatchEvents();
 		assertEquals(2, i);
 
+		/* Unregister subscriber */
+		bus.unregister(sub);
+		bus.post(ev);
 		bus.dispatchEvents();
 		assertEquals(2, i);
 	}
 
 	@Test
-	public void testRunnable() {
+	public void testEventBus2() {
+		/* Register subscriber and create event */
 		EventQueueBus bus = new EventQueueBus();
+		Consumer<TestEvent> c = (ev) -> {
+			j++;
+			assertEquals(34, ev.integer);
+		};
+
+		bus.register(TestEvent.class, c);
+
 		TestEvent ev = new TestEvent();
-		bus.on(TestEvent.class, () -> {
-			b = true;
-		});
-		// Post & Dispatch
-		b = false;
+		ev.integer = 34;
+
+		/* First round */
 		bus.post(ev);
-		assertEquals(false, b);
+		assertEquals(0, j);
 		bus.dispatchEvents();
-		assertEquals(true, b);
+		assertEquals(1, j);
 
-		// Dispatch manually
-		b = false;
+		/* Second round */
+		bus.post(ev);
+		assertEquals(1, j);
 		bus.dispatchEvents();
-		assertEquals(false, b);
+		assertEquals(2, j);
 
-		bus.dispatch(ev);
-		assertEquals(true, b);
+		/* Unregister subscriber */
+		bus.unregister(TestEvent.class, c);
+
+		bus.post(ev);
+		bus.dispatchEvents();
+		assertEquals(2, j);
 	}
 
-	@Test
-	public void testException() {
-		EventQueueBus bus = new EventQueueBus();
-		TestEvent ev = new TestEvent();
-		bus.on(TestEvent.class, () -> {
-			throw new RuntimeException("hello world!");
-		});
-		// Post & Dispatch
-		bus.post(ev);
-		System.out.println(1);
-		bus.dispatchEvents();
-		System.out.println(2);
+	public abstract class TestSubscriber {
+		@Subscribe
+		public abstract void test(TestEvent ev);
 	}
 
 	public class TestEvent {

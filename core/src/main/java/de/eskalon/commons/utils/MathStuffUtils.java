@@ -17,6 +17,8 @@ package de.eskalon.commons.utils;
 
 import java.util.NavigableMap;
 
+import com.badlogic.gdx.math.MathUtils;
+
 /**
  * Math utils.
  * 

@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 
 import de.eskalon.commons.examples.AbstractEskalonExample;
 import de.eskalon.commons.examples.ImageScreenExample;
+import de.eskalon.commons.examples.InputBindingsExample;
 import de.eskalon.commons.examples.PositionalAudioExample;
 import de.eskalon.commons.examples.PostProcessingComplexLayerExample;
 import de.eskalon.commons.examples.PostProcessingExample;
@@ -20,6 +21,7 @@ public class EskalonExamples {
 			Arrays.asList(
 			// @formatter:off
 					ImageScreenExample.class,
+					InputBindingsExample.class,
 					PositionalAudioExample.class,
 					PostProcessingExample.class,
 					PostProcessingSimpleLayerExample.class,

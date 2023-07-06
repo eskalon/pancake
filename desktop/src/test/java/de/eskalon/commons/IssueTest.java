@@ -9,7 +9,7 @@ import de.damios.guacamole.gdx.log.Logger;
 import de.damios.guacamole.gdx.log.LoggerService;
 import de.eskalon.commons.core.EskalonApplication;
 import de.eskalon.commons.core.EskalonApplicationConfiguration;
-import de.eskalon.commons.screens.BlankEskalonScreen;
+import de.eskalon.commons.screens.BlankScreen;
 
 /**
  * A simple runnable app to test issues.
@@ -27,7 +27,7 @@ public class IssueTest extends EskalonApplication {
 		return "test";
 	}
 
-	public class TestScreen extends BlankEskalonScreen {
+	public class TestScreen extends BlankScreen {
 		private final Logger LOG = LoggerService.getLogger(TestScreen.class);
 
 		public TestScreen(EskalonApplication app) {

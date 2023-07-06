@@ -24,10 +24,16 @@ import org.lwjgl.openal.AL10;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 
+import de.eskalon.commons.settings.EskalonSettings;
+
 /**
  * @author damios
  */
 public class DesktopSoundManager extends DefaultSoundManager {
+
+	public DesktopSoundManager(EskalonSettings settings) {
+		super(settings);
+	}
 
 	@Override
 	public ISoundInstance playSoundEffect(String name, boolean stopIfPlaying,

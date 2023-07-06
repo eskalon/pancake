@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
 import de.damios.guacamole.gdx.DefaultInputProcessor;
 import de.eskalon.commons.core.EskalonApplication;
-import de.eskalon.commons.screens.BlankEskalonScreen;
+import de.eskalon.commons.screens.BlankScreen;
 import de.eskalon.commons.screens.EskalonSplashScreen.EskalonCommonsAssets;
 
 public class PositionalAudioExample extends AbstractEskalonExample {
@@ -17,7 +17,7 @@ public class PositionalAudioExample extends AbstractEskalonExample {
 		return "test-screen";
 	}
 
-	public class TestScreen extends BlankEskalonScreen {
+	public class TestScreen extends BlankScreen {
 
 		private BitmapFont font;
 

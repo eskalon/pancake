@@ -12,8 +12,8 @@ public abstract class AbstractEskalonExample extends EskalonApplication {
 
 	@Override
 	protected EskalonApplicationConfiguration getAppConfig() {
-		return super.getAppConfig().enableDebugLoggingOnStartup()
-				.skipSplashScreen();
+		return super.getAppConfig().setAppName("Eskalon Tests")
+				.enableDebugLoggingOnStartup().skipSplashScreen();
 	}
 
 	public int getPrefWidth() {
