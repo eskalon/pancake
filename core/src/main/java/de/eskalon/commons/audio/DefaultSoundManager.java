@@ -68,16 +68,8 @@ public class DefaultSoundManager implements ISoundManager, Disposable {
 				0.7F);
 		this.musicVolume = settings.getFloatProperty(MUSIC_VOLUME_SETTING,
 				0.5F);
-		this.musicVolume.addChangeListener((f) -> {
-			if (currentSong != null)
-				currentSong.x.setVolume(getEffectiveVolume(musicVolume));
-		});
 		this.masterVolume = settings.getFloatProperty(MASTER_VOLUME_SETTING,
 				0.5F);
-		this.masterVolume.addChangeListener((f) -> {
-			if (currentSong != null)
-				currentSong.x.setVolume(getEffectiveVolume(musicVolume));
-		});
 	}
 
 	@Override
@@ -288,11 +280,17 @@ public class DefaultSoundManager implements ISoundManager, Disposable {
 	@Override
 	public void setMasterVolume(float volume) {
 		settings.setFloatProperty(MASTER_VOLUME_SETTING, volume);
+
+		if (currentSong != null)
+			currentSong.x.setVolume(getEffectiveVolume(musicVolume));
 	}
 
 	@Override
 	public void setMusicVolume(float volume) {
 		settings.setFloatProperty(MUSIC_VOLUME_SETTING, volume);
+
+		if (currentSong != null)
+			currentSong.x.setVolume(getEffectiveVolume(musicVolume));
 	}
 
 	@Override

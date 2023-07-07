@@ -391,6 +391,16 @@ public class DefaultInputHandler<E extends Enum<E>, F extends Enum<F>>
 		listeners.clear();
 	}
 
+	@Override
+	public void reset() {
+		for (AxisBinding a : axisBindings.values()) {
+			a.currentState = 0;
+		}
+		for (BinaryBinding b : binaryBindings.values()) {
+			b.currentState = false;
+		}
+	}
+
 	final class AxisBinding {
 
 		// private IntProperty controllerAxis;

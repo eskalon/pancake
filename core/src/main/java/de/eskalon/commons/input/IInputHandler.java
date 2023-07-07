@@ -32,6 +32,8 @@ public interface IInputHandler<E extends Enum<E>, F extends Enum<F>> {
 
 	public int getCursorY();
 
+	public void reset();
+
 	public void clear();
 
 	/* Static methods */
