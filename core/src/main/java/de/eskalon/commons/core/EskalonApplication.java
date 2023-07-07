@@ -82,12 +82,7 @@ import de.eskalon.commons.utils.graphics.GL32CMacIssueHandler;
 public abstract class EskalonApplication
 		extends ManagedGame<AbstractEskalonScreen, ScreenTransition> {
 
-	public static final String VERSION = DevUtils.IN_DEV_ENV
-			? "Development Build"
-			: (Gdx.app.getType() != ApplicationType.WebGL
-					? EskalonApplication.class.getPackage()
-							.getImplementationVersion()
-					: "Version undefined");
+	public static String VERSION;
 
 	private static final Logger LOG = LoggerService
 			.getLogger(EskalonApplication.class);
@@ -126,6 +121,14 @@ public abstract class EskalonApplication
 
 	@Override
 	public final void create() {
+		/*
+		 * CONSTANTS
+		 */
+		VERSION = DevUtils.IN_DEV_ENV ? "Development Build"
+				: (Gdx.app.getType() != ApplicationType.WebGL
+						? EskalonApplication.class.getPackage()
+								.getImplementationVersion()
+						: "Version undefined");
 		/*
 		 * LOGGING
 		 */
