@@ -152,4 +152,16 @@ public interface ISoundManager {
 		setListenerPosition(dir.x, dir.y, dir.z);
 	}
 
+	public void setMasterVolume(float volume);
+
+	public void setMusicVolume(float volume);
+
+	public void setEffectVolume(float volume);
+
+	public float getMasterVolume();
+
+	public float getMusicVolume();
+
+	public float getEffectVolume();
+
 }

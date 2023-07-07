@@ -30,15 +30,20 @@ public final class FloatProperty {
 		}
 	}
 
-	public void addListener(FloatConsumer listener) {
+	public void addChangeListener(FloatConsumer listener) {
 		if (listeners == null)
 			listeners = new LinkedList<>();
 
 		listeners.add(listener);
 	}
 
-	public void removeListener(FloatConsumer listener) {
+	public void removeChangeListener(FloatConsumer listener) {
 		listeners.remove(listener);
+	}
+
+	@Override
+	public String toString() {
+		return "FloatProperty{value=" + value + ",listeners=" + listeners + "}";
 	}
 
 }

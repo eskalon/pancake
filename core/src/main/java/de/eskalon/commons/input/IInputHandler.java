@@ -16,6 +16,7 @@
 package de.eskalon.commons.input;
 
 import de.eskalon.commons.settings.EskalonSettings;
+import de.eskalon.commons.settings.IntProperty;
 
 public interface IInputHandler<E extends Enum<E>, F extends Enum<F>> {
 
@@ -49,9 +50,9 @@ public interface IInputHandler<E extends Enum<E>, F extends Enum<F>> {
 			EskalonSettings settings, F id, int keycode, int mouseButton,
 			boolean toogleable) {
 		// Don't use set because the given values are just default ones
+		settings.getIntProperty(getPropertyName(id, "keycode"), keycode);
 		settings.getIntProperty(getPropertyName(id, "mouse_button"),
 				mouseButton);
-		settings.getIntProperty(getPropertyName(id, "keycode"), keycode);
 		settings.getBooleanProperty(getPropertyName(id, "toogleable"),
 				toogleable);
 	}

@@ -60,9 +60,9 @@ public class DefaultInputHandler<E extends Enum<E>, F extends Enum<F>>
 		for (F f : binaryBindingsClazz.getEnumConstants()) {
 			binaryBindings.put(f, new BinaryBinding(
 					settings.getIntProperty(
-							IInputHandler.getPropertyName(f, "mouse_button")),
-					settings.getIntProperty(
 							IInputHandler.getPropertyName(f, "keycode")),
+					settings.getIntProperty(
+							IInputHandler.getPropertyName(f, "mouse_button")),
 					settings.getBooleanProperty(
 							IInputHandler.getPropertyName(f, "toggleable"))));
 		}

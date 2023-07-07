@@ -30,15 +30,21 @@ public final class BooleanProperty {
 		}
 	}
 
-	public void addListener(BooleanConsumer listener) {
+	public void addChangeListener(BooleanConsumer listener) {
 		if (listeners == null)
 			listeners = new LinkedList<>();
 
 		listeners.add(listener);
 	}
 
-	public void removeListener(BooleanConsumer listener) {
+	public void removeChangeListener(BooleanConsumer listener) {
 		listeners.remove(listener);
+	}
+
+	@Override
+	public String toString() {
+		return "BooleanProperty{value=" + value + ",listeners=" + listeners
+				+ "}";
 	}
 
 }

@@ -29,15 +29,20 @@ public final class IntProperty {
 		}
 	}
 
-	public void addListener(IntConsumer listener) {
+	public void addChangeListener(IntConsumer listener) {
 		if (listeners == null)
 			listeners = new LinkedList<>();
 
 		listeners.add(listener);
 	}
 
-	public void removeListener(IntConsumer listener) {
+	public void removeChangeListener(IntConsumer listener) {
 		listeners.remove(listener);
+	}
+
+	@Override
+	public String toString() {
+		return "IntProperty{value=" + value + ",listeners=" + listeners + "}";
 	}
 
 }

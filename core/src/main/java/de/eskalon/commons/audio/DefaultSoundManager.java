@@ -40,9 +40,11 @@ import de.eskalon.commons.utils.MathStuffUtils;
  */
 public class DefaultSoundManager implements ISoundManager, Disposable {
 
-	public static final String MASTER_VOLUME_SETTING = "volume_master";
-	public static final String EFFECT_VOLUME_SETTING = "volume_effect";
-	public static final String MUSIC_VOLUME_SETTING = "volume_music";
+	private static final String MASTER_VOLUME_SETTING = "volume_master";
+	private static final String EFFECT_VOLUME_SETTING = "volume_effect";
+	private static final String MUSIC_VOLUME_SETTING = "volume_music";
+
+	private EskalonSettings settings;
 
 	protected HashMap<String, Sound> soundEffects = new HashMap<>();
 	protected HashMap<String, Playlist> musicPlaylists = new HashMap<>();
@@ -60,17 +62,19 @@ public class DefaultSoundManager implements ISoundManager, Disposable {
 	protected @Nullable Pair<Music, String> currentSong;
 
 	public DefaultSoundManager(EskalonSettings settings) {
+		this.settings = settings;
+
 		this.effectVolume = settings.getFloatProperty(EFFECT_VOLUME_SETTING,
 				0.7F);
 		this.musicVolume = settings.getFloatProperty(MUSIC_VOLUME_SETTING,
 				0.5F);
-		this.musicVolume.addListener((f) -> {
+		this.musicVolume.addChangeListener((f) -> {
 			if (currentSong != null)
 				currentSong.x.setVolume(getEffectiveVolume(musicVolume));
 		});
 		this.masterVolume = settings.getFloatProperty(MASTER_VOLUME_SETTING,
 				0.5F);
-		this.masterVolume.addListener((f) -> {
+		this.masterVolume.addChangeListener((f) -> {
 			if (currentSong != null)
 				currentSong.x.setVolume(getEffectiveVolume(musicVolume));
 		});
@@ -264,6 +268,36 @@ public class DefaultSoundManager implements ISoundManager, Disposable {
 				this.cancel();
 			}
 		}
+	}
+
+	@Override
+	public float getMasterVolume() {
+		return masterVolume.get();
+	}
+
+	@Override
+	public float getMusicVolume() {
+		return musicVolume.get();
+	}
+
+	@Override
+	public float getEffectVolume() {
+		return effectVolume.get();
+	}
+
+	@Override
+	public void setMasterVolume(float volume) {
+		settings.setFloatProperty(MASTER_VOLUME_SETTING, volume);
+	}
+
+	@Override
+	public void setMusicVolume(float volume) {
+		settings.setFloatProperty(MUSIC_VOLUME_SETTING, volume);
+	}
+
+	@Override
+	public void setEffectVolume(float volume) {
+		settings.setFloatProperty(EFFECT_VOLUME_SETTING, volume);
 	}
 
 }
