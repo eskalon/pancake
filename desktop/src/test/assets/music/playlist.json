@@ -1,0 +1,19 @@
+{
+  name: "default",
+  shuffle: false,
+  repeat: true,
+  music: [
+    [
+      "BattleThemeA",
+      "1.mp3"
+    ],
+    [
+      "Heroic Demise",
+      "2.mp3"
+    ],
+    [
+      "Town Theme RPG",
+      "3.mp3"
+    ]
+  ]
+}

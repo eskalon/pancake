@@ -103,7 +103,7 @@ public abstract class EskalonApplication
 	private DebugInfoRenderer debugInfoRenderer;
 
 	// Input
-	private EskalonGameInputProcessor applicationInputProcessor = new EskalonGameInputProcessor();
+	private EskalonGameInputProcessor applicationInputProcessor;
 
 	// Settings
 	protected EskalonSettings settings;
@@ -232,6 +232,7 @@ public abstract class EskalonApplication
 		/*
 		 * INPUT
 		 */
+		applicationInputProcessor = new EskalonGameInputProcessor(soundManager);
 		getInputMultiplexer().addProcessor(applicationInputProcessor);
 
 		/*
@@ -242,23 +243,31 @@ public abstract class EskalonApplication
 				new EskalonSplashScreen(this, config.skipSplashScreen));
 
 		eventBus.register(CommonsAssetsLoadedEvent.class, (ev) -> {
-			// Retrieve the loaded assets
-			soundManager.addSoundEffect(
-					assetManager.get(EskalonCommonsAssets.SHUTTER_SOUND_PATH),
-					EskalonCommonsAssets.SHUTTER_SOUND_NAME);
+			try {
+				// Retrieve the loaded assets
+				soundManager.addSoundEffect(
+						assetManager
+								.get(EskalonCommonsAssets.SHUTTER_SOUND_PATH),
+						EskalonCommonsAssets.SHUTTER_SOUND_NAME);
 
-			// Enable stuff that depends on eskalon's assets
-			applicationInputProcessor.enable();
-			debugInfoRenderer.initialize(getWidth(), getHeight(),
-					assetManager.get(EskalonCommonsAssets.DEFAULT_FONT_NAME));
+				// Enable stuff that depends on eskalon's assets
+				applicationInputProcessor.enable();
+				debugInfoRenderer.initialize(getWidth(), getHeight(),
+						assetManager
+								.get(EskalonCommonsAssets.DEFAULT_FONT_NAME));
 
-			// Push second screen (usually asset loading)
-			if (!config.skipSplashScreen) {
-				screenManager.pushScreen("blank", "splashOutTransition1");
-				screenManager.pushScreen("blank", "splashOutTransition2");
-				screenManager.pushScreen(initApp(), "splashOutTransition3");
-			} else {
-				screenManager.pushScreen(initApp(), null);
+				// Push second screen (usually asset loading)
+				if (!config.skipSplashScreen) {
+					screenManager.pushScreen("blank", "splashOutTransition1");
+					screenManager.pushScreen("blank", "splashOutTransition2");
+					screenManager.pushScreen(initApp(), "splashOutTransition3");
+				} else {
+					screenManager.pushScreen(initApp(), null);
+				}
+			} catch (Exception e) {
+				LOG.error(
+						"There was an issue when initialising the application: %s",
+						e.getLocalizedMessage());
 			}
 		});
 

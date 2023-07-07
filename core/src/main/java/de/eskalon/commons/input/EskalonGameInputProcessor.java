@@ -18,6 +18,7 @@ package de.eskalon.commons.input;
 import com.badlogic.gdx.Input.Keys;
 
 import de.damios.guacamole.gdx.DefaultInputProcessor;
+import de.eskalon.commons.audio.ISoundManager;
 
 /**
  * This input processor takes care of some basic application-wide key binds:
@@ -33,10 +34,16 @@ public class EskalonGameInputProcessor implements DefaultInputProcessor {
 	private boolean enabled = false;
 	public static final int takeScreenshotKey = Keys.F12;
 	public static final int toggleOverlayKey = Keys.F2;
+	public static final int skipSongKey = Keys.F9;
 	// protected int toggleConsoleKey = Keys.BACKSLASH;
 
+	private ISoundManager soundManager;
 	private boolean takeScreenshot = false;
 	private boolean overlayEnabled = false;
+
+	public EskalonGameInputProcessor(ISoundManager soundManager) {
+		this.soundManager = soundManager;
+	}
 
 	@Override
 	public final boolean keyDown(int keycode) {
@@ -47,8 +54,13 @@ public class EskalonGameInputProcessor implements DefaultInputProcessor {
 			takeScreenshot = true;
 			return true;
 		}
+		if (keycode == skipSongKey) {
+			soundManager.skipSong();
+			return true;
+		}
 		if (keycode == toggleOverlayKey) {
 			overlayEnabled = !overlayEnabled;
+			return true;
 		}
 
 		return false;

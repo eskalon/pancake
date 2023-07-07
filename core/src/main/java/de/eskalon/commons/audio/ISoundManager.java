@@ -101,6 +101,8 @@ public interface ISoundManager {
 	 */
 	public void stopMusic(boolean finishCurrentSong);
 
+	public void skipSong();
+
 	/**
 	 * Adds a sound effect.
 	 * 

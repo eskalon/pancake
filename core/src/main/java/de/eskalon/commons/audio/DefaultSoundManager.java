@@ -137,6 +137,17 @@ public class DefaultSoundManager implements ISoundManager, Disposable {
 		}
 	}
 
+	@Override
+	public void skipSong() {
+		if (currentSong != null) {
+			currentSong.x.setOnCompletionListener(null);
+			fadeInTask.cancel();
+			fadeOutTask.cancel();
+			currentSong.x.stop();
+			playNextSong();
+		}
+	}
+
 	/**
 	 * Plays the next song, if a playlist is set and this playlist is not empty.
 	 * After completion of that song, the next song is played.
