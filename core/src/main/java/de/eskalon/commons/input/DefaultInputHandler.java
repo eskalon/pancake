@@ -33,7 +33,11 @@ public class DefaultInputHandler<E extends Enum<E>>
 		implements DefaultInputProcessor, IInputHandler<E> {
 
 	private static final String KEYBIND_SETTINGS_PREFIX = "keybind_";
-	private static final int MOUSE_ANY_BUTTON = -1;
+
+	public static final int NOT_SET = -2; // ANY_KEY is already -1
+	public static final int MOUSE_ANY_BUTTON = -1;
+	public static final int SCROLL_AXIS_X = 0;
+	public static final int SCROLL_AXIS_Y = 1;
 
 	private EskalonSettings settings;
 
@@ -109,7 +113,7 @@ public class DefaultInputHandler<E extends Enum<E>>
 			Entry<E, BinaryBinding> e = iter.next();
 			BinaryBinding b = e.value;
 
-			if (b.keycode.get() <= BinaryBinding.NOT_SET)
+			if (b.keycode.get() <= NOT_SET)
 				continue;
 
 			if (b.keycode.get() == keycode || b.keycode.get() == Keys.ANY_KEY) {
@@ -185,7 +189,7 @@ public class DefaultInputHandler<E extends Enum<E>>
 			Entry<E, BinaryBinding> e = iter.next();
 			BinaryBinding b = e.value;
 
-			if (b.keycode.get() <= BinaryBinding.NOT_SET)
+			if (b.keycode.get() <= NOT_SET)
 				continue;
 
 			if (b.keycode.get() == keycode || b.keycode.get() == Keys.ANY_KEY) {
@@ -240,13 +244,18 @@ public class DefaultInputHandler<E extends Enum<E>>
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer,
 			int button) {
+		boolean ret = false;
+
 		/* BINARY BINDINGS */
 		for (Iterator<Entry<E, BinaryBinding>> iter = binaryBindings
 				.iterator(); iter.hasNext();) {
+			if (ret)
+				break;
+
 			Entry<E, BinaryBinding> e = iter.next();
 			BinaryBinding b = e.value;
 
-			if (b.mouseButton.get() <= BinaryBinding.NOT_SET)
+			if (b.mouseButton.get() <= NOT_SET)
 				continue;
 
 			if (b.mouseButton.get() == button
@@ -256,27 +265,44 @@ public class DefaultInputHandler<E extends Enum<E>>
 					b.currentState = true;
 
 					for (BinaryBindingListener l : binaryListeners) {
-						if (l.on(e.key))
-							return true;
+						if (l.on(e.key)) {
+							ret = true;
+							break;
+						}
 					}
 				}
 
-				return true;
+				ret = true;
+				break;
 			}
 		}
 
-		return false;
+		/* CURSOR MOVEMENT */
+		// On touch screens there is no mouseMoved event, thus we need to hand
+		// over the first touchDown event as cursor movement; this should happen
+		// after the binary bindings were processed (so Button.LEFT etc.
+		// bindings were already triggered).
+		for (CursorMovementListener l : cursorListeners) {
+			if (l.moved(screenX, screenY))
+				return true;
+		}
+		return ret;
 	}
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+		boolean ret = false;
+
 		/* BINARY BINDINGS */
 		for (Iterator<Entry<E, BinaryBinding>> iter = binaryBindings
 				.iterator(); iter.hasNext();) {
+			if (ret)
+				break;
+
 			Entry<E, BinaryBinding> e = iter.next();
 			BinaryBinding b = e.value;
 
-			if (b.mouseButton.get() <= BinaryBinding.NOT_SET)
+			if (b.mouseButton.get() <= NOT_SET)
 				continue;
 
 			if (b.mouseButton.get() == button
@@ -286,20 +312,36 @@ public class DefaultInputHandler<E extends Enum<E>>
 					b.currentState = false;
 
 					for (BinaryBindingListener l : binaryListeners) {
-						if (l.off(e.key))
-							return true;
+						if (l.off(e.key)) {
+							ret = true;
+							break;
+						}
 					}
 				}
 
-				return true;
+				ret = true;
+				break;
 			}
 		}
-
-		return false;
+		/* CURSOR MOVEMENT */
+		for (CursorMovementListener l : cursorListeners) {
+			if (l.moved(screenX, screenY))
+				return true;
+		}
+		return ret;
 	}
 
 	@Override
 	public boolean mouseMoved(int screenX, int screenY) {
+		for (CursorMovementListener l : cursorListeners) {
+			if (l.moved(screenX, screenY))
+				return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean touchDragged(int screenX, int screenY, int pointer) {
 		for (CursorMovementListener l : cursorListeners) {
 			if (l.moved(screenX, screenY))
 				return true;
@@ -318,8 +360,7 @@ public class DefaultInputHandler<E extends Enum<E>>
 			if (b.mouseAxis.get() <= -1)
 				continue;
 
-			if (amountX != 0
-					&& (b.mouseAxis.get() == AxisBinding.SCROLL_AXIS_X)) {
+			if (amountX != 0 && (b.mouseAxis.get() == SCROLL_AXIS_X)) {
 				for (AxisBindingListener l : axisListeners) {
 					// b.currentState = amountX;
 
@@ -328,8 +369,7 @@ public class DefaultInputHandler<E extends Enum<E>>
 				}
 				return true;
 			}
-			if (amountY != 0
-					&& (b.mouseAxis.get() == AxisBinding.SCROLL_AXIS_Y)) {
+			if (amountY != 0 && (b.mouseAxis.get() == SCROLL_AXIS_Y)) {
 				for (AxisBindingListener l : axisListeners) {
 					// b.currentState = amountY;
 
@@ -351,8 +391,8 @@ public class DefaultInputHandler<E extends Enum<E>>
 	@Override
 	public float getAxisState(E e) {
 		AxisBinding b = axisBindings.get(e);
-		if (b.mouseAxis.get() == AxisBinding.SCROLL_AXIS_X
-				|| b.mouseAxis.get() == AxisBinding.SCROLL_AXIS_Y) {
+		if (b.mouseAxis.get() == SCROLL_AXIS_X
+				|| b.mouseAxis.get() == SCROLL_AXIS_Y) {
 			// TODO add InputProcessor that keeps track of scroll wheel activity
 			// and is reset every render() call
 			throw new UnsupportedOperationException(
@@ -380,9 +420,6 @@ public class DefaultInputHandler<E extends Enum<E>>
 	}
 
 	final class AxisBinding {
-		public static final int NOT_SET = -2; // ANY_KEY is already -1
-		public static final int SCROLL_AXIS_X = 2;
-		public static final int SCROLL_AXIS_Y = 3;
 
 		// private IntProperty controllerAxis;
 		private IntProperty keycodeMin, keycodeMax;
@@ -407,7 +444,6 @@ public class DefaultInputHandler<E extends Enum<E>>
 	}
 
 	final class BinaryBinding {
-		public static final int NOT_SET = -2; // ANY_KEY is already -1
 
 		private IntProperty mouseButton;
 		private IntProperty keycode;
