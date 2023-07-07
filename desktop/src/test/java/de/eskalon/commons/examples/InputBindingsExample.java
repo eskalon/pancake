@@ -10,15 +10,18 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 import de.eskalon.commons.core.EskalonApplication;
 import de.eskalon.commons.input.DefaultInputHandler;
+import de.eskalon.commons.input.DefaultInputListener;
 import de.eskalon.commons.input.IInputHandler;
-import de.eskalon.commons.input.IInputHandler.AxisBindingListener;
-import de.eskalon.commons.input.IInputHandler.BinaryBindingListener;
 import de.eskalon.commons.screens.BlankScreen;
 
 public class InputBindingsExample extends AbstractEskalonExample {
 
-	enum MyGameBinding {
-		SPEED_UP, X_AXIS;
+	enum MyGameAxisBindings {
+		X_AXIS;
+	}
+
+	enum MyGameBinaryBindings {
+		SPEED_UP;
 	}
 
 	@Override
@@ -29,7 +32,7 @@ public class InputBindingsExample extends AbstractEskalonExample {
 
 	public class TestScreen extends BlankScreen {
 
-		private IInputHandler<MyGameBinding> inputHandler;
+		private IInputHandler<MyGameAxisBindings, MyGameBinaryBindings> inputHandler;
 
 		private ShapeRenderer shapeRenderer = new ShapeRenderer();
 		private Viewport viewport = new ScreenViewport();
@@ -40,19 +43,23 @@ public class InputBindingsExample extends AbstractEskalonExample {
 
 		public TestScreen(EskalonApplication app) {
 			super(app);
-			inputHandler = new DefaultInputHandler<>(settings);
+
+			/* Register default bindings */
+			IInputHandler.registerAxisBinding(settings,
+					MyGameAxisBindings.X_AXIS, Keys.A, Keys.D, -2);
+			IInputHandler.registerBinaryBinding(settings,
+					MyGameBinaryBindings.SPEED_UP, Keys.SPACE, -2, false);
+
+			/* Create input handler & listener */
+			inputHandler = new DefaultInputHandler<>(settings,
+					MyGameAxisBindings.class, MyGameBinaryBindings.class);
 			addInputProcessor((DefaultInputHandler) inputHandler);
 
-			inputHandler.registerBinaryBinding(MyGameBinding.SPEED_UP,
-					Keys.SPACE, -2, false);
-			inputHandler.registerAxisBinding(MyGameBinding.X_AXIS, Keys.A,
-					Keys.D, -2);
-
-			inputHandler.addBinaryBindingListener(
-					new BinaryBindingListener<MyGameBinding>() {
+			inputHandler.addListener(
+					new DefaultInputListener<MyGameAxisBindings, MyGameBinaryBindings>() {
 						@Override
-						public boolean on(MyGameBinding id) {
-							if (id == MyGameBinding.SPEED_UP) {
+						public boolean on(MyGameBinaryBindings id) {
+							if (id == MyGameBinaryBindings.SPEED_UP) {
 								vel = 175f;
 								return true;
 							}
@@ -60,21 +67,18 @@ public class InputBindingsExample extends AbstractEskalonExample {
 						}
 
 						@Override
-						public boolean off(MyGameBinding id) {
-							if (id == MyGameBinding.SPEED_UP) {
+						public boolean off(MyGameBinaryBindings id) {
+							if (id == MyGameBinaryBindings.SPEED_UP) {
 								vel = 50f;
 								return true;
 							}
 							return false;
 						}
-					});
 
-			inputHandler.addAxisBindingListener(
-					new AxisBindingListener<MyGameBinding>() {
 						@Override
-						public boolean axisChanged(MyGameBinding id,
+						public boolean axisChanged(MyGameAxisBindings id,
 								float value) {
-							if (id == MyGameBinding.X_AXIS) {
+							if (id == MyGameAxisBindings.X_AXIS) {
 								dir.x = value;
 								return true;
 							}

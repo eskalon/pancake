@@ -26,103 +26,76 @@ import com.badlogic.gdx.utils.ObjectMap.Entry;
 
 import de.damios.guacamole.Preconditions;
 import de.damios.guacamole.gdx.DefaultInputProcessor;
+import de.eskalon.commons.settings.BooleanProperty;
 import de.eskalon.commons.settings.EskalonSettings;
 import de.eskalon.commons.settings.IntProperty;
 
-public class DefaultInputHandler<E extends Enum<E>>
-		implements DefaultInputProcessor, IInputHandler<E> {
-
-	private static final String KEYBIND_SETTINGS_PREFIX = "keybind_";
+public class DefaultInputHandler<E extends Enum<E>, F extends Enum<F>>
+		implements DefaultInputProcessor, IInputHandler<E, F> {
 
 	public static final int NOT_SET = -2; // ANY_KEY is already -1
 	public static final int MOUSE_ANY_BUTTON = -1;
 	public static final int SCROLL_AXIS_X = 0;
 	public static final int SCROLL_AXIS_Y = 1;
 
-	private EskalonSettings settings;
-
 	private ArrayMap<E, AxisBinding> axisBindings = new ArrayMap<>();
-	private ArrayMap<E, BinaryBinding> binaryBindings = new ArrayMap<>();
-	private LinkedList<AxisBindingListener> axisListeners = new LinkedList<>();
-	private LinkedList<BinaryBindingListener> binaryListeners = new LinkedList<>();
-	private LinkedList<CursorMovementListener> cursorListeners = new LinkedList<>();
+	private ArrayMap<F, BinaryBinding> binaryBindings = new ArrayMap<>();
+	private LinkedList<IInputListener> listeners = new LinkedList<>();
 
-	public DefaultInputHandler(EskalonSettings settings) {
-		this.settings = settings;
+	public DefaultInputHandler(EskalonSettings settings,
+			Class<E> axisBindingsClazz, Class<F> binaryBindingsClazz) {
+
+		/* Create all axis bindings */
+		for (E e : axisBindingsClazz.getEnumConstants()) {
+			axisBindings.put(e, new AxisBinding(
+					settings.getIntProperty(
+							IInputHandler.getPropertyName(e, "keycode_min")),
+					settings.getIntProperty(
+							IInputHandler.getPropertyName(e, "keycode_max")),
+					settings.getIntProperty(
+							IInputHandler.getPropertyName(e, "mouse_axis"))));
+		}
+
+		/* Create all binary bindings */
+		for (F f : binaryBindingsClazz.getEnumConstants()) {
+			binaryBindings.put(f, new BinaryBinding(
+					settings.getIntProperty(
+							IInputHandler.getPropertyName(f, "mouse_button")),
+					settings.getIntProperty(
+							IInputHandler.getPropertyName(f, "keycode")),
+					settings.getBooleanProperty(
+							IInputHandler.getPropertyName(f, "toggleable"))));
+		}
 	}
 
 	@Override
-	public void registerAxisBinding(E id, int keycodeMin, int keycodeMax,
-			int mouseAxis) {
-		axisBindings.put(id,
-				new AxisBinding(getProperty(id, "keycode_min", keycodeMin),
-						getProperty(id, "keycode_max", keycodeMax),
-						getProperty(id, "mouse_axis", mouseAxis)));
+	public void addListener(IInputListener<E, F> listener) {
+		listeners.add(listener);
 	}
 
 	@Override
-	public void registerBinaryBinding(E id, int keycode, int mouseButton,
-			boolean toogleable) {
-		binaryBindings.put(id,
-				new BinaryBinding(getProperty(id, "mouse_button", mouseButton),
-						getProperty(id, "keycode", keycode),
-
-						toogleable));
-	}
-
-	private IntProperty getProperty(E id, String name, int defaultValue) {
-		return settings.getIntProperty(KEYBIND_SETTINGS_PREFIX
-				+ (id.toString().toLowerCase()) + "_" + name, defaultValue);
-	}
-
-	@Override
-	public void addAxisBindingListener(AxisBindingListener<E> listener) {
-		axisListeners.add(listener);
-	}
-
-	@Override
-	public void addBinaryBindingListener(BinaryBindingListener<E> listener) {
-		binaryListeners.add(listener);
-	}
-
-	@Override
-	public void addCursorMovementListener(CursorMovementListener listener) {
-		cursorListeners.add(listener);
-	}
-
-	@Override
-	public void removeAxisBindingListener(AxisBindingListener<E> listener) {
-		axisListeners.remove(listener);
-	}
-
-	@Override
-	public void removeBinaryBindingListener(BinaryBindingListener<E> listener) {
-		binaryListeners.remove(listener);
-	}
-
-	@Override
-	public void removeCursorMovementListener(CursorMovementListener listener) {
-		cursorListeners.remove(listener);
+	public void removeListener(IInputListener<E, F> listener) {
+		listeners.remove(listener);
 	}
 
 	@Override
 	public boolean keyDown(int keycode) {
 		/* BINARY BINDINGS */
-		for (Iterator<Entry<E, BinaryBinding>> iter = binaryBindings
+		for (Iterator<Entry<F, BinaryBinding>> iter = binaryBindings
 				.iterator(); iter.hasNext();) {
-			Entry<E, BinaryBinding> e = iter.next();
+			Entry<F, BinaryBinding> e = iter.next();
 			BinaryBinding b = e.value;
 
 			if (b.keycode.get() <= NOT_SET)
 				continue;
 
 			if (b.keycode.get() == keycode || b.keycode.get() == Keys.ANY_KEY) {
-				if (!b.toogleable) {
+				if (!b.toogleable.get()) {
 					/* Handle untoggleable binding */
 					if (!b.currentState) {
 						b.currentState = true;
 
-						for (BinaryBindingListener l : binaryListeners) {
+						for (IInputListener l : listeners) {
 							if (l.on(e.key))
 								return true;
 						}
@@ -131,7 +104,7 @@ public class DefaultInputHandler<E extends Enum<E>>
 					/* Handle toggleable binding */
 					b.currentState = !b.currentState;
 
-					for (BinaryBindingListener l : binaryListeners) {
+					for (IInputListener l : listeners) {
 						if (!b.currentState) {
 							if (l.off(e.key))
 								return true;
@@ -159,7 +132,7 @@ public class DefaultInputHandler<E extends Enum<E>>
 			if (b.keycodeMin.get() == keycode) {
 				b.currentState -= 1;
 
-				for (AxisBindingListener l : axisListeners) {
+				for (IInputListener l : listeners) {
 					if (l.axisChanged(e.key,
 							MathUtils.clamp(b.currentState, -1, 1)))
 						return true;
@@ -169,7 +142,7 @@ public class DefaultInputHandler<E extends Enum<E>>
 			if (b.keycodeMax.get() == keycode) {
 				b.currentState += 1;
 
-				for (AxisBindingListener l : axisListeners) {
+				for (IInputListener l : listeners) {
 					if (l.axisChanged(e.key,
 							MathUtils.clamp(b.currentState, -1, 1)))
 						return true;
@@ -184,20 +157,20 @@ public class DefaultInputHandler<E extends Enum<E>>
 	@Override
 	public boolean keyUp(int keycode) {
 		/* BINARY BINDINGS */
-		for (Iterator<Entry<E, BinaryBinding>> iter = binaryBindings
+		for (Iterator<Entry<F, BinaryBinding>> iter = binaryBindings
 				.iterator(); iter.hasNext();) {
-			Entry<E, BinaryBinding> e = iter.next();
+			Entry<F, BinaryBinding> e = iter.next();
 			BinaryBinding b = e.value;
 
 			if (b.keycode.get() <= NOT_SET)
 				continue;
 
 			if (b.keycode.get() == keycode || b.keycode.get() == Keys.ANY_KEY) {
-				if (!b.toogleable && b.currentState) {
+				if (!b.toogleable.get() && b.currentState) {
 					/* Handle untoggleable binding */
 					b.currentState = false;
 
-					for (BinaryBindingListener l : binaryListeners) {
+					for (IInputListener l : listeners) {
 						if (l.off(e.key))
 							return true;
 					}
@@ -219,7 +192,7 @@ public class DefaultInputHandler<E extends Enum<E>>
 			if (b.keycodeMin.get() == keycode) {
 				b.currentState += 1;
 
-				for (AxisBindingListener l : axisListeners) {
+				for (IInputListener l : listeners) {
 					if (l.axisChanged(e.key,
 							MathUtils.clamp(b.currentState, -1, 1)))
 						return true;
@@ -229,7 +202,7 @@ public class DefaultInputHandler<E extends Enum<E>>
 			if (b.keycodeMax.get() == keycode) {
 				b.currentState -= 1;
 
-				for (AxisBindingListener l : axisListeners) {
+				for (IInputListener l : listeners) {
 					if (l.axisChanged(e.key,
 							MathUtils.clamp(b.currentState, -1, 1)))
 						return true;
@@ -247,12 +220,12 @@ public class DefaultInputHandler<E extends Enum<E>>
 		boolean ret = false;
 
 		/* BINARY BINDINGS */
-		for (Iterator<Entry<E, BinaryBinding>> iter = binaryBindings
+		for (Iterator<Entry<F, BinaryBinding>> iter = binaryBindings
 				.iterator(); iter.hasNext();) {
 			if (ret)
 				break;
 
-			Entry<E, BinaryBinding> e = iter.next();
+			Entry<F, BinaryBinding> e = iter.next();
 			BinaryBinding b = e.value;
 
 			if (b.mouseButton.get() <= NOT_SET)
@@ -260,11 +233,11 @@ public class DefaultInputHandler<E extends Enum<E>>
 
 			if (b.mouseButton.get() == button
 					|| b.mouseButton.get() == MOUSE_ANY_BUTTON) {
-				if (!b.toogleable && !b.currentState) {
+				if (!b.toogleable.get() && !b.currentState) {
 					/* Handle untoggleable binding */
 					b.currentState = true;
 
-					for (BinaryBindingListener l : binaryListeners) {
+					for (IInputListener l : listeners) {
 						if (l.on(e.key)) {
 							ret = true;
 							break;
@@ -282,7 +255,7 @@ public class DefaultInputHandler<E extends Enum<E>>
 		// over the first touchDown event as cursor movement; this should happen
 		// after the binary bindings were processed (so Button.LEFT etc.
 		// bindings were already triggered).
-		for (CursorMovementListener l : cursorListeners) {
+		for (IInputListener l : listeners) {
 			if (l.moved(screenX, screenY))
 				return true;
 		}
@@ -294,12 +267,12 @@ public class DefaultInputHandler<E extends Enum<E>>
 		boolean ret = false;
 
 		/* BINARY BINDINGS */
-		for (Iterator<Entry<E, BinaryBinding>> iter = binaryBindings
+		for (Iterator<Entry<F, BinaryBinding>> iter = binaryBindings
 				.iterator(); iter.hasNext();) {
 			if (ret)
 				break;
 
-			Entry<E, BinaryBinding> e = iter.next();
+			Entry<F, BinaryBinding> e = iter.next();
 			BinaryBinding b = e.value;
 
 			if (b.mouseButton.get() <= NOT_SET)
@@ -307,11 +280,11 @@ public class DefaultInputHandler<E extends Enum<E>>
 
 			if (b.mouseButton.get() == button
 					|| b.mouseButton.get() == MOUSE_ANY_BUTTON) {
-				if (!b.toogleable && b.currentState) {
+				if (!b.toogleable.get() && b.currentState) {
 					/* Handle untoggleable binding */
 					b.currentState = false;
 
-					for (BinaryBindingListener l : binaryListeners) {
+					for (IInputListener l : listeners) {
 						if (l.off(e.key)) {
 							ret = true;
 							break;
@@ -324,7 +297,7 @@ public class DefaultInputHandler<E extends Enum<E>>
 			}
 		}
 		/* CURSOR MOVEMENT */
-		for (CursorMovementListener l : cursorListeners) {
+		for (IInputListener l : listeners) {
 			if (l.moved(screenX, screenY))
 				return true;
 		}
@@ -333,7 +306,7 @@ public class DefaultInputHandler<E extends Enum<E>>
 
 	@Override
 	public boolean mouseMoved(int screenX, int screenY) {
-		for (CursorMovementListener l : cursorListeners) {
+		for (IInputListener l : listeners) {
 			if (l.moved(screenX, screenY))
 				return true;
 		}
@@ -342,7 +315,7 @@ public class DefaultInputHandler<E extends Enum<E>>
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		for (CursorMovementListener l : cursorListeners) {
+		for (IInputListener l : listeners) {
 			if (l.moved(screenX, screenY))
 				return true;
 		}
@@ -361,7 +334,7 @@ public class DefaultInputHandler<E extends Enum<E>>
 				continue;
 
 			if (amountX != 0 && (b.mouseAxis.get() == SCROLL_AXIS_X)) {
-				for (AxisBindingListener l : axisListeners) {
+				for (IInputListener l : listeners) {
 					// b.currentState = amountX;
 
 					if (l.axisChanged(e.key, amountX))
@@ -370,7 +343,7 @@ public class DefaultInputHandler<E extends Enum<E>>
 				return true;
 			}
 			if (amountY != 0 && (b.mouseAxis.get() == SCROLL_AXIS_Y)) {
-				for (AxisBindingListener l : axisListeners) {
+				for (IInputListener l : listeners) {
 					// b.currentState = amountY;
 
 					if (l.axisChanged(e.key, amountY))
@@ -384,8 +357,8 @@ public class DefaultInputHandler<E extends Enum<E>>
 	}
 
 	@Override
-	public boolean isOn(E e) {
-		return binaryBindings.get(e).currentState;
+	public boolean isOn(F f) {
+		return binaryBindings.get(f).currentState;
 	}
 
 	@Override
@@ -402,21 +375,20 @@ public class DefaultInputHandler<E extends Enum<E>>
 	}
 
 	@Override
-	public float getCursorX() {
+	public int getCursorX() {
 		return Gdx.input.getX();
 	}
 
 	@Override
-	public float getCursorY() {
+	public int getCursorY() {
 		return Gdx.input.getY();
 	}
 
 	@Override
 	public void clear() {
 		axisBindings.clear();
-		axisListeners.clear();
 		binaryBindings.clear();
-		binaryListeners.clear();
+		listeners.clear();
 	}
 
 	final class AxisBinding {
@@ -448,12 +420,12 @@ public class DefaultInputHandler<E extends Enum<E>>
 		private IntProperty mouseButton;
 		private IntProperty keycode;
 		// private IntProperty controllerButton;
-		private boolean toogleable;
+		private BooleanProperty toogleable;
 
 		public boolean currentState = false;
 
 		public BinaryBinding(IntProperty keycode, IntProperty mouseButton,
-				boolean toogleable) {
+				BooleanProperty toogleable) {
 			this.keycode = keycode;
 			this.mouseButton = mouseButton;
 			this.toogleable = toogleable;

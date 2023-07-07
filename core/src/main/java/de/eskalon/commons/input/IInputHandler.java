@@ -15,61 +15,50 @@
 
 package de.eskalon.commons.input;
 
-public interface IInputHandler<E extends Enum<E>> {
+import de.eskalon.commons.settings.EskalonSettings;
 
-	public static interface AxisBindingListener<E> {
+public interface IInputHandler<E extends Enum<E>, F extends Enum<F>> {
 
-		public boolean axisChanged(E id, float value);
+	public void addListener(IInputListener<E, F> listener);
 
-	}
+	public void removeListener(IInputListener<E, F> listener);
 
-	public static interface BinaryBindingListener<E> {
-
-		public boolean on(E id);
-
-		public boolean off(E id);
-
-	}
-
-	public static interface CursorMovementListener {
-
-		public boolean moved(float screenX, float screenY);
-
-	}
-
-	public void registerAxisBinding(E id,
-			/* int controllerAxis, */ int keycodeMin, int keycodeMax,
-			int scrollAxis);
-
-	public void registerBinaryBinding(E id,
-			/* int controllerButton, */int keycode, int mouseButton,
-			boolean toogleable);
-
-	// Since there is only one cursor position, we don't need to register any
-	// binding
-	// public void setCursorPositionBinding(int controllerAxis, int
-	// controllerButton);
-
-	public void addAxisBindingListener(AxisBindingListener<E> listener);
-
-	public void addBinaryBindingListener(BinaryBindingListener<E> listener);
-
-	public void addCursorMovementListener(CursorMovementListener listener);
-
-	public void removeAxisBindingListener(AxisBindingListener<E> listener);
-
-	public void removeBinaryBindingListener(BinaryBindingListener<E> listener);
-
-	public void removeCursorMovementListener(CursorMovementListener listener);
-
-	public boolean isOn(E e);
+	public boolean isOn(F f);
 
 	public float getAxisState(E e);
 
-	public float getCursorX();
+	public int getCursorX();
 
-	public float getCursorY();
+	public int getCursorY();
 
 	public void clear();
+
+	/* Static methods */
+	static final String KEYBIND_SETTINGS_PREFIX = "keybind_";
+
+	public static <E extends Enum<E>> void registerAxisBinding(
+			EskalonSettings settings, E id, int keycodeMin, int keycodeMax,
+			int mouseAxis) {
+		// Don't use set because the given values are just default ones
+		settings.getIntProperty(getPropertyName(id, "keycode_min"), keycodeMin);
+		settings.getIntProperty(getPropertyName(id, "keycode_max"), keycodeMax);
+		settings.getIntProperty(getPropertyName(id, "mouse_axis"), mouseAxis);
+	}
+
+	public static <F extends Enum<F>> void registerBinaryBinding(
+			EskalonSettings settings, F id, int keycode, int mouseButton,
+			boolean toogleable) {
+		// Don't use set because the given values are just default ones
+		settings.getIntProperty(getPropertyName(id, "mouse_button"),
+				mouseButton);
+		settings.getIntProperty(getPropertyName(id, "keycode"), keycode);
+		settings.getBooleanProperty(getPropertyName(id, "toogleable"),
+				toogleable);
+	}
+
+	static <G extends Enum<G>> String getPropertyName(G id, String name) {
+		return KEYBIND_SETTINGS_PREFIX + (id.toString().toLowerCase()) + "_"
+				+ name;
+	}
 
 }
