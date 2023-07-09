@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 eskalon
+ * Copyright 2023 damios
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,20 +12,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package de.eskalon.commons.inject;
 
-package de.eskalon.commons.event;
+import com.badlogic.gdx.utils.reflect.Field;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+@FunctionalInterface
+public interface QualifiedProvider<T> {
 
-/**
- * Marks a method as an event subscriber.
- * <p>
- * The type of the event is determined by the methods's first parameter.
- */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface Subscribe {
+	T provide(Field field);
+
 }

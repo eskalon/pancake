@@ -266,7 +266,7 @@ public abstract class EskalonApplication
 				}
 			} catch (Exception e) {
 				LOG.error(
-						"There was an issue when initialising the application: %s",
+						"An unexpected error occurred while initialising the application: %s",
 						e.getLocalizedMessage());
 			}
 		});
