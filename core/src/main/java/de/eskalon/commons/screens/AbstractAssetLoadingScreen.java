@@ -15,14 +15,10 @@
 
 package de.eskalon.commons.screens;
 
-import java.lang.reflect.Field;
-import java.util.Set;
-
 import javax.annotation.Nullable;
 
-import org.reflections8.Reflections;
-import org.reflections8.scanners.FieldAnnotationsScanner;
-
+import com.badlogic.gdx.Application.ApplicationType;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.MathUtils;
 
@@ -31,6 +27,7 @@ import de.damios.guacamole.gdx.reflection.ReflectionUtils;
 import de.eskalon.commons.asset.AnnotationAssetManager;
 import de.eskalon.commons.asset.AnnotationAssetManager.Asset;
 import de.eskalon.commons.core.EskalonApplication;
+import de.eskalon.commons.misc.IFieldAnnotationScanner;
 
 /**
  * This screen takes care of loading all assets for an
@@ -48,7 +45,7 @@ public abstract class AbstractAssetLoadingScreen extends AbstractEskalonScreen {
 	protected EskalonApplication application;
 	private @Nullable String packageRoot;
 
-	private int loadingFps;
+	private int loadingTicksPerSecond;
 	private float progress;
 	private boolean isDone = false;
 
@@ -56,14 +53,14 @@ public abstract class AbstractAssetLoadingScreen extends AbstractEskalonScreen {
 	 * @param application
 	 * @param packageRoot
 	 *            the root package, e.g. "de.eskalon"
-	 * @param loadingFps
+	 * @param loadingTicksPerSecond
 	 *            used to call {@link AssetManager#update(int)}
 	 */
 	public AbstractAssetLoadingScreen(EskalonApplication application,
-			@Nullable String packageRoot, int loadingFps) {
+			@Nullable String packageRoot, int loadingTicksPerSecond) {
 		this.application = application;
 		this.packageRoot = packageRoot;
-		this.loadingFps = loadingFps;
+		this.loadingTicksPerSecond = loadingTicksPerSecond;
 	}
 
 	public AbstractAssetLoadingScreen(EskalonApplication application,
@@ -76,15 +73,17 @@ public abstract class AbstractAssetLoadingScreen extends AbstractEskalonScreen {
 		loadOwnAssets();
 
 		if (packageRoot != null) {
-			Reflections reflections = new Reflections(packageRoot,
-					new FieldAnnotationsScanner());
-			Set<Field> assetFields = reflections
-					.getFieldsAnnotatedWith(Asset.class);
+			IFieldAnnotationScanner annotationScanner = null;
 
-			for (Field f : assetFields) {
-				application.getAssetManager().loadAnnotatedAsset(
-						ReflectionUtils.convertFieldObject(f));
-			}
+			if (Gdx.app.getType() == ApplicationType.Desktop
+					|| Gdx.app.getType() == ApplicationType.HeadlessDesktop)
+				annotationScanner = ReflectionUtils.newInstanceOrNull(
+						"de.eskalon.commons.misc.DesktopFieldAnnotationScanner",
+						IFieldAnnotationScanner.class);
+
+			annotationScanner.forEachFieldAnnotatedWith(packageRoot,
+					Asset.class,
+					(f) -> application.getAssetManager().loadAnnotatedAsset(f));
 		}
 	}
 
@@ -111,8 +110,8 @@ public abstract class AbstractAssetLoadingScreen extends AbstractEskalonScreen {
 				application.getAssetManager().getProgress() + 0.02F, 0, 1);
 
 		// Check if the asset manager is done
-		if (!isDone
-				&& application.getAssetManager().update(1000 / loadingFps)) {
+		if (!isDone && application.getAssetManager()
+				.update(1000 / loadingTicksPerSecond)) {
 			isDone = true;
 			onFinishedLoading();
 		}

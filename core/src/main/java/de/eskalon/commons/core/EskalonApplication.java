@@ -15,12 +15,15 @@
 
 package de.eskalon.commons.core;
 
+import java.nio.IntBuffer;
+
 import javax.annotation.Nullable;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.ApplicationLogger;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -28,6 +31,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.BufferUtils;
 import com.github.acanthite.gdx.graphics.g2d.FreeTypeSkinLoader;
 
 import de.damios.guacamole.gdx.assets.Text;
@@ -145,10 +149,25 @@ public abstract class EskalonApplication
 
 		LOG.info("Version: '%s' | App Type: '%s' | OS: '%s'", VERSION,
 				Gdx.app.getType(), System.getProperty("os.name"));
-		LOG.debug("GL30 Available: '%b' | Renderer: '%s'",
-				Gdx.graphics.isGL30Available(),
+		LOG.debug("GL Context: '%s' (%s %d.%d.%d) | Renderer: '%s'",
+				(Gdx.graphics.isGL32Available() ? "3.2"
+						: (Gdx.graphics.isGL31Available() ? "3.1"
+								: (Gdx.graphics.isGL30Available() ? "3.0"
+										: "2.0"))),
+				Gdx.graphics.getGLVersion().getType(),
+				Gdx.graphics.getGLVersion().getMajorVersion(),
+				Gdx.graphics.getGLVersion().getMinorVersion(),
+				Gdx.graphics.getGLVersion().getReleaseVersion(),
 				Gdx.graphics.getGLVersion().getRendererString());
+		if (LoggerService.isDebugEnabled()) {
+			IntBuffer tmpBuffer = BufferUtils.newIntBuffer(16);
+			Gdx.gl20.glGetIntegerv(GL20.GL_MAX_TEXTURE_SIZE, tmpBuffer);
+			LOG.debug("Max Texture Size: '%s' | Available Memory: %.2f GB",
+					tmpBuffer.get(),
+					(Runtime.getRuntime().maxMemory() / 1024F / 1024F / 1024F));
+		}
 		LOG.debug("Java Version: '%s'", System.getProperty("java.version"));
+		LOG.info("");
 
 		/*
 		 * LOAD SETTINGS

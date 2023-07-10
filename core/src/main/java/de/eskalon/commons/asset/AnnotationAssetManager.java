@@ -27,11 +27,13 @@ import javax.annotation.Nullable;
 import com.badlogic.gdx.assets.AssetLoaderParameters;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
+import com.badlogic.gdx.utils.reflect.Annotation;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.Field;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 
 import de.damios.guacamole.Preconditions;
+import de.eskalon.commons.inject.Qualifier;
 import de.eskalon.commons.screens.AbstractAssetLoadingScreen;
 
 /**
@@ -90,14 +92,16 @@ public class AnnotationAssetManager extends AssetManager {
 	 * @param clazz
 	 * @param instance
 	 */
+	@Deprecated
 	private <T> void injectAssets(Class<T> clazz, @Nullable T instance) {
 		for (Field field : ClassReflection.getDeclaredFields(clazz)) {
 			if (!field.isAnnotationPresent(Asset.class))
 				continue;
-			Asset asset = field.getDeclaredAnnotation(Asset.class)
-					.getAnnotation(Asset.class);
+			Annotation annotation = field.getDeclaredAnnotation(Asset.class);
+			if (annotation == null)
+				continue;
 
-			injectAsset(instance, field, asset);
+			injectAsset(instance, field, annotation.getAnnotation(Asset.class));
 		}
 
 		if (clazz.getSuperclass() != null) {
@@ -105,11 +109,7 @@ public class AnnotationAssetManager extends AssetManager {
 		}
 	}
 
-	private <T> void injectAsset(@Nullable T instance, Field field,
-			Asset annotation) {
-		Asset asset = field.getDeclaredAnnotation(Asset.class)
-				.getAnnotation(Asset.class);
-
+	private <T> void injectAsset(@Nullable T instance, Field field, Asset asset) {
 		if (!asset.disabled()) {
 			try {
 				if (instance != null || field.isStatic()) {
@@ -126,8 +126,8 @@ public class AnnotationAssetManager extends AssetManager {
 		}
 	}
 
-	private @Nullable AssetLoaderParameters<?> getAssetLoaderParameters(Asset asset,
-			Field field) {
+	private @Nullable AssetLoaderParameters<?> getAssetLoaderParameters(
+			Asset asset, Field field) {
 		if (asset.params() == null || asset.params().length() == 0)
 			return null;
 
@@ -156,11 +156,13 @@ public class AnnotationAssetManager extends AssetManager {
 
 	/** @see #injectAssets(Class, Object) */
 	@SuppressWarnings("unchecked")
+	@Deprecated
 	public <T> void injectAssets(T container) {
 		injectAssets((Class<T>) container.getClass(), container);
 	}
 
 	/** @see #getAssetsSet(Class, Object) */
+	@Deprecated
 	public void injectAssets(Class<?> container) {
 		injectAssets(container, null);
 	}
@@ -188,6 +190,7 @@ public class AnnotationAssetManager extends AssetManager {
 	@Documented
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.FIELD })
+	@Qualifier
 	public static @interface Asset {
 
 		boolean disabled() default false;

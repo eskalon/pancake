@@ -2,7 +2,6 @@ package de.eskalon.commons.inject;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -55,8 +54,6 @@ public class EskalonInjector implements IInjector {
 	private @Nullable Object getInstanceForField(Field field) {
 		Class<?> type = field.getType();
 
-		System.out.println(type);
-
 		// Linked bindings
 		type = links.getOrDefault(type, type);
 
@@ -93,6 +90,7 @@ public class EskalonInjector implements IInjector {
 				.getDeclaredFields(target.getClass())) {
 			if (field.isAnnotationPresent(Inject.class)) {
 				try {
+					field.setAccessible(true);
 					field.set(target, getInstanceForField(field));
 				} catch (ReflectionException e) {
 					LOG.error(
