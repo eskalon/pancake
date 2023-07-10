@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 import de.eskalon.commons.examples.AbstractEskalonExample;
 import de.eskalon.commons.examples.ImageScreenExample;
 import de.eskalon.commons.examples.InputBindingsExample;
+import de.eskalon.commons.examples.InputMouseDraggedExample;
 import de.eskalon.commons.examples.MusicExample;
 import de.eskalon.commons.examples.PositionalAudioExample;
 import de.eskalon.commons.examples.PostProcessingComplexLayerExample;
@@ -23,6 +24,7 @@ public class EskalonExamples {
 			// @formatter:off
 					ImageScreenExample.class,
 					InputBindingsExample.class,
+					InputMouseDraggedExample.class,
 					MusicExample.class,
 					PositionalAudioExample.class,
 					PostProcessingExample.class,

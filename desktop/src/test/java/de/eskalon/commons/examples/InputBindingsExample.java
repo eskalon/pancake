@@ -16,11 +16,11 @@ import de.eskalon.commons.screens.BlankScreen;
 
 public class InputBindingsExample extends AbstractEskalonExample {
 
-	enum MyGameAxisBindings {
+	enum TestScreenAxisBindingType {
 		X_AXIS;
 	}
 
-	enum MyGameBinaryBindings {
+	enum TestScreenBinaryBindingType {
 		SPEED_UP;
 	}
 
@@ -32,7 +32,7 @@ public class InputBindingsExample extends AbstractEskalonExample {
 
 	public class TestScreen extends BlankScreen {
 
-		private IInputHandler<MyGameAxisBindings, MyGameBinaryBindings> inputHandler;
+		private IInputHandler<TestScreenAxisBindingType, TestScreenBinaryBindingType> inputHandler;
 
 		private ShapeRenderer shapeRenderer = new ShapeRenderer();
 		private Viewport viewport = new ScreenViewport();
@@ -46,20 +46,20 @@ public class InputBindingsExample extends AbstractEskalonExample {
 
 			/* Register default bindings */
 			IInputHandler.registerAxisBinding(settings,
-					MyGameAxisBindings.X_AXIS, Keys.A, Keys.D, -2);
+					TestScreenAxisBindingType.X_AXIS, Keys.A, Keys.D, -2);
 			IInputHandler.registerBinaryBinding(settings,
-					MyGameBinaryBindings.SPEED_UP, Keys.SPACE, -2, false);
+					TestScreenBinaryBindingType.SPEED_UP, Keys.SPACE, -2, false);
 
 			/* Create input handler & listener */
 			inputHandler = new DefaultInputHandler<>(settings,
-					MyGameAxisBindings.class, MyGameBinaryBindings.class);
+					TestScreenAxisBindingType.class, TestScreenBinaryBindingType.class);
 			addInputProcessor((DefaultInputHandler) inputHandler);
 
 			inputHandler.addListener(
-					new DefaultInputListener<MyGameAxisBindings, MyGameBinaryBindings>() {
+					new DefaultInputListener<TestScreenAxisBindingType, TestScreenBinaryBindingType>() {
 						@Override
-						public boolean on(MyGameBinaryBindings id) {
-							if (id == MyGameBinaryBindings.SPEED_UP) {
+						public boolean on(TestScreenBinaryBindingType id) {
+							if (id == TestScreenBinaryBindingType.SPEED_UP) {
 								vel = 175f;
 								return true;
 							}
@@ -67,8 +67,8 @@ public class InputBindingsExample extends AbstractEskalonExample {
 						}
 
 						@Override
-						public boolean off(MyGameBinaryBindings id) {
-							if (id == MyGameBinaryBindings.SPEED_UP) {
+						public boolean off(TestScreenBinaryBindingType id) {
+							if (id == TestScreenBinaryBindingType.SPEED_UP) {
 								vel = 50f;
 								return true;
 							}
@@ -76,9 +76,9 @@ public class InputBindingsExample extends AbstractEskalonExample {
 						}
 
 						@Override
-						public boolean axisChanged(MyGameAxisBindings id,
+						public boolean axisChanged(TestScreenAxisBindingType id,
 								float value) {
-							if (id == MyGameAxisBindings.X_AXIS) {
+							if (id == TestScreenAxisBindingType.X_AXIS) {
 								dir.x = value;
 								return true;
 							}
