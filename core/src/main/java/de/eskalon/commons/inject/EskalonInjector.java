@@ -25,6 +25,7 @@ import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.Field;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 
+import de.damios.guacamole.annotations.Beta;
 import de.damios.guacamole.gdx.log.Logger;
 import de.damios.guacamole.gdx.log.LoggerService;
 import de.damios.guacamole.gdx.reflection.ReflectionUtils;
@@ -124,7 +125,24 @@ public class EskalonInjector implements IInjector {
 				}
 			}
 		}
+	}
 
+	@Beta
+	public void reloadMembers(Object target) {
+		for (Field field : ClassReflection
+				.getDeclaredFields(target.getClass())) {
+			if (field.isAnnotationPresent(Inject.class)
+					&& field.isAnnotationPresent(Reloadable.class)) {
+				try {
+					field.setAccessible(true);
+					field.set(target, getInstanceForField(field));
+				} catch (ReflectionException e) {
+					LOG.error(
+							"Error while injecting a value for %s into %s: %s",
+							field, target, e);
+				}
+			}
+		}
 	}
 
 }
