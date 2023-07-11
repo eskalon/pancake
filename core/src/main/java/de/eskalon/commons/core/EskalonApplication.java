@@ -62,8 +62,8 @@ import de.eskalon.commons.screens.EskalonSplashScreen;
 import de.eskalon.commons.screens.EskalonSplashScreen.EskalonCommonsAssets;
 import de.eskalon.commons.settings.EskalonSettings;
 import de.eskalon.commons.utils.DevUtils;
+import de.eskalon.commons.utils.GL32CMacIssueHandler;
 import de.eskalon.commons.utils.ScreenshotUtils;
-import de.eskalon.commons.utils.graphics.GL32CMacIssueHandler;
 
 /**
  * A basic game application. Takes care of setting some convenience variables

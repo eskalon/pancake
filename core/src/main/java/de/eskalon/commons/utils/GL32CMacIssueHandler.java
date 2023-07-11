@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package de.eskalon.commons.utils.graphics;
+package de.eskalon.commons.utils;
 
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 

@@ -39,7 +39,7 @@ import de.damios.guacamole.gdx.graphics.NestableFrameBuffer;
 import de.damios.guacamole.gdx.graphics.QuadMeshGenerator;
 import de.damios.guacamole.gdx.graphics.ShaderProgramFactory;
 import de.eskalon.commons.screens.EskalonSplashScreen.EskalonCommonsAssets;
-import de.eskalon.commons.utils.graphics.GL32CMacIssueHandler;
+import de.eskalon.commons.utils.GL32CMacIssueHandler;
 
 /**
  * Renders the content of the g-buffer for debug purposes.

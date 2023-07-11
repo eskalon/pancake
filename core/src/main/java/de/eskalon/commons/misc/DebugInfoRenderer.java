@@ -32,7 +32,7 @@ import de.damios.guacamole.gdx.graphics.ShaderCompatibilityHelper;
 import de.damios.guacamole.gdx.utils.FPSCounter;
 import de.eskalon.commons.audio.ISoundManager;
 import de.eskalon.commons.utils.ColorUtils;
-import de.eskalon.commons.utils.graphics.GL32CMacIssueHandler;
+import de.eskalon.commons.utils.GL32CMacIssueHandler;
 
 /**
  * Prints the current FPS count, a corresponding graph and some other debug
