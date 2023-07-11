@@ -1,4 +1,4 @@
-package de.eskalon.commons.inject;
+package de.eskalon.commons.inject.providers;
 
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
@@ -13,13 +13,15 @@ import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.I18NBundle;
-import com.badlogic.gdx.utils.reflect.Annotation;
 import com.badlogic.gdx.utils.reflect.Field;
 
 import de.damios.guacamole.gdx.assets.Text;
+import de.damios.guacamole.gdx.reflection.ReflectionUtils;
 import de.eskalon.commons.asset.AnnotationAssetManager;
 import de.eskalon.commons.asset.AnnotationAssetManager.Asset;
 import de.eskalon.commons.asset.PlaylistDefinition;
+import de.eskalon.commons.inject.IInjector;
+import de.eskalon.commons.inject.QualifiedProvider;
 
 public class AssetProvider {
 
@@ -74,13 +76,9 @@ public class AssetProvider {
 
 		@Override
 		public T provide(Field field) {
-			Annotation annotation = field.getDeclaredAnnotation(Asset.class);
-
-			if (annotation == null)
-				return null;
-
-			Asset asset = annotation.getAnnotation(Asset.class);
-			if (asset.disabled())
+			Asset asset = ReflectionUtils.getAnnotationObject(field,
+					Asset.class);
+			if (asset == null || asset.disabled())
 				return null;
 
 			return assetManager.get(asset.value());

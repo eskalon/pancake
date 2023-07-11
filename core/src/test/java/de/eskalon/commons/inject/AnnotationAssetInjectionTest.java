@@ -11,10 +11,10 @@ import de.eskalon.commons.LibgdxUnitTest;
 import de.eskalon.commons.asset.AnnotationAssetManager;
 import de.eskalon.commons.asset.AnnotationAssetManagerTest;
 import de.eskalon.commons.asset.AnnotationAssetManager.Asset;
-import de.eskalon.commons.inject.AssetProvider;
 import de.eskalon.commons.inject.EskalonInjector;
 import de.eskalon.commons.inject.IInjector;
 import de.eskalon.commons.inject.Inject;
+import de.eskalon.commons.inject.providers.AssetProvider;
 
 public class AnnotationAssetInjectionTest extends LibgdxUnitTest {
 

@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.reflect.Annotation;
 import de.damios.guacamole.gdx.log.Logger;
 import de.damios.guacamole.gdx.log.LoggerService;
 import de.eskalon.commons.LibgdxUnitTest;
+import de.eskalon.commons.inject.providers.LoggerProvider;
 
 public class EskalonInjectorTest extends LibgdxUnitTest {
 
@@ -36,11 +37,7 @@ public class EskalonInjectorTest extends LibgdxUnitTest {
 		});
 
 		// Qualified provider binding
-		injector.bindToQualifiedProvider(Logger.class, (field) -> {
-			Log log = field.getDeclaredAnnotation(Log.class)
-					.getAnnotation(Log.class);
-			return LoggerService.getLogger(log.value());
-		});
+		injector.bindToQualifiedProvider(Logger.class, new LoggerProvider());
 
 		/* Inject stuff */
 		TestTarget target = new TestTarget();

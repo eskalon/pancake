@@ -33,6 +33,7 @@ import com.badlogic.gdx.utils.reflect.Field;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 
 import de.damios.guacamole.Preconditions;
+import de.damios.guacamole.gdx.reflection.ReflectionUtils;
 import de.eskalon.commons.inject.Qualifier;
 import de.eskalon.commons.screens.AbstractAssetLoadingScreen;
 
@@ -58,9 +59,10 @@ public class AnnotationAssetManager extends AssetManager {
 	 */
 	public <T> void loadAnnotatedAssets(Class<T> clazz) {
 		for (Field field : ClassReflection.getDeclaredFields(clazz)) {
-			if (!field.isAnnotationPresent(Asset.class))
+			Annotation annotation = field.getDeclaredAnnotation(Asset.class);
+			if (annotation == null)
 				continue;
-			loadAnnotatedAsset(field);
+			loadAnnotatedAsset(field, annotation.getAnnotation(Asset.class));
 		}
 
 		if (clazz.getSuperclass() != null) {
@@ -74,14 +76,16 @@ public class AnnotationAssetManager extends AssetManager {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public <T> void loadAnnotatedAsset(Field field) {
-		Preconditions.checkArgument(field.isAnnotationPresent(Asset.class));
+		Annotation annotation = field.getDeclaredAnnotation(Asset.class);
+		Preconditions.checkArgument(annotation != null);
 
-		Asset asset = field.getDeclaredAnnotation(Asset.class)
-				.getAnnotation(Asset.class);
+		loadAnnotatedAsset(field, annotation.getAnnotation(Asset.class));
+	}
 
-		if (!asset.disabled())
-			load(asset.value(), (Class) field.getType(),
-					getAssetLoaderParameters(asset, field));
+	private <T> void loadAnnotatedAsset(Field field, Asset assetAnnotaion) {
+		if (!assetAnnotaion.disabled())
+			load(assetAnnotaion.value(), (Class) field.getType(),
+					getAssetLoaderParameters(assetAnnotaion, field));
 	}
 
 	/**
@@ -95,13 +99,13 @@ public class AnnotationAssetManager extends AssetManager {
 	@Deprecated
 	private <T> void injectAssets(Class<T> clazz, @Nullable T instance) {
 		for (Field field : ClassReflection.getDeclaredFields(clazz)) {
-			if (!field.isAnnotationPresent(Asset.class))
-				continue;
-			Annotation annotation = field.getDeclaredAnnotation(Asset.class);
+			Asset annotation = ReflectionUtils.getAnnotationObject(field,
+					Asset.class);
+
 			if (annotation == null)
 				continue;
 
-			injectAsset(instance, field, annotation.getAnnotation(Asset.class));
+			injectAsset(instance, field, annotation);
 		}
 
 		if (clazz.getSuperclass() != null) {
@@ -109,7 +113,8 @@ public class AnnotationAssetManager extends AssetManager {
 		}
 	}
 
-	private <T> void injectAsset(@Nullable T instance, Field field, Asset asset) {
+	private <T> void injectAsset(@Nullable T instance, Field field,
+			Asset asset) {
 		if (!asset.disabled()) {
 			try {
 				if (instance != null || field.isStatic()) {
