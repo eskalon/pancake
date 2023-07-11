@@ -4,12 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.badlogic.gdx.utils.reflect.Annotation;
-
 import de.damios.guacamole.gdx.log.Logger;
 import de.damios.guacamole.gdx.log.LoggerService;
 import de.eskalon.commons.LibgdxUnitTest;
 import de.eskalon.commons.inject.providers.LoggerProvider;
+import de.eskalon.commons.inject.providers.LoggerProvider.Log;
 
 public class EskalonInjectorTest extends LibgdxUnitTest {
 
@@ -37,7 +36,8 @@ public class EskalonInjectorTest extends LibgdxUnitTest {
 		});
 
 		// Qualified provider binding
-		injector.bindToQualifiedProvider(Logger.class, new LoggerProvider());
+		injector.bindToQualifiedProvider(Logger.class, Log.class,
+				new LoggerProvider());
 
 		/* Inject stuff */
 		TestTarget target = new TestTarget();
@@ -48,7 +48,6 @@ public class EskalonInjectorTest extends LibgdxUnitTest {
 		assertEquals(59, target.classB.value);
 		assertEquals(35, target.classC.value);
 		assertEquals(null, target.classD);
-		System.out.println(target.logger.toString());
 		assertEquals(LoggerService.getLogger(ClassD.class), target.logger);
 	}
 

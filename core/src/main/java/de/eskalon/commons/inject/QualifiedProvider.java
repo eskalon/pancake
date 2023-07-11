@@ -12,13 +12,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.eskalon.commons.inject;
 
-import com.badlogic.gdx.utils.reflect.Field;
+import java.lang.annotation.Annotation;
 
 @FunctionalInterface
-public interface QualifiedProvider<T> {
+public interface QualifiedProvider<T, Q extends Annotation> {
 
-	T provide(Field field);
+	T provide(Q q);
 
 }
