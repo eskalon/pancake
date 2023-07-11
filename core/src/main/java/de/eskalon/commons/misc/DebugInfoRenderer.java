@@ -19,10 +19,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.graphics.profiling.GLProfiler;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -33,6 +35,7 @@ import de.damios.guacamole.gdx.utils.FPSCounter;
 import de.eskalon.commons.audio.ISoundManager;
 import de.eskalon.commons.utils.ColorUtils;
 import de.eskalon.commons.utils.GL32CMacIssueHandler;
+import text.formic.Stringf;
 
 /**
  * Prints the current FPS count, a corresponding graph and some other debug
@@ -51,6 +54,7 @@ public class DebugInfoRenderer {
 	private Viewport viewport;
 	private SpriteBatch batch;
 	private BitmapFont font;
+	private FontDrawer fontDrawer;
 	private ShapeRenderer shapeRenderer;
 	private int width;
 	private int height;
@@ -81,7 +85,7 @@ public class DebugInfoRenderer {
 		this.viewport = new ScreenViewport();
 		this.batch = batch;
 
-		this.gameVersion = gameVersion;
+		this.gameVersion = "Version: " + gameVersion;
 		this.appType = "App Type: " + Gdx.app.getType() + " ("
 				+ System.getProperty("os.name") + ")";
 		this.glProfiler = new GLProfiler(Gdx.graphics);
@@ -99,6 +103,7 @@ public class DebugInfoRenderer {
 
 	public void initialize(int width, int height, BitmapFont font) {
 		this.font = font;
+		this.fontDrawer = new FontDrawer(batch, font, height, width);
 		resize(width, height);
 	}
 
@@ -128,6 +133,9 @@ public class DebugInfoRenderer {
 		this.width = width;
 		this.height = height;
 
+		if (fontDrawer != null)
+			fontDrawer.resize(height, width);
+
 		fpsGraphY = 5;
 		fpsGraphX = width - 356;
 	}
@@ -142,39 +150,38 @@ public class DebugInfoRenderer {
 		/*
 		 * INFO
 		 */
+		fontDrawer.reset();
+		fontDrawer.drawLine(
+				"[F2] TOGGLE DEBUG OVERLAY   /   [F9] SKIP SONG   /   [F12] TAKE SCREENSHOT",
+				" ".repeat(30)).spacer();
+
 		// Common
-		font.draw(batch, gameVersion, 6, height - 5);
-		font.draw(batch, appType, 6, height - 25);
+		fontDrawer.drawLine(gameVersion);
+		fontDrawer.drawLine(appType).spacer();
 
 		// GL Profiling
-		font.draw(batch, "GL Calls: " + glCalls + "", 6, height - 55);
-		font.draw(batch, "Draw Calls: " + drawCalls + "", 6, height - 75);
-		font.draw(batch, "Shader Switches: " + shaderSwitches + "", 6,
-				height - 95);
-		font.draw(batch, "Texture Bindings: " + textureBindings + "", 6,
-				height - 115);
-		font.draw(batch, "Vertex Count: " + vertexCount + "", 6, height - 135);
+		fontDrawer.drawLine("GL Calls: %s", glCalls);
+		fontDrawer.drawLine("Draw Calls: %s", drawCalls);
+		fontDrawer.drawLine("Shader Switches: %s", shaderSwitches);
+		fontDrawer.drawLine("Texture Bindings: %s", textureBindings);
+		fontDrawer.drawLine("Vertex Count: %s", vertexCount).spacer();
 
 		// Threads & Input
-		font.draw(batch,
-				"Threads in Pool: "
-						+ ThreadHandler.getInstance().getActiveThreadCount()
-						+ "/" + ThreadHandler.getInstance().getPoolSize(),
-				6, height - 165);
-		font.draw(batch, "Mouse Pos: (x) " + Gdx.input.getX() + " (y) "
-				+ Gdx.input.getY(), 6, height - 185);
+		fontDrawer.drawLine("Threads in Pool: %s/%s",
+				ThreadHandler.getInstance().getActiveThreadCount(),
+				ThreadHandler.getInstance().getPoolSize());
+		fontDrawer.drawLine("Mouse Pos: (x) %s (y) %s", Gdx.input.getX(),
+				Gdx.input.getY());
 
 		// Sound
-		font.draw(batch,
-				"Music: \"" + soundManager.getCurrentMusicTitle() + "\"", 6,
-				height - 215);
+		fontDrawer.drawLine("Music: \"%s\"",
+				soundManager.getCurrentMusicTitle(), Gdx.input.getY());
 
 		/*
 		 * FPS COUNT
 		 */
-		font.draw(batch,
-				String.valueOf(fpsCounter.getFramesPerSecond()) + " FPS",
-				width - 65, height - 5);
+		fontDrawer.reset().right();
+		fontDrawer.drawLine("%s FPS", fpsCounter.getFramesPerSecond());
 
 		/*
 		 * FPS GRPAH
@@ -253,6 +260,84 @@ public class DebugInfoRenderer {
 
 		shapeRenderer.end();
 		Gdx.gl.glDisable(GL20.GL_BLEND);
+	}
+
+	private class FontDrawer {
+
+		private SpriteBatch batch;
+		private BitmapFont font;
+		private int width;
+		private int height;
+
+		private int align;
+		private int currentLineFromTop;
+		private int spacerCount;
+
+		public FontDrawer(SpriteBatch batch, BitmapFont font, int height,
+				int width) {
+			this.batch = batch;
+			this.font = font;
+			this.height = height;
+			this.width = width;
+
+			reset();
+		}
+
+		public void resize(int height, int width) {
+			this.height = height;
+			this.width = width;
+		}
+
+		public FontDrawer reset() {
+			align = Align.topLeft;
+			currentLineFromTop = 1;
+			spacerCount = 0;
+
+			return this;
+		}
+
+		public FontDrawer drawLine(String string, Object... args) {
+			String s = Stringf.format(string, args);
+			font.draw(batch, s, getX(s), getY());
+			return this;
+		}
+
+		public FontDrawer right() {
+			align = Align.topRight;
+			return this;
+		}
+
+		public FontDrawer left() {
+			align = Align.topLeft;
+			return this;
+		}
+
+		public FontDrawer spacer() {
+			spacerCount++;
+			return this;
+		}
+
+		private int getX(String string) {
+			if (Align.isCenterHorizontal(align))
+				throw new UnsupportedOperationException();
+
+			// Align right
+			if (Align.isRight(align)) {
+				// Ideally, we'd cache this, but since this is just for
+				// debugging purposes, let's keep this simple
+				GlyphLayout layout = new GlyphLayout(font, string);
+				return (int) (width - 10 - layout.width);
+			}
+
+			// Align left
+			return 6;
+		}
+
+		private int getY() {
+			return height - 5
+					- ((currentLineFromTop++ - 1) * (int) font.getLineHeight())
+					- (spacerCount * (int) (font.getLineHeight() / 2));
+		}
 	}
 
 }

@@ -20,12 +20,15 @@ import java.util.Date;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.utils.BufferUtils;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 import de.damios.guacamole.annotations.GwtIncompatible;
+import de.damios.guacamole.gdx.log.Logger;
+import de.damios.guacamole.gdx.log.LoggerService;
 
 /**
  * Takes care of saving a screenshot.
@@ -34,6 +37,9 @@ import de.damios.guacamole.annotations.GwtIncompatible;
  */
 @GwtIncompatible
 public class ScreenshotUtils {
+
+	private static final Logger LOG = LoggerService
+			.getLogger(ScreenshotUtils.class);
 
 	private static final String PNG_FILE_EXT = ".png";
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(
@@ -59,10 +65,12 @@ public class ScreenshotUtils {
 	 */
 	public static void takeAndSaveScreenshot(String path) {
 		Pixmap pixmap = takeScreenshot();
-		PixmapIO.writePNG(
-				Gdx.files.external(
-						path + DATE_FORMAT.format(new Date()) + PNG_FILE_EXT),
-				pixmap);
+		FileHandle file = Gdx.files
+				.external(path + DATE_FORMAT.format(new Date()) + PNG_FILE_EXT);
+
+		LOG.debug("Screenshot saved to %s", file.path());
+
+		PixmapIO.writePNG(file, pixmap);
 		pixmap.dispose();
 	}
 
