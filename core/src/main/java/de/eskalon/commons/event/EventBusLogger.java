@@ -32,10 +32,10 @@ public class EventBusLogger {
 	@Subscribe
 	public void onExceptionEvent(ExceptionEvent ev) {
 		LOG.error(
-				"Exception thrown by subscriber method '%s(%s)' on subscriber '%s' when dispatching event '%s'",
+				"Exception thrown by subscriber method '%s(%s)' on subscriber '%s' when dispatching event '%s': %s",
 				ev.getSubscriberMethod().getName(),
 				ev.getSubscriberMethod().getParameterTypes()[0].getSimpleName(),
-				ev.getSubscriber(), ev.getEvent());
+				ev.getSubscriber(), ev.getEvent(), ev.getCause());
 	}
 
 	@Subscribe
