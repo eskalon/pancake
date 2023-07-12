@@ -157,6 +157,7 @@ public class EventBus {
 
 			List<Subscriber> subscriberList = methodsInListener
 					.computeIfAbsent(hashCode, k -> new ArrayList<>());
+			method.setAccessible(true); // the method may be private
 			subscriberList.add(new Subscriber(subscriberObject, method));
 		}
 		return methodsInListener;
