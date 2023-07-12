@@ -21,6 +21,7 @@ import java.util.HashMap;
 
 import javax.annotation.Nullable;
 
+import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.Field;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
@@ -29,7 +30,6 @@ import de.damios.guacamole.annotations.Beta;
 import de.damios.guacamole.gdx.log.Logger;
 import de.damios.guacamole.gdx.log.LoggerService;
 import de.damios.guacamole.gdx.reflection.ReflectionUtils;
-import de.damios.guacamole.tuple.Pair;
 
 public class EskalonInjector implements IInjector {
 
@@ -45,9 +45,11 @@ public class EskalonInjector implements IInjector {
 	}
 
 	private final HashMap<Class<?>, Class<?>> links = new HashMap<>();
-	private final HashMap<Class<?>, Object> instances = new HashMap<>();
+	private final HashMap<Class<?>, InstanceWrapper<?>> instances = new HashMap<>();
 	private final HashMap<Class<?>, Provider<?>> providers = new HashMap<>();
-	private final HashMap<Class<?>, Pair<QualifiedProvider<?, Annotation>, Class<? extends Annotation>>> qualifiedProviders = new HashMap<>();
+	private final HashMap<Class<?>, QualifiedProviderWrapper<?, ?>> qualifiedProviders = new HashMap<>();
+
+	private boolean fallbackToConstructorReflection = false;
 
 	@Override
 	public <T> void bindTo(Class<T> clazz, Class<? extends T> linkedClazz) {
@@ -56,7 +58,7 @@ public class EskalonInjector implements IInjector {
 
 	@Override
 	public <T> void bindToInstance(Class<T> clazz, T instance) {
-		instances.put(clazz, instance);
+		instances.put(clazz, new InstanceWrapper(instance));
 	}
 
 	@Override
@@ -68,7 +70,8 @@ public class EskalonInjector implements IInjector {
 	public <T, Q extends Annotation> void bindToQualifiedProvider(
 			Class<T> clazz, Class<Q> qualifierClazz,
 			QualifiedProvider<T, Q> provider) {
-		qualifiedProviders.put(clazz, new Pair(provider, qualifierClazz));
+		qualifiedProviders.put(clazz,
+				new QualifiedProviderWrapper(provider, qualifierClazz));
 	}
 
 	private @Nullable Object getInstanceForField(Field field) {
@@ -78,30 +81,52 @@ public class EskalonInjector implements IInjector {
 		type = links.getOrDefault(type, type);
 
 		// Instance bindings
-		Object value = instances.get(type);
-		if (value != null)
-			return value;
+		InstanceWrapper instanceWrapper = instances.get(type);
+		if (instanceWrapper != null) {
+			if (!instanceWrapper.membersInjected) { // only inject once!
+				injectMembers(instanceWrapper.instance);
+				instanceWrapper.membersInjected = true;
+			}
+
+			return instanceWrapper.instance;
+		}
 
 		// Provider binding
 		Provider<?> provider = providers.get(type);
 		if (provider != null) {
-			value = provider.provide();
+			Object value = provider.provide();
 
-			if (value != null)
+			if (value != null) {
+				injectMembers(value);
 				return value;
+			}
 		}
 
 		// Qualified provider binding
-		Pair<QualifiedProvider<?, Annotation>, Class<? extends Annotation>> pair = qualifiedProviders
+		QualifiedProviderWrapper qualifiedProviderWrapper = qualifiedProviders
 				.get(type);
 
-		if (pair != null) {
+		if (qualifiedProviderWrapper != null) {
 			Annotation qualifier = ReflectionUtils.getAnnotationObject(field,
-					pair.y);
+					qualifiedProviderWrapper.qualifierClass);
 
-			if (qualifier != null)
-				return pair.x.provide(qualifier);
+			if (qualifier != null) {
+				Object value = qualifiedProviderWrapper.qualifiedProvider
+						.provide(qualifier);
 
+				if (value != null) {
+					injectMembers(value);
+					return value;
+				}
+			}
+		}
+
+		if (fallbackToConstructorReflection) {
+			Object value = ReflectionUtils.newInstanceOrNull(type);
+
+			if (value != null) // don't try to inject the value's members in
+								// this case
+				return value;
 		}
 
 		LOG.error("No binding found for %s with the following qualifiers: %s",
@@ -111,7 +136,7 @@ public class EskalonInjector implements IInjector {
 	}
 
 	@Override
-	public void injectMembers(Object target) {
+	public <T> T injectMembers(T target) {
 		for (Field field : ClassReflection
 				.getDeclaredFields(target.getClass())) {
 			if (field.isAnnotationPresent(Inject.class)) {
@@ -125,6 +150,8 @@ public class EskalonInjector implements IInjector {
 				}
 			}
 		}
+
+		return target;
 	}
 
 	@Beta
@@ -135,6 +162,11 @@ public class EskalonInjector implements IInjector {
 					&& field.isAnnotationPresent(Reloadable.class)) {
 				try {
 					field.setAccessible(true);
+
+					Object oldValue = field.get(target);
+					if (oldValue != null && oldValue instanceof Disposable)
+						((Disposable) oldValue).dispose();
+
 					field.set(target, getInstanceForField(field));
 				} catch (ReflectionException e) {
 					LOG.error(
@@ -143,6 +175,34 @@ public class EskalonInjector implements IInjector {
 				}
 			}
 		}
+	}
+
+	public void setFallbackToConstructorReflection(
+			boolean fallbackToConstructorReflection) {
+		this.fallbackToConstructorReflection = fallbackToConstructorReflection;
+	}
+
+	private class InstanceWrapper<T> {
+		private T instance;
+		private boolean membersInjected;
+
+		private InstanceWrapper(T instance) {
+			this.instance = instance;
+			this.membersInjected = false;
+		}
+	}
+
+	private class QualifiedProviderWrapper<T, Q extends Annotation> {
+		private QualifiedProvider<T, Q> qualifiedProvider;
+		private Class<Q> qualifierClass;
+
+		private QualifiedProviderWrapper(
+				QualifiedProvider<T, Q> qualifiedProvider,
+				Class<Q> qualifierClass) {
+			this.qualifiedProvider = qualifiedProvider;
+			this.qualifierClass = qualifierClass;
+		}
+
 	}
 
 }

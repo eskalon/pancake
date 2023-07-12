@@ -35,20 +35,23 @@ public class EskalonInjectorTest extends LibgdxUnitTest {
 			return tmp;
 		});
 
+		injector.bindToProvider(ClassE.class, ClassE::new);
+
 		// Qualified provider binding
 		injector.bindToQualifiedProvider(Logger.class, Log.class,
 				new LoggerProvider());
 
 		/* Inject stuff */
-		TestTarget target = new TestTarget();
-		injector.injectMembers(target);
+		TestTarget target = injector.injectMembers(new TestTarget());
 
 		/* Check the results */
 		assertEquals(47, target.classA.value);
 		assertEquals(59, target.classB.value);
 		assertEquals(35, target.classC.value);
 		assertEquals(null, target.classD);
-		assertEquals(LoggerService.getLogger(ClassD.class), target.logger);
+		assertEquals(59, target.classE.b.value);
+		assertEquals(LoggerService.getLogger(EskalonInjectorTest.class),
+				target.logger);
 	}
 
 	public class TestTarget {
@@ -56,7 +59,8 @@ public class EskalonInjectorTest extends LibgdxUnitTest {
 		public @Inject ClassB classB;
 		public @Inject SuperClassC classC;
 		public @Inject ClassD classD;
-		public @Inject @Log(ClassD.class) Logger logger;
+		public @Inject ClassE classE;
+		public @Inject @Log(EskalonInjectorTest.class) Logger logger;
 	}
 
 	public class ClassA {
@@ -75,6 +79,10 @@ public class EskalonInjectorTest extends LibgdxUnitTest {
 	}
 
 	public class ClassD {
+	}
+
+	public class ClassE {
+		private @Inject ClassB b;
 	}
 
 }

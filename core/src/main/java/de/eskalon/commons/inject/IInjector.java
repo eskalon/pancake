@@ -31,6 +31,6 @@ public interface IInjector {
 			Class<T> clazz, Class<Q> qualifierClazz,
 			QualifiedProvider<T, Q> provider);
 
-	public void injectMembers(Object target);
+	public <T> T injectMembers(T target);
 
 }

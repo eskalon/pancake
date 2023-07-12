@@ -152,8 +152,8 @@ public class DebugInfoRenderer {
 		 */
 		fontDrawer.reset();
 		fontDrawer.drawLine(
-				"[F2] TOGGLE DEBUG OVERLAY   /   [F9] SKIP SONG   /   [F12] TAKE SCREENSHOT",
-				" ".repeat(30)).spacer();
+				"[F2] TOGGLE DEBUG OVERLAY   /   [F9] SKIP SONG   /   [F12] TAKE SCREENSHOT")
+				.spacer();
 
 		// Common
 		fontDrawer.drawLine(gameVersion);
