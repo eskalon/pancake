@@ -83,7 +83,13 @@ public class EskalonInjector implements IInjector {
 		// Instance bindings
 		InstanceWrapper instanceWrapper = instances.get(type);
 		if (instanceWrapper != null) {
-			if (!instanceWrapper.membersInjected) { // only inject once!
+			if (!instanceWrapper.membersInjected) { // only inject once; for
+													// providers this is taken
+													// care of by the
+													// requirement that fields
+													// have to have 'null' as
+													// value for injection to
+													// take place
 				injectMembers(instanceWrapper.instance);
 				instanceWrapper.membersInjected = true;
 			}
@@ -124,9 +130,12 @@ public class EskalonInjector implements IInjector {
 		if (fallbackToConstructorReflection) {
 			Object value = ReflectionUtils.newInstanceOrNull(type);
 
-			if (value != null) // don't try to inject the value's members in
-								// this case
+			if (value != null) {
+				// NOTE: don't try to inject the value's members in this case
+				LOG.debug("Falling back to constructor reflection for type %s",
+						type);
 				return value;
+			}
 		}
 
 		LOG.error("No binding found for %s with the following qualifiers: %s",
@@ -142,7 +151,13 @@ public class EskalonInjector implements IInjector {
 			if (field.isAnnotationPresent(Inject.class)) {
 				try {
 					field.setAccessible(true);
-					field.set(target, getInstanceForField(field));
+					Object oldValue = field.get(target);
+					if (oldValue == null)
+						field.set(target, getInstanceForField(field));
+					else
+						LOG.debug(
+								"Field %s of %s is already set ('%s'). As a consequence, no value is injected.",
+								field, target, oldValue);
 				} catch (ReflectionException e) {
 					LOG.error(
 							"Error while injecting a value for %s into %s: %s",
