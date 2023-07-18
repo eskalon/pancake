@@ -17,8 +17,6 @@ package de.eskalon.commons.utils;
 
 import java.util.NavigableMap;
 
-import com.badlogic.gdx.math.MathUtils;
-
 /**
  * Math utils.
  * 
@@ -57,18 +55,41 @@ public final class MathStuffUtils {
 	}
 
 	/**
-	 * Converts a linear level to an exponential one. Is especially useful for
+	 * Converts a linear value to an exponential one. Is especially useful for
 	 * sound levels.
 	 *
 	 * @param x
-	 *            The linear level. Is usually in the range of {@code 0} to
-	 *            {@code 1}.
+	 *            the linear value; is usually in the range of {@code 0} to
+	 *            {@code 1}
 	 * @param base
-	 *            The exponential base to use.
+	 *            the exponential base to use
 	 * @return
 	 */
 	public static double linToExp(double x, int base) {
 		return (Math.pow(base, x) - 1) / (base - 1);
+	}
+
+	/**
+	 * Converts an exponential value obtained via {@link #expToLin(double, int)}
+	 * back to its original linear one.
+	 *
+	 * @param x
+	 *            the exponential value
+	 * @param base
+	 *            the exponential base that was used
+	 * @return
+	 */
+	public static double expToLin(double x, int base) {
+		return log((x * (base - 1)) + 1, base);
+	}
+
+	/**
+	 * @param x
+	 * @param base
+	 * @return the logarithm of {@code x} with base {@code a}
+	 */
+	public static double log(double x, int base) {
+		return (Math.log(x) / Math.log(base));
 	}
 
 	public static float interpolateFunction(

@@ -55,8 +55,8 @@ public class DefaultSoundManager implements ISoundManager, Disposable {
 
 	protected MusicFadeOutTask fadeOutTask = new MusicFadeOutTask();
 	protected MusicFadeInTask fadeInTask = new MusicFadeInTask();
-	protected float musicFadeStep = 0.06F;
-	protected float musicFadeInterval = 0.55F;
+	protected float musicFadeDuration = 4F;
+	protected int musicFadeSteps = 25;
 
 	protected @Nullable Playlist currentPlaylist;
 	protected @Nullable Pair<Music, String> currentSong;
@@ -108,16 +108,19 @@ public class DefaultSoundManager implements ISoundManager, Disposable {
 		currentPlaylist.reset();
 
 		if (currentSong == null) { // if there was no music playing before
-			playNextSong(true);
+			playNextSong();
+			currentSong.x.setVolume(0F);
+			fadeInTask.progress = 0;
 			fadeInTask.songToFadeIn = currentSong.x;
-			Timer.schedule(fadeInTask, 0F, musicFadeInterval);
-		} else if (!finishCurrentSong) { // i.e. fade out current music
+			Timer.schedule(fadeInTask, 0F, musicFadeDuration / musicFadeSteps);
+		} else if (!finishCurrentSong) { // i.e. fade out current song
 											// immediately
 			currentSong.x.setOnCompletionListener(null);
 			fadeInTask.cancel();
 			fadeOutTask.cancel();
+			fadeOutTask.progress = 0;
 			fadeOutTask.songToFadeOut = currentSong.x;
-			Timer.schedule(fadeOutTask, 0F, musicFadeInterval);
+			Timer.schedule(fadeOutTask, 0F, musicFadeDuration / musicFadeSteps);
 		}
 	}
 
@@ -126,12 +129,14 @@ public class DefaultSoundManager implements ISoundManager, Disposable {
 		if (currentSong != null) {
 			currentPlaylist = null;
 
-			if (!finishCurrentSong) { // fade out this song
+			if (!finishCurrentSong) { // i.e. fade out current song immediately
 				currentSong.x.setOnCompletionListener(null);
 				fadeInTask.cancel();
 				fadeOutTask.cancel();
+				fadeOutTask.progress = 0;
 				fadeOutTask.songToFadeOut = currentSong.x;
-				Timer.schedule(fadeOutTask, 0F, musicFadeInterval);
+				Timer.schedule(fadeOutTask, 0F,
+						musicFadeDuration / musicFadeSteps);
 			}
 		}
 	}
@@ -154,10 +159,6 @@ public class DefaultSoundManager implements ISoundManager, Disposable {
 	 * @return whether a new song was started
 	 */
 	private void playNextSong() {
-		playNextSong(false);
-	}
-
-	private void playNextSong(boolean startSilent) {
 		if (currentPlaylist == null) {
 			currentSong = null;
 			return;
@@ -170,8 +171,7 @@ public class DefaultSoundManager implements ISoundManager, Disposable {
 			return;
 		}
 
-		currentSong.x
-				.setVolume(startSilent ? 0 : getEffectiveVolume(musicVolume));
+		currentSong.x.setVolume(getEffectiveVolume(musicVolume));
 		currentSong.x.play();
 		currentSong.x.setOnCompletionListener((Music) -> {
 			playNextSong();
@@ -206,8 +206,12 @@ public class DefaultSoundManager implements ISoundManager, Disposable {
 		musicPlaylists.get(paylistName).setRepeat(repeat);
 	}
 
+	protected float getEffectiveVolume(FloatProperty volumeValue) {
+		return getEffectiveVolume(volumeValue.get());
+	}
+
 	/**
-	 * Converts the linear scale of the volume sliders to a logarithmic scale to
+	 * Converts the linear scale of the volume sliders to a logarithmic one to
 	 * compensate for the human hearing being logarithmic rather than linear.
 	 * 
 	 * @param volumeValue
@@ -219,9 +223,9 @@ public class DefaultSoundManager implements ISoundManager, Disposable {
 	 *      "https://www.dr-lex.be/info-stuff/volumecontrols.html">Additional
 	 *      information on this issue</a>
 	 */
-	protected float getEffectiveVolume(FloatProperty volumeValue) {
-		return (float) MathStuffUtils
-				.linToExp(volumeValue.get() * masterVolume.get(), 2);
+	protected float getEffectiveVolume(float volumeValue) {
+		return (float) MathStuffUtils.linToExp(volumeValue * masterVolume.get(),
+				2);
 	}
 
 	@Override
@@ -247,29 +251,33 @@ public class DefaultSoundManager implements ISoundManager, Disposable {
 	}
 
 	class MusicFadeInTask extends Timer.Task {
-		public Music songToFadeIn;
+		private Music songToFadeIn;
+		private int progress = 0;
 
 		@Override
 		public void run() {
-			if (songToFadeIn.getVolume() < getEffectiveVolume(musicVolume))
-				songToFadeIn
-						.setVolume(songToFadeIn.getVolume() + musicFadeStep);
-			else {
+			if (songToFadeIn.getVolume() < getEffectiveVolume(musicVolume)) {
+				songToFadeIn.setVolume(getEffectiveVolume(
+						(musicVolume.get() / musicFadeSteps * ++progress)));
+			} else {
 				songToFadeIn.setVolume(getEffectiveVolume(musicVolume));
 				this.cancel();
 			}
 		}
+
 	}
 
 	class MusicFadeOutTask extends Timer.Task {
-		public Music songToFadeOut;
+		private Music songToFadeOut;
+		private int progress = 0;
 
 		@Override
 		public void run() {
-			if (songToFadeOut.getVolume() >= musicFadeStep)
-				songToFadeOut
-						.setVolume(songToFadeOut.getVolume() - musicFadeStep);
-			else {
+			if (songToFadeOut.getVolume() >= getEffectiveVolume(
+					musicVolume.get() / musicFadeSteps)) {
+				songToFadeOut.setVolume(getEffectiveVolume(musicVolume.get()
+						/ musicFadeSteps * (musicFadeSteps - ++progress)));
+			} else {
 				songToFadeOut.stop();
 				playNextSong();
 				this.cancel();
