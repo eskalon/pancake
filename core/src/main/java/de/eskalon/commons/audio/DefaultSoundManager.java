@@ -108,12 +108,11 @@ public class DefaultSoundManager implements ISoundManager, Disposable {
 		currentPlaylist.reset();
 
 		if (currentSong == null) { // if there was no music playing before
-			playNextSong();
-
-			currentSong.x.setVolume(0F);
+			playNextSong(true);
 			fadeInTask.songToFadeIn = currentSong.x;
 			Timer.schedule(fadeInTask, 0F, musicFadeInterval);
-		} else if (!finishCurrentSong) { // fade out current music immediately
+		} else if (!finishCurrentSong) { // i.e. fade out current music
+											// immediately
 			currentSong.x.setOnCompletionListener(null);
 			fadeInTask.cancel();
 			fadeOutTask.cancel();
@@ -155,6 +154,10 @@ public class DefaultSoundManager implements ISoundManager, Disposable {
 	 * @return whether a new song was started
 	 */
 	private void playNextSong() {
+		playNextSong(false);
+	}
+
+	private void playNextSong(boolean startSilent) {
 		if (currentPlaylist == null) {
 			currentSong = null;
 			return;
@@ -167,7 +170,8 @@ public class DefaultSoundManager implements ISoundManager, Disposable {
 			return;
 		}
 
-		currentSong.x.setVolume(getEffectiveVolume(musicVolume));
+		currentSong.x
+				.setVolume(startSilent ? 0 : getEffectiveVolume(musicVolume));
 		currentSong.x.play();
 		currentSong.x.setOnCompletionListener((Music) -> {
 			playNextSong();
