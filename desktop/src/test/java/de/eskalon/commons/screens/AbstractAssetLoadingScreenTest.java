@@ -6,21 +6,40 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.badlogic.gdx.assets.loaders.FileHandleResolver;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
+import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
+
 import de.eskalon.commons.LibgdxUnitTest;
 import de.eskalon.commons.asset.AnnotationAssetManager;
-import de.eskalon.commons.asset.AnnotationAssetManagerTest;
+import de.eskalon.commons.asset.BitmapFontAssetLoaderParametersFactory;
 import de.eskalon.commons.core.EskalonApplication;
-import de.eskalon.commons.screens.AbstractAssetLoadingScreen;
 
 public class AbstractAssetLoadingScreenTest extends LibgdxUnitTest {
+
+	public static AnnotationAssetManager createAssetManager() {
+		FileHandleResolver resolver = new InternalFileHandleResolver();
+		AnnotationAssetManager aM = new AnnotationAssetManager(resolver);
+		aM.setLoader(FreeTypeFontGenerator.class,
+				new FreeTypeFontGeneratorLoader(resolver));
+		aM.setLoader(BitmapFont.class, ".ttf",
+				new FreetypeFontLoader(resolver));
+
+		aM.registerAssetLoaderParametersFactory(BitmapFont.class,
+				new BitmapFontAssetLoaderParametersFactory());
+
+		return aM;
+	}
 
 	private boolean isFinished = false;
 
 	@Test
 	public void test() {
 		EskalonApplication game = Mockito.spy(EskalonApplication.class);
-		AnnotationAssetManager a = AnnotationAssetManagerTest
-				.createAssetManager();
+		AnnotationAssetManager a = createAssetManager();
 		Mockito.doReturn(a).when(game).getAssetManager();
 
 		AbstractAssetLoadingScreen s = new AbstractAssetLoadingScreen(game,
@@ -44,7 +63,6 @@ public class AbstractAssetLoadingScreenTest extends LibgdxUnitTest {
 			}
 		};
 
-		s.create();
 		while (!isFinished)
 			s.render(1);
 

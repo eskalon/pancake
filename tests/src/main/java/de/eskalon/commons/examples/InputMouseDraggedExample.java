@@ -4,9 +4,11 @@ import com.badlogic.gdx.Input.Buttons;
 
 import de.damios.guacamole.gdx.DefaultInputProcessor;
 import de.eskalon.commons.core.EskalonApplication;
+import de.eskalon.commons.examples.InputBindingsExample.TestScreen;
 import de.eskalon.commons.input.DefaultInputHandler;
 import de.eskalon.commons.input.DefaultInputListener;
 import de.eskalon.commons.input.IInputHandler;
+import de.eskalon.commons.screens.AbstractEskalonScreen;
 import de.eskalon.commons.screens.BlankScreen;
 
 public class InputMouseDraggedExample extends AbstractEskalonExample {
@@ -19,9 +21,8 @@ public class InputMouseDraggedExample extends AbstractEskalonExample {
 	}
 
 	@Override
-	protected String initApp() {
-		screenManager.addScreen("test-screen", new TestScreen(this));
-		return "test-screen";
+	protected AbstractEskalonScreen initApp() {
+		return new TestScreen(this);
 	}
 
 	public class TestScreen extends BlankScreen {

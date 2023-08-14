@@ -7,15 +7,15 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
 import de.damios.guacamole.gdx.DefaultInputProcessor;
 import de.eskalon.commons.core.EskalonApplication;
+import de.eskalon.commons.screens.AbstractEskalonScreen;
 import de.eskalon.commons.screens.AbstractImageScreen;
 import de.eskalon.commons.screens.EskalonSplashScreen.EskalonCommonsAssets;
 
 public class ImageScreenExample extends AbstractEskalonExample {
 
 	@Override
-	protected String initApp() {
-		screenManager.addScreen("test-screen", new TestScreen());
-		return "test-screen";
+	protected AbstractEskalonScreen initApp() {
+		return new TestScreen();
 	}
 
 	@Override
@@ -29,10 +29,7 @@ public class ImageScreenExample extends AbstractEskalonExample {
 
 		public TestScreen() {
 			super(getPrefWidth(), getPrefHeight());
-		}
-
-		@Override
-		protected void create() {
+			
 			setImage(new Texture(Gdx.files.internal("test.png")));
 
 			addInputProcessor(new DefaultInputProcessor() {

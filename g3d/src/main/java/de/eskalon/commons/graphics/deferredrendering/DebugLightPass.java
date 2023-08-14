@@ -105,18 +105,18 @@ public class DebugLightPass extends LightPass {
 
 	public DebugLightPass(DeferredRenderer renderer) {
 		super(renderer);
-		this.orthoCam = new OrthographicCamera(renderer.game.getWidth(),
-				renderer.game.getHeight());
-		this.orthoCam.combined.setToOrtho2D(0, 0, renderer.game.getWidth(),
-				renderer.game.getHeight());
+		this.orthoCam = new OrthographicCamera(Gdx.graphics.getWidth(),
+				Gdx.graphics.getHeight());
+		this.orthoCam.combined.setToOrtho2D(0, 0, Gdx.graphics.getWidth(),
+				Gdx.graphics.getHeight());
 		this.sBatch = this.renderer.game.getSpriteBatch();
 		this.shapeRenderer = new ShapeRenderer(5000, GL32CMacIssueHandler
 				.createImmediateModeRenderer20DefaultShader(false, true, 0));
 
 		this.ambientLightPass = new AmbientLightPass(this.renderer);
 
-		this.viewportWidth = this.renderer.game.getWidth();
-		this.viewportHeight = this.renderer.game.getHeight();
+		this.viewportWidth = Gdx.graphics.getWidth();
+		this.viewportHeight = Gdx.graphics.getHeight();
 
 		this.calculatePositions(viewportWidth, viewportHeight);
 
@@ -305,20 +305,18 @@ public class DebugLightPass extends LightPass {
 		// MIDDLE LINES
 		// left line
 		this.shapeRenderer.rectLine(this.linePositions[0], 0f,
-				this.linePositions[0], this.renderer.game.getHeight(),
+				this.linePositions[0], Gdx.graphics.getHeight(),
 				this.lineWidth);
 		// right line
 		this.shapeRenderer.rectLine(this.linePositions[1], 0f,
-				this.linePositions[1], this.renderer.game.getHeight(),
+				this.linePositions[1], Gdx.graphics.getHeight(),
 				this.lineWidth);
 		// bottom line
 		this.shapeRenderer.rectLine(0f, this.linePositions[2],
-				this.renderer.game.getWidth(), this.linePositions[2],
-				this.lineWidth);
+				Gdx.graphics.getWidth(), this.linePositions[2], this.lineWidth);
 		// top line
 		this.shapeRenderer.rectLine(0f, this.linePositions[3],
-				this.renderer.game.getWidth(), this.linePositions[3],
-				this.lineWidth);
+				Gdx.graphics.getWidth(), this.linePositions[3], this.lineWidth);
 
 		// SCREEN BORDER LINES
 		if (this.lineWidth > 1f) {

@@ -20,6 +20,7 @@ import de.damios.guacamole.gdx.graphics.NestableFrameBuffer;
 import de.eskalon.commons.core.EskalonApplication;
 import de.eskalon.commons.core.EskalonApplicationConfiguration;
 import de.eskalon.commons.input.EskalonGameInputProcessor;
+import de.eskalon.commons.screens.AbstractEskalonScreen;
 import de.eskalon.commons.screens.AbstractImageScreen;
 
 public class PostProcessingComplexLayerExample extends AbstractEskalonExample {
@@ -30,12 +31,11 @@ public class PostProcessingComplexLayerExample extends AbstractEskalonExample {
 	}
 
 	@Override
-	protected String initApp() {
+	protected AbstractEskalonScreen initApp() {
 		Gdx.graphics.setVSync(false);
-		screenManager.addScreen("test-screen", new TestScreen());
 		Gdx.input.getInputProcessor()
 				.keyDown(EskalonGameInputProcessor.toggleOverlayKey);
-		return "test-screen";
+		return new TestScreen();
 	}
 
 	public class TestScreen extends AbstractImageScreen {
@@ -57,10 +57,7 @@ public class PostProcessingComplexLayerExample extends AbstractEskalonExample {
 			a.setDisabled(true);
 			b.setDisabled(true);
 			c.setDisabled(true);
-		}
 
-		@Override
-		protected void create() {
 			setImage(new Texture(Gdx.files.internal("grid1280x720.png")));
 		}
 

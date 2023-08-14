@@ -86,6 +86,10 @@ import de.eskalon.commons.utils.ScreenshotUtils;
 public abstract class EskalonApplication
 		extends ManagedGame<AbstractEskalonScreen, ScreenTransition> {
 
+	/// TODO use DI for assetManager, eventBus, postProcessor, soundManager,
+	/// batch,
+	/// uiSkin, settings
+
 	public static String VERSION;
 
 	private static final Logger LOG = LoggerService
@@ -257,10 +261,6 @@ public abstract class EskalonApplication
 		/*
 		 * SPLASH SCREEN
 		 */
-		this.screenManager.addScreen("blank", new BlankScreen(this));
-		this.screenManager.addScreen("splash",
-				new EskalonSplashScreen(this, config.skipSplashScreen));
-
 		eventBus.register(CommonsAssetsLoadedEvent.class, (ev) -> {
 			try {
 				// Retrieve the loaded assets
@@ -271,15 +271,19 @@ public abstract class EskalonApplication
 
 				// Enable stuff that depends on eskalon's assets
 				applicationInputProcessor.enable();
-				debugInfoRenderer.initialize(getWidth(), getHeight(),
-						assetManager
+				debugInfoRenderer.initialize(Gdx.graphics.getWidth(),
+						Gdx.graphics.getHeight(), assetManager
 								.get(EskalonCommonsAssets.DEFAULT_FONT_NAME));
 
 				// Push second screen (usually asset loading)
 				if (!config.skipSplashScreen) {
-					screenManager.pushScreen("blank", "splashOutTransition1");
-					screenManager.pushScreen("blank", "splashOutTransition2");
-					screenManager.pushScreen(initApp(), "splashOutTransition3");
+					screenManager.pushScreen(new BlankScreen(this),
+							new BlendingTransition(batch, 0.18F,
+									Interpolation.fade));
+					screenManager.pushScreen(new BlankScreen(this),
+							new BlankTimedTransition(0.22F));
+					screenManager.pushScreen(initApp(), new BlendingTransition(
+							batch, 0.35F, Interpolation.pow2In));
 				} else {
 					screenManager.pushScreen(initApp(), null);
 				}
@@ -290,28 +294,12 @@ public abstract class EskalonApplication
 			}
 		});
 
-		if (!config.skipSplashScreen) {
-			BlendingTransition splashBlendingTransition = new BlendingTransition(
-					batch, 0.25F, Interpolation.exp10In);
-			screenManager.addScreenTransition("splashInTransition",
-					splashBlendingTransition);
-			BlendingTransition splashOutTransition1 = new BlendingTransition(
-					batch, 0.18F, Interpolation.fade);
-			screenManager.addScreenTransition("splashOutTransition1",
-					splashOutTransition1);
-			BlankTimedTransition splashOutTransition2 = new BlankTimedTransition(
-					0.22F);
-			screenManager.addScreenTransition("splashOutTransition2",
-					splashOutTransition2);
-			BlendingTransition splashOutTransition3 = new BlendingTransition(
-					batch, 0.35F, Interpolation.pow2In);
-			screenManager.addScreenTransition("splashOutTransition3",
-					splashOutTransition3);
-		}
-
 		// Push the splash screen
-		screenManager.pushScreen("splash",
-				config.skipSplashScreen ? null : "splashInTransition");
+		screenManager.pushScreen(
+				new EskalonSplashScreen(this, config.skipSplashScreen),
+				config.skipSplashScreen ? null
+						: new BlendingTransition(batch, 0.25F,
+								Interpolation.exp10In));
 	}
 
 	/**
@@ -320,7 +308,7 @@ public abstract class EskalonApplication
 	 * @return the name of the screen that should be pushed after the splash
 	 *         screen
 	 */
-	protected abstract String initApp();
+	protected abstract AbstractEskalonScreen initApp();
 
 	@Override
 	public void render() {

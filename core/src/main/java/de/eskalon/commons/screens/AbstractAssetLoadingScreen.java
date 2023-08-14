@@ -43,7 +43,6 @@ import de.eskalon.commons.misc.IFieldAnnotationScanner;
 public abstract class AbstractAssetLoadingScreen extends AbstractEskalonScreen {
 
 	protected EskalonApplication application;
-	private @Nullable String packageRoot;
 
 	private int loadingTicksPerSecond;
 	private float progress;
@@ -59,17 +58,8 @@ public abstract class AbstractAssetLoadingScreen extends AbstractEskalonScreen {
 	public AbstractAssetLoadingScreen(EskalonApplication application,
 			@Nullable String packageRoot, int loadingTicksPerSecond) {
 		this.application = application;
-		this.packageRoot = packageRoot;
 		this.loadingTicksPerSecond = loadingTicksPerSecond;
-	}
 
-	public AbstractAssetLoadingScreen(EskalonApplication application,
-			@Nullable String packageRoot) {
-		this(application, packageRoot, 30);
-	}
-
-	@Override
-	protected void create() {
 		loadOwnAssets();
 
 		if (packageRoot != null) {
@@ -87,10 +77,9 @@ public abstract class AbstractAssetLoadingScreen extends AbstractEskalonScreen {
 		}
 	}
 
-	@Override
-	public void show() {
-		super.show();
-		this.isDone = false;
+	public AbstractAssetLoadingScreen(EskalonApplication application,
+			@Nullable String packageRoot) {
+		this(application, packageRoot, 30);
 	}
 
 	/**
@@ -100,7 +89,8 @@ public abstract class AbstractAssetLoadingScreen extends AbstractEskalonScreen {
 
 	/**
 	 * This method is responsible for finishing up the loaded assets (e.g.
-	 * create the skin) and pushing the next screen.
+	 * creating the skin, compiling shaders, etc.) as well as pushing the next
+	 * screen.
 	 */
 	protected abstract void onFinishedLoading();
 

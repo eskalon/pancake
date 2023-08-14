@@ -9,9 +9,11 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import de.eskalon.commons.core.EskalonApplication;
+import de.eskalon.commons.examples.ImageScreenExample.TestScreen;
 import de.eskalon.commons.input.DefaultInputHandler;
 import de.eskalon.commons.input.DefaultInputListener;
 import de.eskalon.commons.input.IInputHandler;
+import de.eskalon.commons.screens.AbstractEskalonScreen;
 import de.eskalon.commons.screens.BlankScreen;
 
 public class InputBindingsExample extends AbstractEskalonExample {
@@ -25,9 +27,8 @@ public class InputBindingsExample extends AbstractEskalonExample {
 	}
 
 	@Override
-	protected String initApp() {
-		screenManager.addScreen("test-screen", new TestScreen(this));
-		return "test-screen";
+	protected AbstractEskalonScreen initApp() {
+		return new TestScreen(this);
 	}
 
 	public class TestScreen extends BlankScreen {
@@ -48,11 +49,13 @@ public class InputBindingsExample extends AbstractEskalonExample {
 			IInputHandler.registerAxisBinding(settings,
 					TestScreenAxisBindingType.X_AXIS, Keys.A, Keys.D, -2);
 			IInputHandler.registerBinaryBinding(settings,
-					TestScreenBinaryBindingType.SPEED_UP, Keys.SPACE, -2, false);
+					TestScreenBinaryBindingType.SPEED_UP, Keys.SPACE, -2,
+					false);
 
 			/* Create input handler & listener */
 			inputHandler = new DefaultInputHandler<>(settings,
-					TestScreenAxisBindingType.class, TestScreenBinaryBindingType.class);
+					TestScreenAxisBindingType.class,
+					TestScreenBinaryBindingType.class);
 			addInputProcessor((DefaultInputHandler) inputHandler);
 
 			inputHandler.addListener(

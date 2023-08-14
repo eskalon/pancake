@@ -12,6 +12,7 @@ hs_err_pid*
 /desktop/bin/
 /g3d/bin/
 /gwt/bin/
+/tests/bin/
 *.tmp
 *.bak
 *.swp
@@ -27,30 +28,35 @@ hs_err_pid*
 /desktop/nbproject/private/
 /g3d/nbproject/private/
 /gwt/nbproject/private/
+/tests/nbproject/private/
 
 /build/
 /core/build/
 /desktop/build/
 /g3d/build/
 /gwt/build/
+/tests/build/
 
 /nbbuild/
 /core/nbbuild/
 /desktop/nbbuild/
 /g3d/nbbuild/
 /gwt/nbbuild/
+/tests/nbbuild/
 
 /dist/
 /core/dist/
 /desktop/dist/
 /g3d/dist/
 /gwt/dist/
+/tests/dist/
 
 /nbdist/
 /core/nbdist/
 /desktop/nbdist/
 /g3d/nbdist/
 /gwt/nbdist/
+/tests/nbdist/
 
 nbactions.xml
 nb-configuration.xml
@@ -64,6 +70,7 @@ gradle-app.setting
 /desktop/build/
 /g3d/build/
 /gwt/build/
+/tests/build/
 
 ## OS Specific
 .DS_Store

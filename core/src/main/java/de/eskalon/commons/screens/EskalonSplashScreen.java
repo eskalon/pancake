@@ -57,11 +57,8 @@ public class EskalonSplashScreen extends AbstractEskalonScreen {
 		this.game = game;
 		this.skip = skip;
 		this.viewport = new ScreenViewport();
-	}
 
-	@Override
-	protected void create() {
-		// don't use injections for performance reasons
+		// Don't use injections for performance reasons
 		game.getAssetManager().load(EskalonCommonsAssets.LOGO_TEXTURE_PATH,
 				Texture.class);
 		titleImage = game.getAssetManager()
@@ -121,7 +118,7 @@ public class EskalonSplashScreen extends AbstractEskalonScreen {
 
 	@Override
 	public void dispose() {
-		// not needed
+		// not needed; the title image might be used in other screens
 	}
 
 	/**

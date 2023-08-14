@@ -21,7 +21,7 @@ allprojects {
 		gdxVersion = "1.12.0"
 		guacamoleVersion = "631bdc0ae7" // = 0.3.4
 		reflectionsVersion = "0.11.5"
-		screenmanagerVersion = "0.6.9"
+		screenmanagerVersion = "create_new_instances-SNAPSHOT" // = 0.7.0
 		vfxVersion = "0.6.1"
 		
 		// Test dependencies:
@@ -39,6 +39,7 @@ allprojects {
 
 project(":core") {
 	apply plugin: "java-library"
+	apply plugin: "java-test-fixtures" // used to expose LibgdxUnitTest
 
 	dependencies {
 		implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
@@ -89,13 +90,42 @@ project(":desktop") {
 		implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
 		
 		// Test dependencies
+		testImplementation(testFixtures(project(":core")))
 		testImplementation "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+		testImplementation "org.mockito:mockito-core:$mockitoVersion"
+		testImplementation "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
 		testImplementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
 		testImplementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
-		testImplementation "com.github.crykn.gdx-vfx:gdx-vfx-effects:$vfxVersion"
 	}
 	
 	sourceSets.test {
 		resources.srcDirs = ["src/test/assets"]
+	}
+	
+	// This is needed so testFixtures don't break normal dependencies on Eclipse with Gradle 7.5+
+	// See https://github.com/gradle/gradle/issues/21853 and https://github.com/eclipse/buildship/issues/1206 for more information
+	eclipse.classpath.file {
+    	whenMerged { classpath ->
+        	def testDependencies = classpath.entries.findAll { entry -> entry instanceof org.gradle.plugins.ide.eclipse.model.ProjectDependency && entry.entryAttributes.test }
+        	classpath.entries.removeAll testDependencies
+    	}
+	}
+}
+
+project(":tests") {
+	apply plugin: "java-library"
+
+	dependencies {
+		api project(":core")
+		api project(":desktop")
+
+		implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+		implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+		implementation "com.github.crykn.gdx-vfx:gdx-vfx-effects:$vfxVersion"
+		implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
+	}
+	
+	sourceSets.main {
+		resources.srcDirs = ["src/main/assets"]
 	}
 }

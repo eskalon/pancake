@@ -9,6 +9,7 @@ import de.damios.guacamole.gdx.log.Logger;
 import de.damios.guacamole.gdx.log.LoggerService;
 import de.eskalon.commons.core.EskalonApplication;
 import de.eskalon.commons.core.EskalonApplicationConfiguration;
+import de.eskalon.commons.screens.AbstractEskalonScreen;
 import de.eskalon.commons.screens.BlankScreen;
 
 /**
@@ -22,9 +23,8 @@ public class IssueTest extends EskalonApplication {
 	}
 
 	@Override
-	protected String initApp() {
-		screenManager.addScreen("test", new TestScreen(this));
-		return "test";
+	protected AbstractEskalonScreen initApp() {
+		return new TestScreen(this);
 	}
 
 	public class TestScreen extends BlankScreen {
@@ -32,11 +32,7 @@ public class IssueTest extends EskalonApplication {
 
 		public TestScreen(EskalonApplication app) {
 			super(app);
-		}
 
-		@Override
-		public void show() {
-			super.show();
 			LOG.error("Test");
 		}
 

@@ -1,2 +1,2 @@
 rootProject.name = "pancake"
-include "core", "desktop", "g3d"
+include "core", "desktop", "g3d", "tests"

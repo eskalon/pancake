@@ -6,15 +6,16 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
 import de.damios.guacamole.gdx.DefaultInputProcessor;
 import de.eskalon.commons.core.EskalonApplication;
+import de.eskalon.commons.examples.InputBindingsExample.TestScreen;
+import de.eskalon.commons.screens.AbstractEskalonScreen;
 import de.eskalon.commons.screens.BlankScreen;
 import de.eskalon.commons.screens.EskalonSplashScreen.EskalonCommonsAssets;
 
 public class PositionalAudioExample extends AbstractEskalonExample {
 
 	@Override
-	protected String initApp() {
-		screenManager.addScreen("test-screen", new TestScreen(this));
-		return "test-screen";
+	protected AbstractEskalonScreen initApp() {
+		return new TestScreen(this);
 	}
 
 	public class TestScreen extends BlankScreen {

@@ -34,7 +34,10 @@ import com.badlogic.gdx.utils.reflect.ReflectionException;
 
 import de.damios.guacamole.Preconditions;
 import de.damios.guacamole.gdx.reflection.ReflectionUtils;
+import de.eskalon.commons.inject.IInjector;
+import de.eskalon.commons.inject.Inject;
 import de.eskalon.commons.inject.Qualifier;
+import de.eskalon.commons.inject.providers.AssetProvider;
 import de.eskalon.commons.screens.AbstractAssetLoadingScreen;
 
 /**
@@ -159,14 +162,28 @@ public class AnnotationAssetManager extends AssetManager {
 		paramFactories.put(clazz, factory);
 	}
 
-	/** @see #injectAssets(Class, Object) */
+	/**
+	 * @see #injectAssets(Class, Object)
+	 * @deprecated {@link IInjector#injectMembers(Object)} should be used
+	 *             instead. Be sure to annotate your assets with {@link Inject}
+	 *             as well and to bind the necessary asset providers to the
+	 *             injector via
+	 *             {@link AssetProvider#bindAssetProvider(de.eskalon.commons.inject.IInjector, AnnotationAssetManager)}.
+	 */
 	@SuppressWarnings("unchecked")
 	@Deprecated
 	public <T> void injectAssets(T container) {
 		injectAssets((Class<T>) container.getClass(), container);
 	}
 
-	/** @see #getAssetsSet(Class, Object) */
+	/**
+	 * @see #injectAssets(Class, Object)
+	 * @deprecated {@link IInjector#injectMembers(Object)} should be used
+	 *             instead. Be sure to annotate your assets with {@link Inject}
+	 *             as well and to bind the necessary asset providers to the
+	 *             injector via
+	 *             {@link AssetProvider#bindAssetProvider(de.eskalon.commons.inject.IInjector, AnnotationAssetManager)}.
+	 */
 	@Deprecated
 	public void injectAssets(Class<?> container) {
 		injectAssets(container, null);

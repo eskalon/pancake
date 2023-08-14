@@ -33,8 +33,7 @@ import de.eskalon.commons.core.EskalonApplication;
  * the stage for ease of use.
  * <p>
  * An UI skin has to be {@linkplain EskalonApplication#setUISkin(Skin) set for
- * the whole application} before this screen is {@linkplain #create()
- * initialized}.
+ * the whole application} before this screen is instantiated.
  */
 public abstract class AbstractEskalonUIScreen extends AbstractImageScreen {
 
@@ -47,21 +46,14 @@ public abstract class AbstractEskalonUIScreen extends AbstractImageScreen {
 	 */
 	protected Table mainTable;
 	/**
-	 * The default UI skin. Is automatically set in the
-	 * {@link #create()}-method.
+	 * The default UI skin. Is automatically set upon instantiation.
 	 */
 	protected Skin skin;
 
 	public AbstractEskalonUIScreen(int screenWidth, int screenHeight) {
 		super(screenWidth, screenHeight);
 		this.setMode(ImageScreenMode.CENTERED_ORIGINAL_SIZE);
-	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void create() {
 		skin = getApplication().getUISkin();
 
 		stage = new Stage(new ScreenViewport(),
@@ -72,8 +64,6 @@ public abstract class AbstractEskalonUIScreen extends AbstractImageScreen {
 
 		addInputProcessor(stage);
 	}
-
-	protected abstract void setUIValues();
 
 	@Override
 	public void render(float delta) {
@@ -89,18 +79,6 @@ public abstract class AbstractEskalonUIScreen extends AbstractImageScreen {
 
 	protected void renderBackground(float delta) {
 		super.render(delta);
-	}
-
-	@Override
-	public void show() {
-		super.show();
-
-		// Fixes UI elements still being selected when the stage is shown a
-		// second time
-		stage.mouseMoved(1, 1);
-		stage.touchUp(1, 1, 0, 0);
-
-		setUIValues();
 	}
 
 	@Override

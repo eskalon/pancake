@@ -47,13 +47,13 @@ public class AmbientLightPass extends LightPass {
 
 	public AmbientLightPass(DeferredRenderer renderer) {
 		super(renderer);
-		this.orthoCam = new OrthographicCamera(renderer.game.getWidth(),
-				renderer.game.getHeight());
-		this.orthoCam.combined.setToOrtho2D(0, 0, renderer.game.getWidth(),
-				renderer.game.getHeight());
+		this.orthoCam = new OrthographicCamera(Gdx.graphics.getWidth(),
+				Gdx.graphics.getHeight());
+		this.orthoCam.combined.setToOrtho2D(0, 0, Gdx.graphics.getWidth(),
+				Gdx.graphics.getHeight());
 		this.program = ShaderProgramFactory.fromFile(vert, frag);
 		this.screenQuad = QuadMeshGenerator.createFullScreenQuad(
-				renderer.game.getWidth(), renderer.game.getHeight(), true);
+				Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
 	}
 
 	@Override
@@ -92,7 +92,7 @@ public class AmbientLightPass extends LightPass {
 
 	public void resize() {
 		this.screenQuad = QuadMeshGenerator.createFullScreenQuad(
-				renderer.game.getWidth(), renderer.game.getHeight(), true);
+				Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
 	}
 
 }

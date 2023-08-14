@@ -17,6 +17,7 @@ package de.eskalon.commons.screens;
 
 import javax.annotation.Nullable;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -73,11 +74,6 @@ public abstract class AbstractImageScreen extends AbstractEskalonScreen {
 	}
 
 	@Override
-	protected void create() {
-		// do nothing
-	}
-
-	@Override
 	public void render(float delta) {
 		if (image != null) {
 			viewport.apply();
@@ -106,7 +102,8 @@ public abstract class AbstractImageScreen extends AbstractEskalonScreen {
 	}
 
 	/**
-	 * Changes the displayed image.
+	 * Changes the displayed image. The image is <i>not</i> automatically
+	 * disposed by the screen!
 	 * 
 	 * @param image
 	 */
@@ -138,32 +135,30 @@ public abstract class AbstractImageScreen extends AbstractEskalonScreen {
 
 		switch (this.mode) {
 		case STRETCH:
-			this.dimensions.set(getApplication().getWidth(),
-					getApplication().getHeight());
+			this.dimensions.set(Gdx.graphics.getWidth(),
+					Gdx.graphics.getHeight());
 			this.position.set(0, 0);
 			break;
 		case SCALE:
-			scl = image.getWidth() - getApplication().getWidth() >= image
-					.getHeight() - getApplication().getHeight()
-							? getApplication().getWidth()
-									/ (float) image.getWidth()
-							: getApplication().getHeight()
+			scl = image.getWidth() - Gdx.graphics.getWidth() >= image
+					.getHeight() - Gdx.graphics.getHeight()
+							? Gdx.graphics.getWidth() / (float) image.getWidth()
+							: Gdx.graphics.getHeight()
 									/ (float) image.getHeight();
 			this.dimensions.set(image.getWidth() * scl,
 					image.getHeight() * scl);
 			this.position.set(0, 0);
 			break;
 		case CENTERED_SCALE:
-			scl = image.getWidth() - getApplication().getWidth() >= image
-					.getHeight() - getApplication().getHeight()
-							? getApplication().getWidth()
-									/ (float) image.getWidth()
-							: getApplication().getHeight()
+			scl = image.getWidth() - Gdx.graphics.getWidth() >= image
+					.getHeight() - Gdx.graphics.getHeight()
+							? Gdx.graphics.getWidth() / (float) image.getWidth()
+							: Gdx.graphics.getHeight()
 									/ (float) image.getHeight();
 			this.dimensions.set(image.getWidth() * scl,
 					image.getHeight() * scl);
-			this.position.set(
-					(getApplication().getWidth() - this.dimensions.x) / 2, 0);
+			this.position.set((Gdx.graphics.getWidth() - this.dimensions.x) / 2,
+					0);
 			break;
 		case ORIGINAL_SIZE:
 			this.dimensions.set(image.getWidth(), image.getHeight());
@@ -171,9 +166,8 @@ public abstract class AbstractImageScreen extends AbstractEskalonScreen {
 			break;
 		case CENTERED_ORIGINAL_SIZE:
 			this.dimensions.set(image.getWidth(), image.getHeight());
-			this.position.set(
-					(getApplication().getWidth() - image.getWidth()) / 2F,
-					(getApplication().getHeight() - image.getHeight()) / 2F);
+			this.position.set((Gdx.graphics.getWidth() - image.getWidth()) / 2F,
+					(Gdx.graphics.getHeight() - image.getHeight()) / 2F);
 			break;
 		}
 	}

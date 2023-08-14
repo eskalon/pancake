@@ -14,6 +14,7 @@ import de.damios.guacamole.gdx.DefaultInputProcessor;
 import de.eskalon.commons.core.EskalonApplication;
 import de.eskalon.commons.core.EskalonApplicationConfiguration;
 import de.eskalon.commons.input.EskalonGameInputProcessor;
+import de.eskalon.commons.screens.AbstractEskalonScreen;
 import de.eskalon.commons.screens.AbstractImageScreen;
 
 public class PostProcessingSimpleLayerExample extends AbstractEskalonExample {
@@ -24,12 +25,11 @@ public class PostProcessingSimpleLayerExample extends AbstractEskalonExample {
 	}
 
 	@Override
-	protected String initApp() {
+	protected AbstractEskalonScreen initApp() {
 		Gdx.graphics.setVSync(false);
-		screenManager.addScreen("test-screen", new TestScreen());
 		Gdx.input.getInputProcessor()
 				.keyDown(EskalonGameInputProcessor.toggleOverlayKey);
-		return "test-screen";
+		return new TestScreen();
 	}
 
 	public class TestScreen extends AbstractImageScreen {
@@ -54,10 +54,7 @@ public class PostProcessingSimpleLayerExample extends AbstractEskalonExample {
 					return false;
 				}
 			});
-		}
 
-		@Override
-		protected void create() {
 			setImage(new Texture(Gdx.files.internal("test.png")));
 		}
 

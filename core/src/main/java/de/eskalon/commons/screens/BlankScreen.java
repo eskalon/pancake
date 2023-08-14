@@ -36,11 +36,6 @@ public class BlankScreen extends AbstractEskalonScreen {
 	}
 
 	@Override
-	protected void create() {
-		// not needed
-	}
-
-	@Override
 	public void render(float delta) {
 		// do nothing
 	}
