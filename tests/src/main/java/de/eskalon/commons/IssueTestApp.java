@@ -21,9 +21,8 @@ import de.eskalon.commons.screens.BlankScreen;
  */
 public class IssueTestApp extends AbstractEskalonApplication {
 
-	@Inject
 	public IssueTestApp() {
-		super(EskalonApplicationConfiguration.create());
+		super(EskalonApplicationConfiguration.create().build());
 	}
 
 	@Override
@@ -61,10 +60,9 @@ public class IssueTestApp extends AbstractEskalonApplication {
 			config.setForegroundFPS(60);
 
 			try {
-				new Lwjgl3Application(
-						new EskalonApplicationStarter("Test App",
-								IssueTestApp.class,
-								StartArguments.create().enableDebugLogging()),
+				new Lwjgl3Application(new EskalonApplicationStarter("Test App",
+						IssueTestApp.class,
+						StartArguments.create().enableDebugLogging().build()),
 						config);
 			} catch (Exception e) {
 				System.err.println(

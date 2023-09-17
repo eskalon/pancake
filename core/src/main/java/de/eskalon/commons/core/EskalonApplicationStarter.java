@@ -74,7 +74,7 @@ public class EskalonApplicationStarter implements ApplicationListener {
 	public EskalonApplicationStarter(String appName,
 			Class<? extends AbstractEskalonApplication> applicationClazz) {
 		this(appName, applicationClazz,
-				StartArguments.create().enableDebugLogging());
+				StartArguments.create().enableDebugLogging().build());
 	}
 
 	@Override

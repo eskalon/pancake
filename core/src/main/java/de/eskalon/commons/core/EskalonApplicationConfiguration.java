@@ -16,34 +16,51 @@
 package de.eskalon.commons.core;
 
 /**
- * This class holds the configuration for an {@link AbstractEskalonApplication}. Unlike
- * {@link StartArguments}, properties of {@link EskalonApplicationConfiguration}
- * are not passed to the application from the outside, but rather represent
- * (permanent) decisions of the application's developer.
+ * This class holds the configuration for an {@link AbstractEskalonApplication}.
+ * Unlike {@link StartArguments}, properties of
+ * {@link EskalonApplicationConfiguration} are not passed to the application
+ * from the outside, but rather represent (permanent) decisions of the
+ * application's developer.
  * 
  * @author damios
  */
 public class EskalonApplicationConfiguration {
 
-	public static EskalonApplicationConfiguration create() {
-		return new EskalonApplicationConfiguration();
+	/* Builder */
+	public static EskalonApplicationConfigurationBuilder create() {
+		return new EskalonApplicationConfigurationBuilder();
 	}
 
+	public static class EskalonApplicationConfigurationBuilder {
+
+		private EskalonApplicationConfiguration ret;
+
+		private EskalonApplicationConfigurationBuilder() {
+			this.ret = new EskalonApplicationConfiguration();
+		}
+
+		public EskalonApplicationConfigurationBuilder createPostProcessor() {
+			ret.createPostProcessor = true;
+			return this;
+		}
+
+		public EskalonApplicationConfigurationBuilder provideDepthBuffers() {
+			ret.provideDepthBuffers = true;
+			return this;
+		}
+
+		public EskalonApplicationConfiguration build() {
+			return ret;
+		}
+
+	}
+
+	/* Class itself */
 	private boolean createPostProcessor;
 	private boolean provideDepthBuffers;
 
 	private EskalonApplicationConfiguration() {
 		// reduce visibility
-	}
-
-	public EskalonApplicationConfiguration createPostProcessor() {
-		this.createPostProcessor = true;
-		return this;
-	}
-
-	public EskalonApplicationConfiguration provideDepthBuffers() {
-		this.provideDepthBuffers = true;
-		return this;
 	}
 
 	public boolean shouldCreatePostProcessor() {

@@ -44,7 +44,8 @@ public class EskalonExamples {
 		// PLEASE NOTE: This class should not be executed manually! Use
 		// DesktopExampleStarter instead!
 
-		Class<? extends AbstractEskalonApplication> testAppClazz = forName(args[0]);
+		Class<? extends AbstractEskalonApplication> testAppClazz = forName(
+				args[0]);
 		Preconditions.checkNotNull(testAppClazz);
 
 		StartOnFirstThreadHelper.executeIfJVMValid(() -> {
@@ -56,9 +57,10 @@ public class EskalonExamples {
 			config.setForegroundFPS(150);
 
 			try {
-				new Lwjgl3Application(new EskalonApplicationStarter(args[0],
-						testAppClazz, StartArguments.create()
-								.enableDebugLogging().skipSplashScreen()),
+				new Lwjgl3Application(
+						new EskalonApplicationStarter(args[0], testAppClazz,
+								StartArguments.create().enableDebugLogging()
+										.skipSplashScreen().build()),
 						config);
 			} catch (Exception e) {
 				System.err.println(

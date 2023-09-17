@@ -23,7 +23,8 @@ public class PostProcessingSimpleLayerExample
 		extends AbstractEskalonApplication {
 
 	public PostProcessingSimpleLayerExample() {
-		super(EskalonApplicationConfiguration.create().createPostProcessor());
+		super(EskalonApplicationConfiguration.create().createPostProcessor()
+				.build());
 	}
 
 	@Override

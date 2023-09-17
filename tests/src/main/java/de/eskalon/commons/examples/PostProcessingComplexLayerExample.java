@@ -29,7 +29,8 @@ public class PostProcessingComplexLayerExample
 		extends AbstractEskalonApplication {
 
 	public PostProcessingComplexLayerExample() {
-		super(EskalonApplicationConfiguration.create().createPostProcessor());
+		super(EskalonApplicationConfiguration.create().createPostProcessor()
+				.build());
 	}
 
 	@Override

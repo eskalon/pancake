@@ -24,7 +24,8 @@ import de.eskalon.commons.screens.BlankScreen;
 public class PostProcessingExample extends AbstractEskalonApplication {
 
 	public PostProcessingExample() {
-		super(EskalonApplicationConfiguration.create().createPostProcessor());
+		super(EskalonApplicationConfiguration.create().createPostProcessor()
+				.build());
 	}
 
 	@Override

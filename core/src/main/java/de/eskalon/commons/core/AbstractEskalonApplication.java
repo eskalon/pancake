@@ -104,7 +104,7 @@ public abstract class AbstractEskalonApplication
 	private DebugInfoRenderer debugInfoRenderer;
 
 	protected AbstractEskalonApplication() {
-		this(EskalonApplicationConfiguration.create());
+		this(EskalonApplicationConfiguration.create().build());
 	}
 
 	protected AbstractEskalonApplication(

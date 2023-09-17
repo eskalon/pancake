@@ -23,22 +23,38 @@ public class StartArguments {
 	private boolean enableDebugLoggingOnStartup;
 	private boolean skipSplashScreen;
 
-	public static StartArguments create() {
-		return new StartArguments();
+	/* Builder */
+	public static StartArgumentsBuilder create() {
+		return new StartArgumentsBuilder();
 	}
 
+	public static class StartArgumentsBuilder {
+
+		private StartArguments ret;
+
+		private StartArgumentsBuilder() {
+			this.ret = new StartArguments();
+		}
+
+		public StartArgumentsBuilder enableDebugLogging() {
+			ret.enableDebugLoggingOnStartup = true;
+			return this;
+		}
+
+		public StartArgumentsBuilder skipSplashScreen() {
+			ret.skipSplashScreen = true;
+			return this;
+		}
+
+		public StartArguments build() {
+			return ret;
+		}
+
+	}
+
+	/* Class itself */
 	private StartArguments() {
 		// reduce visibility
-	}
-
-	public StartArguments enableDebugLogging() {
-		this.enableDebugLoggingOnStartup = true;
-		return this;
-	}
-
-	public StartArguments skipSplashScreen() {
-		this.skipSplashScreen = true;
-		return this;
 	}
 
 	public boolean shouldEnableDebugLogging() {
