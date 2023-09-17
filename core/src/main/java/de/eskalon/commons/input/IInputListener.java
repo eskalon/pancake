@@ -15,6 +15,12 @@
 
 package de.eskalon.commons.input;
 
+/**
+ * This is a listener for input events provided by {@link IInputHandler}.
+ * 
+ * @param <E>
+ * @param <F>
+ */
 public interface IInputListener<E extends Enum<E>, F extends Enum<F>> {
 
 	public boolean on(F id);

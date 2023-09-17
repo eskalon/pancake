@@ -45,13 +45,13 @@ public interface ISoundManager {
 	 * 
 	 * @param name
 	 *            the name of the sound
-	 * @param stopIfPlaying
+	 * @param stopIfAlreadyPlaying
 	 *            whether to stop all currently playing instances of this sound
 	 * @return the sound instance used to control the playback
 	 */
 	public default ISoundInstance playSoundEffect(String name,
-			boolean stopIfPlaying) {
-		return playSoundEffect(name, stopIfPlaying, 1F);
+			boolean stopIfAlreadyPlaying) {
+		return playSoundEffect(name, stopIfAlreadyPlaying, 1F);
 	}
 
 	/**
@@ -60,7 +60,7 @@ public interface ISoundManager {
 	 * 
 	 * @param name
 	 *            the name of the sound
-	 * @param stopIfPlaying
+	 * @param stopIfAlreadyPlaying
 	 *            whether to stop all currently playing instances of the sound
 	 * @param pitch
 	 *            the pitch multiplier; {@code 1} by default, {@code >1} to play
@@ -68,8 +68,8 @@ public interface ISoundManager {
 	 *            {@code 0.5} and {@code 2.0}
 	 * @return the sound instance used to control the playback
 	 */
-	public ISoundInstance playSoundEffect(String name, boolean stopIfPlaying,
-			float pitch);
+	public ISoundInstance playSoundEffect(String name,
+			boolean stopIfAlreadyPlaying, float pitch);
 
 	/**
 	 * Plays a certain music playlist.

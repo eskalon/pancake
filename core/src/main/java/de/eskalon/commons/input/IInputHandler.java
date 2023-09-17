@@ -16,8 +16,17 @@
 package de.eskalon.commons.input;
 
 import de.eskalon.commons.settings.EskalonSettings;
-import de.eskalon.commons.settings.IntProperty;
 
+/**
+ * This class handles input events for bindings, which were previously
+ * registered via
+ * {@link #registerAxisBinding(EskalonSettings, Enum, int, int, int)} and
+ * {@link #registerBinaryBinding(EskalonSettings, Enum, int, int, boolean)}. To
+ * process inputs add listeners via {@link #addListener(IInputListener)}.
+ * 
+ * @param <E>
+ * @param <F>
+ */
 public interface IInputHandler<E extends Enum<E>, F extends Enum<F>> {
 
 	public void addListener(IInputListener<E, F> listener);

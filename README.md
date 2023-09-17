@@ -13,21 +13,22 @@ Pancake uses the following libraries and frameworks :
 - [guacamole](https://github.com/crykn/guacamole)
 - [gdx-vfx](https://github.com/crykn/gdx-vfx) (in a forked version)
 - [freetype-skin](https://github.com/crykn/freetype-skin)
-- [reflections](https://github.com/ronmamo/reflections) (for the classpath scanning in AbstractAssetLoadingScreen)
+- [reflections](https://github.com/ronmamo/reflections) (for `DesktopFieldAnnotationScanner` which is used in for asset loading)
 
 ## Content
 A selection of what Pancake offers:
 
 ### <u>core:</u>
+- **AbstractEskalonApplication:** the core application; has to be created via `EskalonApplicationStarter` to take advantage of its features. Dependency injection is used to provide various useful objects, for instance a sprite batch, an asset manager, a sound manager, an event bus, a post processing pipeline etc.
 - **AnnotationAssetManager**
 	- `@Asset("cool_texture.jpg")`, `@Asset(value = "ui/skin/skin.json", params = "ui/skin/skin.atlas")`
 	- `#loadAnnotatedAssets(Class<T> clazz)`
-	- `#injectAssets(Class<T> clazz, @Nullable T instance)`
+	- `#injectAssets(Class<T> clazz, @Nullable T instance)`; superseded by `IInjector#injectMembers(Object)`
 	- `#registerAssetLoaderParametersFactory(Class<T> clazz, AssetLoaderParametersFactory<T> factory)`
 - **DefaultSoundManager & Playlist**
 	- `#playSoundEffect(String name)`
 	- `#playMusic(String playlistName)`
-	- Playlist files:
+	- Playlist files (loaded via `PlaylistDefinitionLoader`):
 ```java
 {
    name: "best_playlist_ever",
@@ -41,13 +42,13 @@ A selection of what Pancake offers:
      ]
  }
  ```
-- **EskalonApplication:** the core application, which keeps a sprite batch, an asset manager, a sound manager, an event bus etc.
+- **EskalonInjector:** a simple dependency injection system; the most common classes are registered by `EskalonApplicationStarter` and `AbstractEskalonApplication`
 - **EventBus:** a simple event bus system
-- **PostProcessingPipeline:** A simple post processing pipeline based on gdx-vfx
-- **DefaultInputHandler**
+- **PostProcessingPipeline:** A simple post processing pipeline based on [gdx-vfx](https://github.com/crykn/gdx-vfx)
+- **DefaultInputHandler**; provides mappable key bindings which can be handled via `IInputListener`
 - **Lang, ILocalizable & ILocalized**
 	- `Lang#get(String key, Object... args)`
-- **DebugInfoRenderer:** renders some debug information, including a neat fps graph
+- **DebugInfoRenderer:** renders some debug information, including a neat FPS graph
 - **AbstractAssetLoadingScreen:** a screen loading all assets annotated with `@Asset` in a specified package 
 - **AbstractEskalonUIScreen:** a screen rendering a background image & a stage
 - **AbstractImageScreen:** a simple screen rendering one image
@@ -58,6 +59,7 @@ A selection of what Pancake offers:
 
 ### desktop
 - Audio implementations that support spatial audio
+- A field annotation scanner utilising [reflections](https://github.com/ronmamo/reflections)
 
 ### g3d:
 - A **deferred renderer** [WIP]

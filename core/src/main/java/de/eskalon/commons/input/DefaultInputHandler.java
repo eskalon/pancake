@@ -20,16 +20,27 @@ import java.util.LinkedList;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.ObjectMap.Entry;
 
 import de.damios.guacamole.Preconditions;
 import de.damios.guacamole.gdx.DefaultInputProcessor;
+import de.eskalon.commons.screen.ManagedScreen;
 import de.eskalon.commons.settings.BooleanProperty;
 import de.eskalon.commons.settings.EskalonSettings;
 import de.eskalon.commons.settings.IntProperty;
 
+/**
+ * This class is the main implementation of {@link IInputHandler}.
+ * <p>
+ * It has to be added as an input processor to libGDX (e.g. via
+ * {@link ManagedScreen#addInputProcessor(InputProcessor)}).
+ * 
+ * @param <E>
+ * @param <F>
+ */
 public class DefaultInputHandler<E extends Enum<E>, F extends Enum<F>>
 		implements DefaultInputProcessor, IInputHandler<E, F> {
 

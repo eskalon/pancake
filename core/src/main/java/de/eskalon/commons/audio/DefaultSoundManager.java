@@ -77,8 +77,8 @@ public class DefaultSoundManager implements ISoundManager, Disposable {
 	}
 
 	@Override
-	public ISoundInstance playSoundEffect(String name, boolean stopIfPlaying,
-			float pitch) {
+	public ISoundInstance playSoundEffect(String name,
+			boolean stopIfAlreadyPlaying, float pitch) {
 		Sound effect = soundEffects.get(name);
 
 		if (effect == null)
@@ -86,7 +86,7 @@ public class DefaultSoundManager implements ISoundManager, Disposable {
 					"There is no sound effect with the name '" + name
 							+ "' registered");
 
-		if (stopIfPlaying)
+		if (stopIfAlreadyPlaying)
 			effect.stop();
 
 		long id = effect.play(getEffectiveVolume(effectVolume));
