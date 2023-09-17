@@ -11,6 +11,7 @@ buildscript {
 allprojects {
 	apply plugin: "eclipse"
 	apply plugin: "idea"
+	apply plugin: "java-library"
 
 	version = "0.1.2"
 	
@@ -38,7 +39,6 @@ allprojects {
 }
 
 project(":core") {
-	apply plugin: "java-library"
 	apply plugin: "java-test-fixtures" // used to expose LibgdxUnitTest
 
 	dependencies {
@@ -60,6 +60,12 @@ project(":core") {
 		testImplementation "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
 		testImplementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
 		testImplementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
+	
+		// Test fixture dependencies
+		testFixturesImplementation "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+		testFixturesImplementation "org.mockito:mockito-core:$mockitoVersion"
+		testFixturesImplementation "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
+	
 	}
 
 	sourceSets.main {
@@ -72,8 +78,6 @@ project(":core") {
 }
 
 project(":g3d") {
-	apply plugin: "java-library"
-
 	dependencies {
 		api project(":core")
 		implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
@@ -81,8 +85,6 @@ project(":g3d") {
 }
 
 project(":desktop") {
-	apply plugin: "java-library"
-
 	dependencies {
 		api project(":core")
 		api "com.github.crykn.guacamole:gdx-desktop:$guacamoleVersion"
@@ -95,11 +97,12 @@ project(":desktop") {
 		testImplementation "org.mockito:mockito-core:$mockitoVersion"
 		testImplementation "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
 		testImplementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+		testImplementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
 		testImplementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
 	}
 	
 	sourceSets.test {
-		resources.srcDirs = ["src/test/assets"]
+		resources.srcDirs = ["../core/src/test/assets"]
 	}
 	
 	// This is needed so testFixtures don't break normal dependencies on Eclipse with Gradle 7.5+
@@ -113,8 +116,6 @@ project(":desktop") {
 }
 
 project(":tests") {
-	apply plugin: "java-library"
-
 	dependencies {
 		api project(":core")
 		api project(":desktop")
