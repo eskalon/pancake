@@ -34,6 +34,7 @@ import com.badlogic.gdx.utils.reflect.Method;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 
 import de.damios.guacamole.ConcatenatedIterator;
+import de.damios.guacamole.Exceptions;
 import de.damios.guacamole.MoreObjects;
 import de.damios.guacamole.Preconditions;
 import de.damios.guacamole.gdx.log.Logger;
@@ -111,7 +112,7 @@ public class EventBus {
 		} catch (ReflectionException e) {
 			LOG.error(
 					"Cannot retrieve the accept(Object) method of the given consumer. "
-							+ e);
+							+ Exceptions.getStackTraceAsString(e));
 		}
 	}
 

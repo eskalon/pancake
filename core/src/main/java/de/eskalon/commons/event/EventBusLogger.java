@@ -15,6 +15,7 @@
 
 package de.eskalon.commons.event;
 
+import de.damios.guacamole.Exceptions;
 import de.damios.guacamole.gdx.log.Logger;
 import de.damios.guacamole.gdx.log.LoggerService;
 
@@ -35,7 +36,8 @@ public class EventBusLogger {
 				"Exception thrown by subscriber method '%s(%s)' on subscriber '%s' when dispatching event '%s': %s",
 				ev.getSubscriberMethod().getName(),
 				ev.getSubscriberMethod().getParameterTypes()[0].getSimpleName(),
-				ev.getSubscriber(), ev.getEvent(), ev.getCause());
+				ev.getSubscriber(), ev.getEvent(),
+				Exceptions.getStackTraceAsString(ev.getCause()));
 	}
 
 	@Subscribe

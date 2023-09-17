@@ -1,6 +1,5 @@
 package de.eskalon.commons.screens;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
@@ -16,7 +15,8 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import de.eskalon.commons.LibgdxUnitTest;
 import de.eskalon.commons.asset.AnnotationAssetManager;
 import de.eskalon.commons.asset.BitmapFontAssetLoaderParametersFactory;
-import de.eskalon.commons.core.EskalonApplication;
+import de.eskalon.commons.core.AbstractEskalonApplication;
+import de.eskalon.commons.inject.EskalonInjector;
 
 public class AbstractAssetLoadingScreenTest extends LibgdxUnitTest {
 
@@ -38,11 +38,8 @@ public class AbstractAssetLoadingScreenTest extends LibgdxUnitTest {
 
 	@Test
 	public void test() {
-		EskalonApplication game = Mockito.spy(EskalonApplication.class);
 		AnnotationAssetManager a = createAssetManager();
-		Mockito.doReturn(a).when(game).getAssetManager();
-
-		AbstractAssetLoadingScreen s = new AbstractAssetLoadingScreen(game,
+		AbstractAssetLoadingScreen s = new AbstractAssetLoadingScreen(a, 
 				"de.eskalon.commons.screens.test") {
 
 			@Override
@@ -65,8 +62,6 @@ public class AbstractAssetLoadingScreenTest extends LibgdxUnitTest {
 
 		while (!isFinished)
 			s.render(1);
-
-		assertEquals(game, s.getApplication());
 
 		assertTrue(a.isLoaded("test.png"));
 		assertTrue(a.isLoaded("randomName.ttf"));

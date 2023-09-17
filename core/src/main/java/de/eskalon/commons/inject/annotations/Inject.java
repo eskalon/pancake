@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 damios
+ * Copyright 2023 eskalon
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,19 @@
  * limitations under the License.
  */
 
-package de.eskalon.commons.inject;
+package de.eskalon.commons.inject.annotations;
 
-import java.util.function.Consumer;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import de.damios.guacamole.Preconditions;
-
-@FunctionalInterface
-public interface Provider<T> {
-
-	T provide();
-
+/**
+ * Marks injectable fields and constructors.
+ */
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.CONSTRUCTOR, ElementType.FIELD })
+public @interface Inject {
 }

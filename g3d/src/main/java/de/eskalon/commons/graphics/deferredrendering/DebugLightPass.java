@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
@@ -50,6 +51,8 @@ import de.eskalon.commons.utils.GL32CMacIssueHandler;
  * @author Sarroxxie
  */
 public class DebugLightPass extends LightPass {
+
+	private AssetManager assetManager;
 
 	private Camera orthoCam;
 	private Map<String, Mesh> quads = new ConcurrentHashMap<String, Mesh>();
@@ -103,13 +106,16 @@ public class DebugLightPass extends LightPass {
 
 	private ShaderProgram program, depth, metallic, roughness, ambient;
 
-	public DebugLightPass(DeferredRenderer renderer) {
+	public DebugLightPass(DeferredRenderer renderer, AssetManager assetManager,
+			SpriteBatch batch) {
 		super(renderer);
+		this.assetManager = assetManager;
+
 		this.orthoCam = new OrthographicCamera(Gdx.graphics.getWidth(),
 				Gdx.graphics.getHeight());
 		this.orthoCam.combined.setToOrtho2D(0, 0, Gdx.graphics.getWidth(),
 				Gdx.graphics.getHeight());
-		this.sBatch = this.renderer.game.getSpriteBatch();
+		this.sBatch = batch;
 		this.shapeRenderer = new ShapeRenderer(5000, GL32CMacIssueHandler
 				.createImmediateModeRenderer20DefaultShader(false, true, 0));
 
@@ -257,7 +263,7 @@ public class DebugLightPass extends LightPass {
 	 */
 	protected void renderDebugText() {
 		if (this.defaultFont == null) {
-			this.defaultFont = this.renderer.game.getAssetManager()
+			this.defaultFont = this.assetManager
 					.get(EskalonCommonsAssets.DEFAULT_FONT_NAME);
 		}
 		this.sBatch.begin();

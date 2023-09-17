@@ -24,6 +24,8 @@ import org.lwjgl.openal.AL10;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 
+import de.eskalon.commons.inject.annotations.Inject;
+import de.eskalon.commons.inject.annotations.Singleton;
 import de.eskalon.commons.settings.EskalonSettings;
 
 /**
@@ -31,6 +33,8 @@ import de.eskalon.commons.settings.EskalonSettings;
  */
 public class DesktopSoundManager extends DefaultSoundManager {
 
+	@Inject
+	@Singleton
 	public DesktopSoundManager(EskalonSettings settings) {
 		super(settings);
 	}

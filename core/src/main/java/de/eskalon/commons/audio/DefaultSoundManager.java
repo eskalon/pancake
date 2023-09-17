@@ -27,6 +27,8 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.Timer;
 
 import de.damios.guacamole.tuple.Pair;
+import de.eskalon.commons.inject.annotations.Inject;
+import de.eskalon.commons.inject.annotations.Singleton;
 import de.eskalon.commons.settings.EskalonSettings;
 import de.eskalon.commons.settings.FloatProperty;
 import de.eskalon.commons.utils.MathStuffUtils;
@@ -61,6 +63,8 @@ public class DefaultSoundManager implements ISoundManager, Disposable {
 	protected @Nullable Playlist currentPlaylist;
 	protected @Nullable Pair<Music, String> currentSong;
 
+	@Inject
+	@Singleton
 	public DefaultSoundManager(EskalonSettings settings) {
 		this.settings = settings;
 

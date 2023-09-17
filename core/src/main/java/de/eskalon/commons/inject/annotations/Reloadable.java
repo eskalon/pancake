@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 damios
+ * Copyright 2023 eskalon
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,25 +13,24 @@
  * limitations under the License.
  */
 
-package de.eskalon.commons.inject;
+package de.eskalon.commons.inject.annotations;
 
-import java.lang.annotation.Annotation;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import de.eskalon.commons.inject.annotations.Qualifier;
+import de.damios.guacamole.annotations.Beta;
+import de.eskalon.commons.inject.IInjector;
 
 /**
- * A dependency provider which only injects into fields annotated with a certain
- * {@link Qualifier}.
- * <p>
- * At the moment, {@link QualifiedProvider}s are ignored for constructor
- * injection.
- * 
- * @param <T>
- * @see IInjector#bindToQualifiedProvider(Class, Class, QualifiedProvider)
+ * Marks fields which should be {@link IInjector#reloadMembers(Object)
+ * reloadable}.
  */
-@FunctionalInterface
-public interface QualifiedProvider<T, Q extends Annotation> {
-
-	T provide(Q q);
-
+@Beta
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface Reloadable {
 }

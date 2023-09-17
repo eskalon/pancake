@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package de.eskalon.commons.inject;
+package de.eskalon.commons.inject.annotations;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -21,11 +21,19 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import de.damios.guacamole.annotations.Beta;
+import de.eskalon.commons.inject.IInjector;
+import de.eskalon.commons.inject.QualifiedProvider;
 
-@Beta
+/**
+ * Marks classes which should only get instantiated once by the
+ * {@link IInjector} and cached for future retrieval.
+ * <p>
+ * The annotation has to be put on the class's constructor (which was annotated
+ * with {@link Inject}) or
+ * {@link QualifiedProvider#provide(java.lang.annotation.Annotation)}.
+ */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface Reloadable {
+@Target({ ElementType.CONSTRUCTOR, ElementType.METHOD })
+public @interface Singleton {
 }

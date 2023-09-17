@@ -1,33 +1,34 @@
 package de.eskalon.commons.examples;
 
 import de.eskalon.commons.asset.PlaylistDefinition;
-import de.eskalon.commons.core.EskalonApplication;
-import de.eskalon.commons.examples.InputBindingsExample.TestScreen;
+import de.eskalon.commons.core.AbstractEskalonApplication;
+import de.eskalon.commons.examples.ImageScreenExample.TestScreen;
+import de.eskalon.commons.inject.EskalonInjector;
+import de.eskalon.commons.inject.annotations.Inject;
 import de.eskalon.commons.screens.AbstractEskalonScreen;
 import de.eskalon.commons.screens.BlankScreen;
 
-public class MusicExample extends AbstractEskalonExample {
+public class MusicExample extends AbstractEskalonApplication {
 
 	@Override
-	protected AbstractEskalonScreen initApp() {
-		return new TestScreen(this);
+	protected Class<? extends AbstractEskalonScreen> initApp() {
+		EskalonInjector.getInstance().bindToConstructor(TestScreen.class);
+		return TestScreen.class;
 	}
 
 	public class TestScreen extends BlankScreen {
 
-		public TestScreen(EskalonApplication app) {
-			super(app);
+		@Inject // needed so the class does not have to be static
+		public TestScreen() {
+			assetManager.load("music/playlist.json", PlaylistDefinition.class);
+			assetManager.finishLoading();
 
-			app.getAssetManager().load("music/playlist.json",
-					PlaylistDefinition.class);
-			getApplication().getAssetManager().finishLoading();
-
-			PlaylistDefinition playlistDef = app.getAssetManager()
+			PlaylistDefinition playlistDef = assetManager
 					.get("music/playlist.json", PlaylistDefinition.class);
 
 			PlaylistDefinition.addPlaylistDefinitionToSoundManager(playlistDef,
-					app.getSoundManager(), app.getAssetManager());
-			app.getSoundManager().playMusic("default");
+					soundManager, assetManager);
+			soundManager.playMusic("default");
 		}
 
 	}

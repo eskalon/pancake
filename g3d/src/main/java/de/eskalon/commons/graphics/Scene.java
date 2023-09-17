@@ -15,12 +15,13 @@
 
 package de.eskalon.commons.graphics;
 
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 
-import de.eskalon.commons.core.EskalonApplication;
 import de.eskalon.commons.graphics.deferredrendering.DeferredRenderer;
 
 /**
@@ -32,7 +33,6 @@ public class Scene implements Disposable {
 
 	private Array<ModelInstance> instances;
 	private IRenderer renderer;
-	private EskalonApplication game;
 
 	private Camera camera;
 
@@ -43,10 +43,11 @@ public class Scene implements Disposable {
 	 * @param height
 	 *            viewport height
 	 */
-	public Scene(EskalonApplication game, int width, int height) {
-		this.game = game;
+	// TODO: use dependency injection
+	public Scene(AssetManager assetManager, SpriteBatch batch, int width,
+			int height) {
 		this.instances = new Array<ModelInstance>();
-		this.renderer = new DeferredRenderer(this.game);
+		this.renderer = new DeferredRenderer(assetManager, batch);
 	}
 
 	public void render() {

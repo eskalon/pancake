@@ -6,33 +6,38 @@ import com.badlogic.gdx.graphics.Color;
 
 import de.damios.guacamole.gdx.StartOnFirstThreadHelper;
 import de.damios.guacamole.gdx.log.Logger;
-import de.damios.guacamole.gdx.log.LoggerService;
-import de.eskalon.commons.core.EskalonApplication;
+import de.eskalon.commons.core.AbstractEskalonApplication;
 import de.eskalon.commons.core.EskalonApplicationConfiguration;
+import de.eskalon.commons.core.EskalonApplicationStarter;
+import de.eskalon.commons.core.StartArguments;
+import de.eskalon.commons.inject.EskalonInjector;
+import de.eskalon.commons.inject.annotations.Inject;
+import de.eskalon.commons.inject.providers.LoggerProvider.Log;
 import de.eskalon.commons.screens.AbstractEskalonScreen;
 import de.eskalon.commons.screens.BlankScreen;
 
 /**
  * A simple runnable app to test issues.
  */
-public class IssueTest extends EskalonApplication {
+public class IssueTestApp extends AbstractEskalonApplication {
 
-	@Override
-	protected EskalonApplicationConfiguration getAppConfig() {
-		return super.getAppConfig().enableDebugLoggingOnStartup();
+	@Inject
+	public IssueTestApp() {
+		super(EskalonApplicationConfiguration.create());
 	}
 
 	@Override
-	protected AbstractEskalonScreen initApp() {
-		return new TestScreen(this);
+	protected Class<? extends AbstractEskalonScreen> initApp() {
+		EskalonInjector.getInstance().bindToConstructor(TestScreen.class);
+		return TestScreen.class;
 	}
 
-	public class TestScreen extends BlankScreen {
-		private final Logger LOG = LoggerService.getLogger(TestScreen.class);
+	public static class TestScreen extends BlankScreen {
+		private @Log(TestScreen.class) @Inject Logger LOG;
 
-		public TestScreen(EskalonApplication app) {
-			super(app);
-
+		@Override
+		public void show() {
+			super.show();
 			LOG.error("Test");
 		}
 
@@ -56,7 +61,11 @@ public class IssueTest extends EskalonApplication {
 			config.setForegroundFPS(60);
 
 			try {
-				new Lwjgl3Application(new IssueTest(), config);
+				new Lwjgl3Application(
+						new EskalonApplicationStarter("Test App",
+								IssueTestApp.class,
+								StartArguments.create().enableDebugLogging()),
+						config);
 			} catch (Exception e) {
 				System.err.println(
 						"An unexpected error occurred while starting the app:");

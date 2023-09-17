@@ -6,7 +6,14 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import de.eskalon.commons.examples.AbstractEskalonExample;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
+
+import de.damios.guacamole.Preconditions;
+import de.damios.guacamole.gdx.StartOnFirstThreadHelper;
+import de.eskalon.commons.core.AbstractEskalonApplication;
+import de.eskalon.commons.core.EskalonApplicationStarter;
+import de.eskalon.commons.core.StartArguments;
 import de.eskalon.commons.examples.ImageScreenExample;
 import de.eskalon.commons.examples.InputBindingsExample;
 import de.eskalon.commons.examples.InputMouseDraggedExample;
@@ -15,11 +22,11 @@ import de.eskalon.commons.examples.PositionalAudioExample;
 import de.eskalon.commons.examples.PostProcessingComplexLayerExample;
 import de.eskalon.commons.examples.PostProcessingExample;
 import de.eskalon.commons.examples.PostProcessingSimpleLayerExample;
+import de.eskalon.commons.inject.EskalonInjector;
 
-//Based on libGDX's GdxTests
 public class EskalonExamples {
 
-	public static final List<Class<? extends AbstractEskalonExample>> TESTS = new ArrayList<>(
+	public static final List<Class<? extends AbstractEskalonApplication>> TESTS = new ArrayList<>(
 			Arrays.asList(
 			// @formatter:off
 					ImageScreenExample.class,
@@ -33,18 +40,38 @@ public class EskalonExamples {
 			// @formatter:on
 			));
 
-	public static @Nullable AbstractEskalonExample newTest(String testName) {
-		try {
-			return forName(testName).newInstance();
-		} catch (InstantiationException | IllegalAccessException e) {
-			e.printStackTrace();
-		}
-		return null;
+	public static void main(String[] args) {
+		// PLEASE NOTE: This class should not be executed manually! Use
+		// DesktopExampleStarter instead!
+
+		Class<? extends AbstractEskalonApplication> testAppClazz = forName(args[0]);
+		Preconditions.checkNotNull(testAppClazz);
+
+		StartOnFirstThreadHelper.executeIfJVMValid(() -> {
+			Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
+			config.setTitle(args[0]);
+			config.setWindowedMode(1280, 720);
+			config.setResizable(false);
+			config.useVsync(false);
+			config.setForegroundFPS(150);
+
+			try {
+				new Lwjgl3Application(new EskalonApplicationStarter(args[0],
+						testAppClazz, StartArguments.create()
+								.enableDebugLogging().skipSplashScreen()),
+						config);
+			} catch (Exception e) {
+				System.err.println(
+						"An unexpected error occurred while starting the test application:");
+				e.printStackTrace();
+				System.exit(-1);
+			}
+		});
 	}
 
-	private static @Nullable Class<? extends AbstractEskalonExample> forName(
+	private static @Nullable Class<? extends AbstractEskalonApplication> forName(
 			String name) {
-		for (Class<? extends AbstractEskalonExample> clazz : TESTS) {
+		for (Class<? extends AbstractEskalonApplication> clazz : TESTS) {
 			if (clazz.getSimpleName().equals(name))
 				return clazz;
 		}

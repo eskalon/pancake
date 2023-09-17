@@ -16,32 +16,28 @@
 package de.eskalon.commons.core;
 
 /**
- * The class used to configure {@link EskalonApplication}.
+ * This class holds the configuration for an {@link AbstractEskalonApplication}. Unlike
+ * {@link StartArguments}, properties of {@link EskalonApplicationConfiguration}
+ * are not passed to the application from the outside, but rather represent
+ * (permanent) decisions of the application's developer.
  * 
  * @author damios
  */
 public class EskalonApplicationConfiguration {
 
-	String appName = "Eskalon App";
-	boolean createPostProcessor;
-	boolean enableDebugLoggingOnStartup;
-	boolean provideDepthBuffers;
-	boolean skipSplashScreen;
+	public static EskalonApplicationConfiguration create() {
+		return new EskalonApplicationConfiguration();
+	}
 
-	public EskalonApplicationConfiguration() {
-		this.createPostProcessor = false;
-		this.enableDebugLoggingOnStartup = false;
-		this.provideDepthBuffers = false;
-		this.skipSplashScreen = false;
+	private boolean createPostProcessor;
+	private boolean provideDepthBuffers;
+
+	private EskalonApplicationConfiguration() {
+		// reduce visibility
 	}
 
 	public EskalonApplicationConfiguration createPostProcessor() {
 		this.createPostProcessor = true;
-		return this;
-	}
-
-	public EskalonApplicationConfiguration enableDebugLoggingOnStartup() {
-		this.enableDebugLoggingOnStartup = true;
 		return this;
 	}
 
@@ -50,14 +46,19 @@ public class EskalonApplicationConfiguration {
 		return this;
 	}
 
-	public EskalonApplicationConfiguration skipSplashScreen() {
-		this.skipSplashScreen = true;
-		return this;
+	public boolean shouldCreatePostProcessor() {
+		return createPostProcessor;
 	}
 
-	public EskalonApplicationConfiguration setAppName(String appName) {
-		this.appName = appName;
-		return this;
+	public boolean shouldProvideDepthBuffers() {
+		return provideDepthBuffers;
+	}
+
+	@Override
+	public String toString() {
+		return "EskalonApplicationConfiguration{createPostProcessor="
+				+ createPostProcessor + ",provideDepthBuffers="
+				+ provideDepthBuffers + "}";
 	}
 
 }

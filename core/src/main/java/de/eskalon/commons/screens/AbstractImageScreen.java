@@ -19,11 +19,13 @@ import javax.annotation.Nullable;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import de.damios.guacamole.Preconditions;
+import de.eskalon.commons.inject.annotations.Inject;
 
 /**
  * A basic screen displaying one texture.
@@ -59,12 +61,18 @@ public abstract class AbstractImageScreen extends AbstractEskalonScreen {
 
 	public static final ImageScreenMode DEFAULT_SCREEN_MODE = ImageScreenMode.STRETCH;
 
+	private @Inject SpriteBatch batch;
+
 	private @Nullable Texture image;
 	private Vector2 dimensions;
 	private Vector2 position;
 
 	private Viewport viewport;
 	private ImageScreenMode mode;
+
+	public AbstractImageScreen() {
+		this(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+	}
 
 	public AbstractImageScreen(int screenWidth, int screenHeight) {
 		this.dimensions = new Vector2(screenWidth, screenHeight);
@@ -77,13 +85,12 @@ public abstract class AbstractImageScreen extends AbstractEskalonScreen {
 	public void render(float delta) {
 		if (image != null) {
 			viewport.apply();
-			getApplication().getSpriteBatch()
-					.setProjectionMatrix(viewport.getCamera().combined);
+			batch.setProjectionMatrix(viewport.getCamera().combined);
 
-			getApplication().getSpriteBatch().begin();
-			getApplication().getSpriteBatch().draw(this.image, this.position.x,
-					this.position.y, this.dimensions.x, this.dimensions.y);
-			getApplication().getSpriteBatch().end();
+			batch.begin();
+			batch.draw(this.image, this.position.x, this.position.y,
+					this.dimensions.x, this.dimensions.y);
+			batch.end();
 		}
 	}
 

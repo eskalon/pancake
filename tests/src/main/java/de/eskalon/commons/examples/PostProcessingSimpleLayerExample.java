@@ -11,25 +11,29 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.crashinvaders.vfx.effects.WaterDistortionEffect;
 
 import de.damios.guacamole.gdx.DefaultInputProcessor;
-import de.eskalon.commons.core.EskalonApplication;
+import de.eskalon.commons.core.AbstractEskalonApplication;
 import de.eskalon.commons.core.EskalonApplicationConfiguration;
-import de.eskalon.commons.input.EskalonGameInputProcessor;
+import de.eskalon.commons.inject.EskalonInjector;
+import de.eskalon.commons.inject.annotations.Inject;
+import de.eskalon.commons.input.EskalonApplicationInputProcessor;
 import de.eskalon.commons.screens.AbstractEskalonScreen;
 import de.eskalon.commons.screens.AbstractImageScreen;
 
-public class PostProcessingSimpleLayerExample extends AbstractEskalonExample {
+public class PostProcessingSimpleLayerExample
+		extends AbstractEskalonApplication {
 
-	@Override
-	protected EskalonApplicationConfiguration getAppConfig() {
-		return super.getAppConfig().createPostProcessor();
+	public PostProcessingSimpleLayerExample() {
+		super(EskalonApplicationConfiguration.create().createPostProcessor());
 	}
 
 	@Override
-	protected AbstractEskalonScreen initApp() {
+	protected Class<? extends AbstractEskalonScreen> initApp() {
 		Gdx.graphics.setVSync(false);
 		Gdx.input.getInputProcessor()
-				.keyDown(EskalonGameInputProcessor.toggleOverlayKey);
-		return new TestScreen();
+				.keyDown(EskalonApplicationInputProcessor.toggleOverlayKey);
+
+		EskalonInjector.getInstance().bindToConstructor(TestScreen.class);
+		return TestScreen.class;
 	}
 
 	public class TestScreen extends AbstractImageScreen {
@@ -37,9 +41,8 @@ public class PostProcessingSimpleLayerExample extends AbstractEskalonExample {
 		private ShapeRenderer shapeRenderer = new ShapeRenderer();
 		private Viewport viewport2 = new ScreenViewport();
 
+		@Inject // needed so the class does not have to be static
 		public TestScreen() {
-			super(getPrefWidth(), getPrefHeight());
-
 			WaterDistortionEffect effect = new WaterDistortionEffect(3.5F,
 					2.5F);
 			postProcessor.addEffect(effect);
@@ -94,11 +97,6 @@ public class PostProcessingSimpleLayerExample extends AbstractEskalonExample {
 		@Override
 		public Color getClearColor() {
 			return Color.DARK_GRAY;
-		}
-
-		@Override
-		protected EskalonApplication getApplication() {
-			return PostProcessingSimpleLayerExample.this;
 		}
 
 	}

@@ -15,23 +15,36 @@
 
 package de.eskalon.commons.utils;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Application.ApplicationType;
+
 import de.damios.guacamole.annotations.GwtIncompatible;
-import de.eskalon.commons.core.EskalonApplication;
+import de.eskalon.commons.core.AbstractEskalonApplication;
 
 /**
  * Development utils.
  * 
  * @author damios
  */
-public final class DevUtils {
+public final class ContextUtils {
 
-	private DevUtils() {
+	private ContextUtils() {
 		throw new UnsupportedOperationException();
 	}
 
-	@GwtIncompatible // TODO super-source: return !GWT.isProdMode() &&
-						// GWT.isClient();
-	public final static boolean IN_DEV_ENV = EskalonApplication.class
-			.getPackage().getImplementationVersion() == null;
+	@GwtIncompatible
+	// TODO super-source: return !GWT.isProdMode() && GWT.isClient();
+	public static boolean isInDevEnv() {
+		return AbstractEskalonApplication.class.getPackage()
+				.getImplementationVersion() == null;
+	}
+
+	public static String getVersion() {
+		return isInDevEnv() ? "Development Build"
+				: (Gdx.app.getType() != ApplicationType.WebGL
+						? AbstractEskalonApplication.class.getPackage()
+								.getImplementationVersion()
+						: "Version undefined");
+	}
 
 }

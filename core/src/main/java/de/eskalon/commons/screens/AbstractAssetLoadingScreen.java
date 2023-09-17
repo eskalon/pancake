@@ -26,12 +26,13 @@ import de.damios.guacamole.annotations.GwtIncompatible;
 import de.damios.guacamole.gdx.reflection.ReflectionUtils;
 import de.eskalon.commons.asset.AnnotationAssetManager;
 import de.eskalon.commons.asset.AnnotationAssetManager.Asset;
-import de.eskalon.commons.core.EskalonApplication;
+import de.eskalon.commons.core.AbstractEskalonApplication;
+import de.eskalon.commons.inject.annotations.Inject;
 import de.eskalon.commons.misc.IFieldAnnotationScanner;
 
 /**
  * This screen takes care of loading all assets for an
- * {@link EskalonApplication}. Assets have to be in a package below the
+ * {@link AbstractEskalonApplication}. Assets have to be in a package below the
  * specified root package and be annotated with {@link Asset}.
  * <p>
  * Afterwards, the loaded assets can be injected in the respective fields via
@@ -42,7 +43,7 @@ import de.eskalon.commons.misc.IFieldAnnotationScanner;
 @GwtIncompatible
 public abstract class AbstractAssetLoadingScreen extends AbstractEskalonScreen {
 
-	protected EskalonApplication application;
+	protected AnnotationAssetManager assetManager;
 
 	private int loadingTicksPerSecond;
 	private float progress;
@@ -55,9 +56,9 @@ public abstract class AbstractAssetLoadingScreen extends AbstractEskalonScreen {
 	 * @param loadingTicksPerSecond
 	 *            used to call {@link AssetManager#update(int)}
 	 */
-	public AbstractAssetLoadingScreen(EskalonApplication application,
+	public AbstractAssetLoadingScreen(AnnotationAssetManager assetManager,
 			@Nullable String packageRoot, int loadingTicksPerSecond) {
-		this.application = application;
+		this.assetManager = assetManager;
 		this.loadingTicksPerSecond = loadingTicksPerSecond;
 
 		loadOwnAssets();
@@ -72,14 +73,13 @@ public abstract class AbstractAssetLoadingScreen extends AbstractEskalonScreen {
 						IFieldAnnotationScanner.class);
 
 			annotationScanner.forEachFieldAnnotatedWith(packageRoot,
-					Asset.class,
-					(f) -> application.getAssetManager().loadAnnotatedAsset(f));
+					Asset.class, (f) -> assetManager.loadAnnotatedAsset(f));
 		}
 	}
 
-	public AbstractAssetLoadingScreen(EskalonApplication application,
+	public AbstractAssetLoadingScreen(AnnotationAssetManager assetManager,
 			@Nullable String packageRoot) {
-		this(application, packageRoot, 30);
+		this(assetManager, packageRoot, 30);
 	}
 
 	/**
@@ -89,29 +89,22 @@ public abstract class AbstractAssetLoadingScreen extends AbstractEskalonScreen {
 
 	/**
 	 * This method is responsible for finishing up the loaded assets (e.g.
-	 * creating the skin, compiling shaders, etc.) as well as pushing the next
-	 * screen.
+	 * compiling shaders, creating an UI skin, building a 3D scene etc.) as well
+	 * as pushing the next screen.
 	 */
 	protected abstract void onFinishedLoading();
 
 	@Override
 	public void render(float delta) {
-		progress = MathUtils.clamp(
-				application.getAssetManager().getProgress() + 0.02F, 0, 1);
+		progress = MathUtils.clamp(assetManager.getProgress() + 0.02F, 0, 1);
 
 		// Check if the asset manager is done
-		if (!isDone && application.getAssetManager()
-				.update(1000 / loadingTicksPerSecond)) {
+		if (!isDone && assetManager.update(1000 / loadingTicksPerSecond)) {
 			isDone = true;
 			onFinishedLoading();
 		}
 
 		render(delta, progress);
-	}
-
-	@Override
-	protected EskalonApplication getApplication() {
-		return application;
 	}
 
 	public abstract void render(float delta, float progress);

@@ -24,12 +24,13 @@ import de.eskalon.commons.audio.ISoundManager;
  * This input processor takes care of some basic application-wide key binds:
  * <ul>
  * <li><b>F2:</b> toggle the debug overlay</li>
+ * <li><b>F9:</b> {@linkplain ISoundManager#skipSong() skip a song}</li>
  * <li><b>F12:</b> take a screenshot</li>
  * </ul>
  * 
  * @author damios
  */
-public class EskalonGameInputProcessor implements DefaultInputProcessor {
+public class EskalonApplicationInputProcessor implements DefaultInputProcessor {
 
 	private boolean enabled = false;
 	public static final int takeScreenshotKey = Keys.F12;
@@ -41,7 +42,7 @@ public class EskalonGameInputProcessor implements DefaultInputProcessor {
 	private boolean takeScreenshot = false;
 	private boolean overlayEnabled = false;
 
-	public EskalonGameInputProcessor(ISoundManager soundManager) {
+	public EskalonApplicationInputProcessor(ISoundManager soundManager) {
 		this.soundManager = soundManager;
 	}
 

@@ -4,21 +4,21 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
 
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
 import de.eskalon.commons.LibgdxUnitTest;
 import de.eskalon.commons.asset.AnnotationAssetManager;
-import de.eskalon.commons.asset.AnnotationAssetManagerTest;
 import de.eskalon.commons.asset.AnnotationAssetManager.Asset;
-import de.eskalon.commons.inject.EskalonInjector;
-import de.eskalon.commons.inject.IInjector;
-import de.eskalon.commons.inject.Inject;
-import de.eskalon.commons.inject.providers.AssetProvider;
+import de.eskalon.commons.asset.AnnotationAssetManagerTest;
+import de.eskalon.commons.inject.annotations.Inject;
+import de.eskalon.commons.inject.providers.AssetProviders;
 
 public class AnnotationAssetInjectionTest extends LibgdxUnitTest {
 
 	@Test
+	// Prints: #test3 cannot be resolved
 	public void test() {
 		AnnotationAssetManager aM = AnnotationAssetManagerTest
 				.createAssetManager();
@@ -29,8 +29,9 @@ public class AnnotationAssetInjectionTest extends LibgdxUnitTest {
 		aM.finishLoading();
 
 		// Inject the assets via EskalonInjector
-		IInjector injector = EskalonInjector.getInstance();
-		AssetProvider.bindAssetProvider(injector, aM);
+		IInjector injector = new DefaultInjector();
+		injector.bindToInstance(AssetManager.class, aM);
+		AssetProviders.bindAssetProviders(injector);
 		injector.injectMembers(holder);
 
 		assertNotNull(holder.test1a);

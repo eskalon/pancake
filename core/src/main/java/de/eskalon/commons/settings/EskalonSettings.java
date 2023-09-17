@@ -21,7 +21,10 @@ import com.badlogic.gdx.Gdx;
 
 import de.damios.guacamole.Preconditions;
 import de.damios.guacamole.gdx.log.Logger;
-import de.damios.guacamole.gdx.log.LoggerService;
+import de.eskalon.commons.core.EskalonApplicationContext;
+import de.eskalon.commons.inject.annotations.Inject;
+import de.eskalon.commons.inject.annotations.Singleton;
+import de.eskalon.commons.inject.providers.LoggerProvider.Log;
 
 /**
  * This class manages game settings via properties.
@@ -30,8 +33,7 @@ public class EskalonSettings {
 
 	private static final String FIRST_STARTUP_SETTING = "is_first_startup";
 
-	private static final Logger LOG = LoggerService
-			.getLogger(EskalonSettings.class);
+	private @Inject @Log(EskalonSettings.class) Logger LOG;
 
 	protected final AutoFlushingPreferences preferences;
 
@@ -45,20 +47,22 @@ public class EskalonSettings {
 	 * @param fileName
 	 *            the name of the preferences file
 	 */
-	public EskalonSettings(String fileName) {
-		Preconditions.checkNotNull(fileName);
+	@Inject
+	@Singleton
+	public EskalonSettings(EskalonApplicationContext appContext) {
+		Preconditions.checkNotNull(appContext);
+
+		String fileName = appContext.getAppName().trim().replace(" ", "-")
+				.toLowerCase();
+
 		this.preferences = AutoFlushingPreferences
 				.createInstance(Gdx.app.getPreferences(fileName));
 		this.preferences.setAutoFlushing(true);
 
 		this.isFirstStartup = this.preferences.getBoolean(FIRST_STARTUP_SETTING,
 				true);
-		if (this.isFirstStartup)
-			this.preferences.putBoolean(FIRST_STARTUP_SETTING, false); // set to
-																		// false
-																		// for
-																		// future
-																		// runs
+		if (this.isFirstStartup) // set flag to false for future runs
+			this.preferences.putBoolean(FIRST_STARTUP_SETTING, false);
 	}
 
 	// First Startup

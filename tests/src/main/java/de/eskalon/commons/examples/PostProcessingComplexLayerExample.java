@@ -17,25 +17,29 @@ import com.crashinvaders.vfx.effects.VignettingEffect;
 import com.crashinvaders.vfx.effects.util.MixEffect.Method;
 
 import de.damios.guacamole.gdx.graphics.NestableFrameBuffer;
-import de.eskalon.commons.core.EskalonApplication;
+import de.eskalon.commons.core.AbstractEskalonApplication;
 import de.eskalon.commons.core.EskalonApplicationConfiguration;
-import de.eskalon.commons.input.EskalonGameInputProcessor;
+import de.eskalon.commons.inject.EskalonInjector;
+import de.eskalon.commons.inject.annotations.Inject;
+import de.eskalon.commons.input.EskalonApplicationInputProcessor;
 import de.eskalon.commons.screens.AbstractEskalonScreen;
 import de.eskalon.commons.screens.AbstractImageScreen;
 
-public class PostProcessingComplexLayerExample extends AbstractEskalonExample {
+public class PostProcessingComplexLayerExample
+		extends AbstractEskalonApplication {
 
-	@Override
-	protected EskalonApplicationConfiguration getAppConfig() {
-		return super.getAppConfig().createPostProcessor();
+	public PostProcessingComplexLayerExample() {
+		super(EskalonApplicationConfiguration.create().createPostProcessor());
 	}
 
 	@Override
-	protected AbstractEskalonScreen initApp() {
+	protected Class<? extends AbstractEskalonScreen> initApp() {
 		Gdx.graphics.setVSync(false);
 		Gdx.input.getInputProcessor()
-				.keyDown(EskalonGameInputProcessor.toggleOverlayKey);
-		return new TestScreen();
+				.keyDown(EskalonApplicationInputProcessor.toggleOverlayKey);
+
+		EskalonInjector.getInstance().bindToConstructor(TestScreen.class);
+		return TestScreen.class;
 	}
 
 	public class TestScreen extends AbstractImageScreen {
@@ -48,9 +52,8 @@ public class PostProcessingComplexLayerExample extends AbstractEskalonExample {
 		private ChainVfxEffect b = new VignettingEffect(false);
 		private ChainVfxEffect c = new MotionBlurEffect(Method.MIX, 0.8F);
 
+		@Inject // needed so the class does not have to be static
 		public TestScreen() {
-			super(getPrefWidth(), getPrefHeight());
-
 			postProcessor.addEffects(a, b, c);
 
 			a.setSizeSource(SizeSource.SCREEN);
@@ -62,7 +65,8 @@ public class PostProcessingComplexLayerExample extends AbstractEskalonExample {
 		}
 
 		private NestableFrameBuffer fbo = new NestableFrameBuffer(
-				Format.RGBA8888, getPrefWidth(), getPrefHeight(), false);
+				Format.RGBA8888, Gdx.graphics.getWidth(),
+				Gdx.graphics.getHeight(), false);
 
 		@Override
 		public void render(float delta) {
@@ -99,8 +103,9 @@ public class PostProcessingComplexLayerExample extends AbstractEskalonExample {
 			viewport2.apply();
 			batch.setProjectionMatrix(viewport2.getCamera().combined);
 			batch.begin();
-			batch.draw(fbo.getColorBufferTexture(), 0, 0, getPrefWidth(),
-					getPrefHeight(), 0, 0, 1, 1);
+			batch.draw(fbo.getColorBufferTexture(), 0, 0,
+					Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), 0, 0, 1,
+					1);
 			batch.end();
 
 			// Render the blue circle
@@ -127,11 +132,6 @@ public class PostProcessingComplexLayerExample extends AbstractEskalonExample {
 		@Override
 		public void dispose() {
 			shapeRenderer.dispose();
-		}
-
-		@Override
-		protected EskalonApplication getApplication() {
-			return PostProcessingComplexLayerExample.this;
 		}
 
 	}

@@ -13,16 +13,33 @@
  * limitations under the License.
  */
 
-package de.eskalon.commons.inject;
+package de.eskalon.commons.core;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+/**
+ * This class holds information related to the application.
+ */
+public class EskalonApplicationContext {
 
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface Inject {
+	private String appName;
+	private String version;
+
+	public EskalonApplicationContext(String appName, String version) {
+		this.appName = appName;
+		this.version = version;
+	}
+
+	public String getAppName() {
+		return appName;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	@Override
+	public String toString() {
+		return "EskalonApplicationContext{appName=" + appName + ",version="
+				+ version + "}";
+	}
+
 }

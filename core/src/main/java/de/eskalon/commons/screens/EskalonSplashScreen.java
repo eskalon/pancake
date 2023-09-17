@@ -15,21 +15,24 @@
 
 package de.eskalon.commons.screens;
 
-import java.util.function.Consumer;
-
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader.FreeTypeFontLoaderParameter;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import de.eskalon.commons.core.EskalonApplication;
+import de.eskalon.commons.core.StartArguments;
 import de.eskalon.commons.event.CommonsEvents;
+import de.eskalon.commons.event.CommonsEvents.CommonsAssetsLoadedEvent;
+import de.eskalon.commons.event.EventBus;
+import de.eskalon.commons.inject.annotations.Inject;
 
 /**
- * This screen is the first screen shown to the user when he starts the game. It
- * shows the eskalon logo and loads some internal assets.
+ * This screen is the first screen shown to the user when they start the game.
+ * It displays the eskalon logo and loads the internal assets.
  * <p>
  * Upon completion, a {@link CommonsAssetsLoadedEvent} is posted.
  * 
@@ -37,7 +40,10 @@ import de.eskalon.commons.event.CommonsEvents;
  */
 public class EskalonSplashScreen extends AbstractEskalonScreen {
 
-	private EskalonApplication game;
+	private AssetManager assetManager;
+	private @Inject SpriteBatch batch;
+	private @Inject EventBus eventBus;
+
 	private Viewport viewport;
 	private Texture titleImage;
 
@@ -49,59 +55,52 @@ public class EskalonSplashScreen extends AbstractEskalonScreen {
 	private int xPos;
 	private int yPos;
 
-	public EskalonSplashScreen(EskalonApplication game) {
-		this(game, false);
-	}
-
-	public EskalonSplashScreen(EskalonApplication game, boolean skip) {
-		this.game = game;
-		this.skip = skip;
+	@Inject
+	public EskalonSplashScreen(StartArguments startArgs,
+			AssetManager assetManager) {
+		this.assetManager = assetManager;
+		this.skip = startArgs.shouldSkipSplashScreen();
 		this.viewport = new ScreenViewport();
 
 		// Don't use injections for performance reasons
-		game.getAssetManager().load(EskalonCommonsAssets.LOGO_TEXTURE_PATH,
+		assetManager.load(EskalonCommonsAssets.LOGO_TEXTURE_PATH,
 				Texture.class);
-		titleImage = game.getAssetManager()
+		titleImage = assetManager
 				.finishLoadingAsset(EskalonCommonsAssets.LOGO_TEXTURE_PATH);
 
-		/*
-		 * Add common assets to loading queue
-		 */
+		/* Add common assets to loading queue */
 		// Default font
 		FreeTypeFontLoaderParameter fontParam = new FreeTypeFontLoaderParameter();
 		fontParam.fontFileName = EskalonCommonsAssets.DEFAULT_FONT_PATH;
 		fontParam.fontParameters.size = 14;
-		game.getAssetManager().load(EskalonCommonsAssets.DEFAULT_FONT_NAME,
+		assetManager.load(EskalonCommonsAssets.DEFAULT_FONT_NAME,
 				BitmapFont.class, fontParam);
 
 		// Shutter sound
-		game.getAssetManager().load(EskalonCommonsAssets.SHUTTER_SOUND_PATH,
-				Sound.class);
+		assetManager.load(EskalonCommonsAssets.SHUTTER_SOUND_PATH, Sound.class);
 	}
 
 	@Override
 	public void render(float delta) {
 		viewport.apply();
-		game.getSpriteBatch()
-				.setProjectionMatrix(viewport.getCamera().combined);
-		game.getSpriteBatch().begin();
+		batch.setProjectionMatrix(viewport.getCamera().combined);
+		batch.begin();
 
 		if (!skip)
-			game.getSpriteBatch().draw(this.titleImage, xPos, yPos);
+			batch.draw(this.titleImage, xPos, yPos);
 
 		if (startTime == -1) {
 			this.startTime = System.currentTimeMillis();
 		}
 
-		if (!isDone && game.getAssetManager().update(1000 / 30) && (skip
+		if (!isDone && assetManager.update(1000 / 30) && (skip
 				|| (startTime + duration) < System.currentTimeMillis())) {
 			isDone = true;
 
-			game.getEventBus()
-					.post(new CommonsEvents.CommonsAssetsLoadedEvent());
+			eventBus.post(new CommonsEvents.CommonsAssetsLoadedEvent());
 		}
 
-		game.getSpriteBatch().end();
+		batch.end();
 	}
 
 	@Override
@@ -109,11 +108,6 @@ public class EskalonSplashScreen extends AbstractEskalonScreen {
 		viewport.update(width, height, true);
 		xPos = (width - titleImage.getWidth()) / 2;
 		yPos = (height - titleImage.getHeight()) / 2 + 40;
-	}
-
-	@Override
-	protected EskalonApplication getApplication() {
-		return game;
 	}
 
 	@Override

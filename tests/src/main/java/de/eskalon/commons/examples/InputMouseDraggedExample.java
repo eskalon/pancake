@@ -3,15 +3,16 @@ package de.eskalon.commons.examples;
 import com.badlogic.gdx.Input.Buttons;
 
 import de.damios.guacamole.gdx.DefaultInputProcessor;
-import de.eskalon.commons.core.EskalonApplication;
-import de.eskalon.commons.examples.InputBindingsExample.TestScreen;
+import de.eskalon.commons.core.AbstractEskalonApplication;
+import de.eskalon.commons.inject.EskalonInjector;
+import de.eskalon.commons.inject.annotations.Inject;
 import de.eskalon.commons.input.DefaultInputHandler;
 import de.eskalon.commons.input.DefaultInputListener;
 import de.eskalon.commons.input.IInputHandler;
 import de.eskalon.commons.screens.AbstractEskalonScreen;
 import de.eskalon.commons.screens.BlankScreen;
 
-public class InputMouseDraggedExample extends AbstractEskalonExample {
+public class InputMouseDraggedExample extends AbstractEskalonApplication {
 
 	enum TestScreenAxisBindingType {
 	}
@@ -21,17 +22,17 @@ public class InputMouseDraggedExample extends AbstractEskalonExample {
 	}
 
 	@Override
-	protected AbstractEskalonScreen initApp() {
-		return new TestScreen(this);
+	protected Class<? extends AbstractEskalonScreen> initApp() {
+		EskalonInjector.getInstance().bindToConstructor(TestScreen.class);
+		return TestScreen.class;
 	}
 
 	public class TestScreen extends BlankScreen {
 
 		private IInputHandler<TestScreenAxisBindingType, TestScreenBinaryBindingType> inputHandler;
 
-		public TestScreen(EskalonApplication app) {
-			super(app);
-
+		@Inject // needed so the class does not have to be static
+		public TestScreen() {
 			/* Register default bindings */
 			IInputHandler.registerBinaryBinding(settings,
 					TestScreenBinaryBindingType.MOUSE_CLICK, -2, Buttons.LEFT,

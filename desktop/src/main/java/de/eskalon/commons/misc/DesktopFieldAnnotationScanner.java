@@ -8,6 +8,7 @@ import org.reflections8.Reflections;
 import org.reflections8.scanners.FieldAnnotationsScanner;
 
 import com.badlogic.gdx.utils.reflect.Field;
+import com.badlogic.gdx.utils.reflect.ReflectionConverter;
 
 import de.damios.guacamole.gdx.reflection.ReflectionUtils;
 import de.eskalon.commons.asset.AnnotationAssetManager;
@@ -25,7 +26,7 @@ public class DesktopFieldAnnotationScanner implements IFieldAnnotationScanner {
 				.getFieldsAnnotatedWith(annotation);
 
 		for (java.lang.reflect.Field f : assetFields) {
-			action.accept(ReflectionUtils.convertFieldObject(f));
+			action.accept(ReflectionConverter.convertFieldObject(f));
 		}
 	}
 

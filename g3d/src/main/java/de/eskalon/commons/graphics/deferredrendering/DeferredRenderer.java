@@ -16,8 +16,10 @@
 package de.eskalon.commons.graphics.deferredrendering;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL30;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.utils.DefaultTextureBinder;
 import com.badlogic.gdx.graphics.g3d.utils.RenderContext;
@@ -26,7 +28,6 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 
 import de.damios.guacamole.gdx.graphics.NestableFrameBuffer.NestableFrameBufferBuilder;
-import de.eskalon.commons.core.EskalonApplication;
 import de.eskalon.commons.graphics.IRenderer;
 
 /**
@@ -34,7 +35,6 @@ import de.eskalon.commons.graphics.IRenderer;
  */
 public class DeferredRenderer implements IRenderer, Disposable {
 
-	protected EskalonApplication game;
 	private GeometryPass geometryPass;
 	private LightPass lightPass;
 
@@ -63,8 +63,7 @@ public class DeferredRenderer implements IRenderer, Disposable {
 	protected FrameBuffer gBuffer;
 	protected Camera camera;
 
-	public DeferredRenderer(EskalonApplication game) {
-		this.game = game;
+	public DeferredRenderer(AssetManager assetManager, SpriteBatch batch) {
 		this.context = new RenderContext(
 				new DefaultTextureBinder(DefaultTextureBinder.ROUNDROBIN));
 
@@ -88,7 +87,7 @@ public class DeferredRenderer implements IRenderer, Disposable {
 		// GL30.GL_NEAREST);
 
 		this.geometryPass = new GeometryPass(this);
-		this.lightPass = new DebugLightPass(this);
+		this.lightPass = new DebugLightPass(this, assetManager, batch);
 	}
 
 	@Override

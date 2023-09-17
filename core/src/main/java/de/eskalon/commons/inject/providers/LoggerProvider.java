@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
 import de.damios.guacamole.gdx.log.Logger;
 import de.damios.guacamole.gdx.log.LoggerService;
 import de.eskalon.commons.inject.QualifiedProvider;
-import de.eskalon.commons.inject.Qualifier;
+import de.eskalon.commons.inject.annotations.Qualifier;
 import de.eskalon.commons.inject.providers.LoggerProvider.Log;
 
 public class LoggerProvider implements QualifiedProvider<Logger, Log> {

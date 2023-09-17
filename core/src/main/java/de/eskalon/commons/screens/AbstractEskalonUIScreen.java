@@ -17,23 +17,16 @@ package de.eskalon.commons.screens;
 
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-import de.eskalon.commons.core.EskalonApplication;
-
 /**
- * The base class of all UI screens. It automatically loads the
- * {@linkplain #skin skin} of the {@linkplain EskalonApplication#getUISkin()
- * application} and sets the {@link #stage} as {@linkplain InputProcessor input
- * processor}. A {@linkplain #mainTable main table} is automatically added to
- * the stage for ease of use.
- * <p>
- * An UI skin has to be {@linkplain EskalonApplication#setUISkin(Skin) set for
- * the whole application} before this screen is instantiated.
+ * The base class of all UI screens. It automatically sets the {@link #stage} as
+ * {@linkplain InputProcessor input processor}. A {@linkplain #mainTable main
+ * table} is automatically added to the stage for ease of use.
  */
 public abstract class AbstractEskalonUIScreen extends AbstractImageScreen {
 
@@ -45,19 +38,11 @@ public abstract class AbstractEskalonUIScreen extends AbstractImageScreen {
 	 * The main table, to which the {@link Actor}s are usually added.
 	 */
 	protected Table mainTable;
-	/**
-	 * The default UI skin. Is automatically set upon instantiation.
-	 */
-	protected Skin skin;
 
-	public AbstractEskalonUIScreen(int screenWidth, int screenHeight) {
-		super(screenWidth, screenHeight);
+	public AbstractEskalonUIScreen(SpriteBatch batch) {
 		this.setMode(ImageScreenMode.CENTERED_ORIGINAL_SIZE);
 
-		skin = getApplication().getUISkin();
-
-		stage = new Stage(new ScreenViewport(),
-				getApplication().getSpriteBatch());
+		stage = new Stage(new ScreenViewport(), batch);
 		mainTable = new Table();
 		stage.addActor(mainTable);
 		mainTable.setFillParent(true);

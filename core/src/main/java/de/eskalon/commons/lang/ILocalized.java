@@ -18,7 +18,7 @@ package de.eskalon.commons.lang;
 /**
  * This interface is used to mark an already localized entity, i.e. one whose
  * name doesn't change in different languages or where the name is provided
- * programatically.
+ * programmatically.
  * 
  * @author damios
  */

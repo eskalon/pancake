@@ -30,63 +30,61 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.I18NBundle;
 
 import de.damios.guacamole.gdx.assets.Text;
-import de.eskalon.commons.asset.AnnotationAssetManager;
 import de.eskalon.commons.asset.AnnotationAssetManager.Asset;
 import de.eskalon.commons.asset.PlaylistDefinition;
 import de.eskalon.commons.inject.IInjector;
 import de.eskalon.commons.inject.QualifiedProvider;
+import de.eskalon.commons.inject.annotations.Inject;
 
-public class AssetProvider {
+public class AssetProviders {
 
-	public static void bindAssetProvider(IInjector injector,
-			AnnotationAssetManager assetManager) {
+	public static void bindAssetProviders(IInjector injector) {
 		/* libGDX */
 		injector.bindToQualifiedProvider(BitmapFont.class, Asset.class,
-				new AssetTypeProvider<BitmapFont>(assetManager));
+				BitmapAssetProvider.class);
 		injector.bindToQualifiedProvider(Cubemap.class, Asset.class,
-				new AssetTypeProvider<Cubemap>(assetManager));
+				CubemapAssetProvider.class);
 		injector.bindToQualifiedProvider(I18NBundle.class, Asset.class,
-				new AssetTypeProvider<I18NBundle>(assetManager));
+				I18NBundleAssetProvider.class);
 		injector.bindToQualifiedProvider(Model.class, Asset.class,
-				new AssetTypeProvider<Model>(assetManager));
+				ModelAssetProvider.class);
 		injector.bindToQualifiedProvider(Music.class, Asset.class,
-				new AssetTypeProvider<Music>(assetManager));
+				MusicAssetProvider.class);
 		injector.bindToQualifiedProvider(ParticleEffect.class, Asset.class,
-				new AssetTypeProvider<ParticleEffect>(assetManager));
+				ParticleEffectAssetProvider.class);
 		injector.bindToQualifiedProvider(Pixmap.class, Asset.class,
-				new AssetTypeProvider<Pixmap>(assetManager));
+				PixmapAssetProvider.class);
 		injector.bindToQualifiedProvider(ShaderProgram.class, Asset.class,
-				new AssetTypeProvider<ShaderProgram>(assetManager));
+				ShaderProgramAssetProvider.class);
 		injector.bindToQualifiedProvider(Skin.class, Asset.class,
-				new AssetTypeProvider<Skin>(assetManager));
+				SkinAssetProvider.class);
 		injector.bindToQualifiedProvider(Sound.class, Asset.class,
-				new AssetTypeProvider<Sound>(assetManager));
+				SoundAssetProvider.class);
 		injector.bindToQualifiedProvider(TextureAtlas.class, Asset.class,
-				new AssetTypeProvider<TextureAtlas>(assetManager));
+				TextureAtlasAssetProvider.class);
 		injector.bindToQualifiedProvider(Texture.class, Asset.class,
-				new AssetTypeProvider<Texture>(assetManager));
+				TextureAssetProvider.class);
 
 		/* Pancake */
 		// injector.bindToQualifiedProvider(JSON.class, Asset.class,
 		// new AssetTypeProvider<JSON>(assetManager));
 		injector.bindToQualifiedProvider(PlaylistDefinition.class, Asset.class,
-				new AssetTypeProvider<PlaylistDefinition>(assetManager));
+				PlaylistDefinitionAssetProvider.class);
 		injector.bindToQualifiedProvider(Text.class, Asset.class,
-				new AssetTypeProvider<Text>(assetManager));
+				TextAssetProvider.class);
 	}
 
-	private AssetProvider() {
+	private AssetProviders() {
 		throw new UnsupportedOperationException();
 	}
 
-	private static class AssetTypeProvider<T>
+	/*
+	 * BASE CLASS
+	 */
+	private static abstract class AssetProvider<T>
 			implements QualifiedProvider<T, Asset> {
-
+		@Inject
 		private AssetManager assetManager;
-
-		private AssetTypeProvider(AssetManager assetManager) {
-			this.assetManager = assetManager;
-		}
 
 		@Override
 		public T provide(Asset asset) {
@@ -95,7 +93,59 @@ public class AssetProvider {
 
 			return assetManager.get(asset.value());
 		}
+	}
 
+	/*
+	 * LIBGDX PROVIDERS
+	 */
+	public static class BitmapAssetProvider extends AssetProvider<BitmapFont> {
+	}
+
+	public static class CubemapAssetProvider extends AssetProvider<Cubemap> {
+	}
+
+	public static class I18NBundleAssetProvider
+			extends AssetProvider<I18NBundle> {
+	}
+
+	public static class ModelAssetProvider extends AssetProvider<Model> {
+	}
+
+	public static class MusicAssetProvider extends AssetProvider<Music> {
+	}
+
+	public static class ParticleEffectAssetProvider
+			extends AssetProvider<ParticleEffect> {
+	}
+
+	public static class PixmapAssetProvider extends AssetProvider<Pixmap> {
+	}
+
+	public static class ShaderProgramAssetProvider
+			extends AssetProvider<ShaderProgram> {
+	}
+
+	public static class SkinAssetProvider extends AssetProvider<Skin> {
+	}
+
+	public static class SoundAssetProvider extends AssetProvider<Sound> {
+	}
+
+	public static class TextureAtlasAssetProvider
+			extends AssetProvider<TextureAtlas> {
+	}
+
+	public static class TextureAssetProvider extends AssetProvider<Texture> {
+	}
+
+	/*
+	 * PANCAKE PROVIDERS
+	 */
+	public static class PlaylistDefinitionAssetProvider
+			extends AssetProvider<PlaylistDefinition> {
+	}
+
+	public static class TextAssetProvider extends AssetProvider<Text> {
 	}
 
 }

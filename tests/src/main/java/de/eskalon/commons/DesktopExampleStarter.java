@@ -1,11 +1,12 @@
 package de.eskalon.commons;
 
+import java.util.List;
+
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
-import com.badlogic.gdx.backends.lwjgl3.Lwjgl3WindowConfiguration;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -18,7 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import de.damios.guacamole.gdx.StartOnFirstThreadHelper;
-import de.eskalon.commons.examples.AbstractEskalonExample;
+import de.eskalon.commons.utils.JavaProcess;
 
 // Based on libGDX's Lwjgl3TestStarter
 public class DesktopExampleStarter {
@@ -73,19 +74,16 @@ public class DesktopExampleStarter {
 				testButton.addListener(new ChangeListener() {
 					@Override
 					public void changed(ChangeEvent event, Actor actor) {
-						AbstractEskalonExample test = EskalonExamples
-								.newTest(testName);
-						Lwjgl3WindowConfiguration winConfig = new Lwjgl3WindowConfiguration();
-						winConfig.setTitle(testName);
-						winConfig.setResizable(test.isResizable());
-						winConfig.setWindowedMode(test.getPrefWidth(),
-								test.getPrefHeight());
-						((Lwjgl3Application) Gdx.app).newWindow(test,
-								winConfig);
+						// A new process is created so that the different static
+						// DI instances do not interfere with each other
+						JavaProcess.exec(EskalonExamples.class,
+								List.of(testName));
+
 						System.out.println(
 								" --- Started test: " + testName + " --- ");
 						prefs.putString("LastTest", testName);
 						prefs.flush();
+
 						if (testButton != lastClickedTestButton) {
 							testButton.setColor(Color.CYAN);
 							if (lastClickedTestButton != null) {

@@ -18,6 +18,9 @@ package de.eskalon.commons.event;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import de.eskalon.commons.inject.annotations.Inject;
+import de.eskalon.commons.inject.annotations.Singleton;
+
 /**
  * This event bus queues events and only posts them to the subscribers when
  * {@link #dispatchEvents()} is called. This can be useful if events have to get
@@ -26,6 +29,12 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @author damios
  */
 public class EventQueueBus extends EventBus {
+
+	@Inject
+	@Singleton
+	public EventQueueBus() {
+		// empty default constructor
+	}
 
 	/**
 	 * Queue of posted events. Is taken care of when {@link #dispatchEvents()}

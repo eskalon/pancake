@@ -15,34 +15,15 @@
 
 package de.eskalon.commons.screens;
 
-import de.eskalon.commons.core.EskalonApplication;
-import de.eskalon.commons.screen.AutoDisposingManagedScreen;
+import de.eskalon.commons.core.AbstractEskalonApplication;
 import de.eskalon.commons.screen.ManagedScreen;
 
 /**
- * A basic screen for use with {@link EskalonApplication}. Is automatically
- * registered as event listener when the screen is {@linkplain #show() shown}
- * /{@linkplain #hide() hidden}.
- * <p>
- * An instance of this screen can only be pushed once!
+ * A basic screen for use with {@link AbstractEskalonApplication}.
  * 
  * @author damios
  */
-public abstract class AbstractEskalonScreen extends AutoDisposingManagedScreen {
-
-	protected abstract EskalonApplication getApplication();
-
-	@Override
-	public void show() {
-		super.show();
-		getApplication().getEventBus().register(this);
-	}
-
-	@Override
-	public void hide() {
-		super.hide();
-		getApplication().getEventBus().unregister(this);
-	}
+public abstract class AbstractEskalonScreen extends ManagedScreen {
 
 	@Override
 	public void resize(int width, int height) {

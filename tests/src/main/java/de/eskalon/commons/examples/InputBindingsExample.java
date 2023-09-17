@@ -8,15 +8,16 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import de.eskalon.commons.core.EskalonApplication;
-import de.eskalon.commons.examples.ImageScreenExample.TestScreen;
+import de.eskalon.commons.core.AbstractEskalonApplication;
+import de.eskalon.commons.inject.EskalonInjector;
+import de.eskalon.commons.inject.annotations.Inject;
 import de.eskalon.commons.input.DefaultInputHandler;
 import de.eskalon.commons.input.DefaultInputListener;
 import de.eskalon.commons.input.IInputHandler;
 import de.eskalon.commons.screens.AbstractEskalonScreen;
 import de.eskalon.commons.screens.BlankScreen;
 
-public class InputBindingsExample extends AbstractEskalonExample {
+public class InputBindingsExample extends AbstractEskalonApplication {
 
 	enum TestScreenAxisBindingType {
 		X_AXIS;
@@ -27,8 +28,9 @@ public class InputBindingsExample extends AbstractEskalonExample {
 	}
 
 	@Override
-	protected AbstractEskalonScreen initApp() {
-		return new TestScreen(this);
+	protected Class<? extends AbstractEskalonScreen> initApp() {
+		EskalonInjector.getInstance().bindToConstructor(TestScreen.class);
+		return TestScreen.class;
 	}
 
 	public class TestScreen extends BlankScreen {
@@ -42,9 +44,8 @@ public class InputBindingsExample extends AbstractEskalonExample {
 		private Vector2 dir = new Vector2();
 		private float vel = 50f;
 
-		public TestScreen(EskalonApplication app) {
-			super(app);
-
+		@Inject // needed so the class does not have to be static
+		public TestScreen() {
 			/* Register default bindings */
 			IInputHandler.registerAxisBinding(settings,
 					TestScreenAxisBindingType.X_AXIS, Keys.A, Keys.D, -2);

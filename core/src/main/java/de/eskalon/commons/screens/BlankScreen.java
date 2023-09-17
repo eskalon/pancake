@@ -15,25 +15,12 @@
 
 package de.eskalon.commons.screens;
 
-import de.eskalon.commons.core.EskalonApplication;
-
 /**
  * A blank screen. Can be used for creating complex transitions.
  * 
  * @author damios
  */
 public class BlankScreen extends AbstractEskalonScreen {
-
-	private EskalonApplication app;
-
-	public BlankScreen(EskalonApplication app) {
-		this.app = app;
-	}
-
-	@Override
-	protected EskalonApplication getApplication() {
-		return app;
-	}
 
 	@Override
 	public void render(float delta) {

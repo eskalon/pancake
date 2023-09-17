@@ -6,30 +6,30 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
 import de.damios.guacamole.gdx.DefaultInputProcessor;
-import de.eskalon.commons.core.EskalonApplication;
+import de.eskalon.commons.IssueTestApp.TestScreen;
+import de.eskalon.commons.core.AbstractEskalonApplication;
+import de.eskalon.commons.inject.EskalonInjector;
+import de.eskalon.commons.inject.annotations.Inject;
 import de.eskalon.commons.screens.AbstractEskalonScreen;
 import de.eskalon.commons.screens.AbstractImageScreen;
 import de.eskalon.commons.screens.EskalonSplashScreen.EskalonCommonsAssets;
 
-public class ImageScreenExample extends AbstractEskalonExample {
+public class ImageScreenExample extends AbstractEskalonApplication {
 
 	@Override
-	protected AbstractEskalonScreen initApp() {
-		return new TestScreen();
-	}
-
-	@Override
-	public boolean isResizable() {
-		return true;
+	protected Class<? extends AbstractEskalonScreen> initApp() {
+		EskalonInjector.getInstance().bindToConstructor(TestScreen.class);
+		return TestScreen.class;
 	}
 
 	public class TestScreen extends AbstractImageScreen {
 
 		private BitmapFont font;
 
+		@Inject // needed so the class does not have to be static
 		public TestScreen() {
-			super(getPrefWidth(), getPrefHeight());
-			
+			Gdx.graphics.setResizable(true);
+
 			setImage(new Texture(Gdx.files.internal("test.png")));
 
 			addInputProcessor(new DefaultInputProcessor() {
@@ -54,11 +54,6 @@ public class ImageScreenExample extends AbstractEskalonExample {
 			batch.begin();
 			font.draw(batch, getMode().toString(), 5, 15);
 			batch.end();
-		}
-
-		@Override
-		protected EskalonApplication getApplication() {
-			return ImageScreenExample.this;
 		}
 
 	}

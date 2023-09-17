@@ -13,26 +13,28 @@ import com.crashinvaders.vfx.effects.MotionBlurEffect;
 import com.crashinvaders.vfx.effects.util.MixEffect.Method;
 
 import de.damios.guacamole.gdx.DefaultInputProcessor;
-import de.eskalon.commons.core.EskalonApplication;
+import de.eskalon.commons.core.AbstractEskalonApplication;
 import de.eskalon.commons.core.EskalonApplicationConfiguration;
-import de.eskalon.commons.examples.PostProcessingComplexLayerExample.TestScreen;
-import de.eskalon.commons.input.EskalonGameInputProcessor;
+import de.eskalon.commons.inject.EskalonInjector;
+import de.eskalon.commons.inject.annotations.Inject;
+import de.eskalon.commons.input.EskalonApplicationInputProcessor;
 import de.eskalon.commons.screens.AbstractEskalonScreen;
 import de.eskalon.commons.screens.BlankScreen;
 
-public class PostProcessingExample extends AbstractEskalonExample {
+public class PostProcessingExample extends AbstractEskalonApplication {
 
-	@Override
-	protected EskalonApplicationConfiguration getAppConfig() {
-		return super.getAppConfig().createPostProcessor();
+	public PostProcessingExample() {
+		super(EskalonApplicationConfiguration.create().createPostProcessor());
 	}
 
 	@Override
-	protected AbstractEskalonScreen initApp() {
+	protected Class<? extends AbstractEskalonScreen> initApp() {
 		Gdx.graphics.setVSync(false);
 		Gdx.input.getInputProcessor()
-				.keyDown(EskalonGameInputProcessor.toggleOverlayKey);
-		return new TestScreen(this);
+				.keyDown(EskalonApplicationInputProcessor.toggleOverlayKey);
+
+		EskalonInjector.getInstance().bindToConstructor(TestScreen.class);
+		return TestScreen.class;
 	}
 
 	public class TestScreen extends BlankScreen {
@@ -40,9 +42,8 @@ public class PostProcessingExample extends AbstractEskalonExample {
 		private ShapeRenderer shapeRenderer = new ShapeRenderer();
 		private Viewport viewport = new ScreenViewport();
 
-		public TestScreen(EskalonApplication app) {
-			super(app);
-
+		@Inject // needed so the class does not have to be static
+		public TestScreen() {
 			BloomEffect effect1 = new BloomEffect();
 			MotionBlurEffect effect2 = new MotionBlurEffect(Method.MAX, 0.9F);
 			postProcessor.addEffects(effect1, effect2);

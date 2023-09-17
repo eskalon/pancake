@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package de.eskalon.commons.inject;
+package de.eskalon.commons.inject.annotations;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -21,6 +21,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Marks annotations which are used as qualifiers for a
+ * {@link QualifiedProvider}. Such annotations are used to provide additional
+ * arguments for the dependency resolution.
+ */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.ANNOTATION_TYPE)

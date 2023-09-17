@@ -5,26 +5,28 @@ import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
 import de.damios.guacamole.gdx.DefaultInputProcessor;
-import de.eskalon.commons.core.EskalonApplication;
-import de.eskalon.commons.examples.InputBindingsExample.TestScreen;
+import de.eskalon.commons.core.AbstractEskalonApplication;
+import de.eskalon.commons.examples.ImageScreenExample.TestScreen;
+import de.eskalon.commons.inject.EskalonInjector;
+import de.eskalon.commons.inject.annotations.Inject;
 import de.eskalon.commons.screens.AbstractEskalonScreen;
 import de.eskalon.commons.screens.BlankScreen;
 import de.eskalon.commons.screens.EskalonSplashScreen.EskalonCommonsAssets;
 
-public class PositionalAudioExample extends AbstractEskalonExample {
+public class PositionalAudioExample extends AbstractEskalonApplication {
 
 	@Override
-	protected AbstractEskalonScreen initApp() {
-		return new TestScreen(this);
+	protected Class<? extends AbstractEskalonScreen> initApp() {
+		EskalonInjector.getInstance().bindToConstructor(TestScreen.class);
+		return TestScreen.class;
 	}
 
 	public class TestScreen extends BlankScreen {
 
 		private BitmapFont font;
 
-		public TestScreen(EskalonApplication app) {
-			super(app);
-
+		@Inject // needed so the class does not have to be static
+		public TestScreen() {
 			soundManager.addSoundEffect(
 					Gdx.audio.newSound(Gdx.files.internal("sound_mono.wav")),
 					"test_sound");
@@ -37,8 +39,10 @@ public class PositionalAudioExample extends AbstractEskalonExample {
 						// x = left/right; y = up/down; z = front/back
 						soundManager.playSoundEffect("test_sound")
 								.setSoundPosition(
-										30F * screenX / getPrefWidth() - 15F,
-										17F * screenY / getPrefHeight() - 8.5F,
+										30F * screenX / Gdx.graphics.getWidth()
+												- 15F,
+										17F * screenY / Gdx.graphics.getHeight()
+												- 8.5F,
 										0);
 						return true;
 					}

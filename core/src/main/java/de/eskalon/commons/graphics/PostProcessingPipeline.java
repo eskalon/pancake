@@ -19,10 +19,16 @@ import com.badlogic.gdx.utils.Disposable;
 import com.crashinvaders.vfx.VfxManager;
 import com.crashinvaders.vfx.effects.ChainVfxEffect;
 
+import de.damios.guacamole.Preconditions;
 import de.damios.guacamole.gdx.graphics.NestableFrameBuffer;
+import de.eskalon.commons.inject.annotations.Inject;
+import de.eskalon.commons.inject.annotations.Singleton;
 
 /**
  * A post processing pipeline.
+ * <p>
+ * Has to be {@linkplain #initialize(int, int, boolean) initialized} before it
+ * can be used.
  * <p>
  * Capture a screen with {@link #beginCapture()} and {@link #endCapture()} and
  * then render the effects onto the screen via
@@ -50,16 +56,28 @@ public class PostProcessingPipeline implements Disposable {
 	private boolean disabled = false;
 	private boolean doPostProcessing;
 
-	public PostProcessingPipeline(int screenWidth, int screenHeight,
+	private boolean initialized = false;
+
+	@Inject
+	@Singleton
+	public PostProcessingPipeline() {
+		// empty default constructor
+	}
+
+	public void initialize(int screenWidth, int screenHeight,
 			boolean hasDepth) {
 		this.vfxManager = new VfxManager(screenWidth, screenHeight, hasDepth);
 		this.vfxManager.setBlendingEnabled(true); // this is useful if effects
 													// should only be applied to
 													// one layer, but not the
 													// background.
+		this.initialized = true;
 	}
 
 	public void beginCapture() {
+		Preconditions.checkState(initialized,
+				"The post processing pipeline has to be initalized first!");
+
 		doPostProcessing = !disabled && vfxManager.hasEffects();
 
 		if (doPostProcessing) {
