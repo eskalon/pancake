@@ -15,7 +15,11 @@
 
 package de.eskalon.commons.screens;
 
+import java.util.function.Supplier;
+
+import de.eskalon.commons.core.EskalonApplicationContext;
 import de.eskalon.commons.event.EventBus;
+import de.eskalon.commons.inject.EskalonInjector;
 import de.eskalon.commons.inject.annotations.Inject;
 import de.eskalon.commons.screen.ManagedScreen;
 import de.eskalon.commons.screen.ScreenManager;
@@ -30,6 +34,36 @@ public class EskalonScreenManager
 		extends ScreenManager<AbstractEskalonScreen, ScreenTransition> {
 
 	protected @Inject EventBus eventBus;
+	protected @Inject EskalonApplicationContext appContext;
+
+	/**
+	 * Push a screen.
+	 * 
+	 * @param screen
+	 * @param transitionName
+	 */
+	public void pushScreen(Class<? extends AbstractEskalonScreen> screenClass,
+			String transitionName) {
+		super.pushScreen(() -> {
+			return EskalonInjector.getInstance().getInstance(screenClass);
+		}, () -> {
+			return appContext.getTransitions().get(transitionName);
+		});
+	}
+
+	@Override
+	@Deprecated // use pushScreen(Class, String) instead
+	public void pushScreen(AbstractEskalonScreen screen,
+			ScreenTransition transition) {
+		super.pushScreen(screen, transition);
+	}
+
+	@Override
+	@Deprecated // use pushScreen(Class, String) instead
+	public void pushScreen(Supplier<AbstractEskalonScreen> screenSupplier,
+			Supplier<ScreenTransition> transitionSupplier) {
+		super.pushScreen(screenSupplier, transitionSupplier);
+	}
 
 	@Override
 	protected void initializeScreen(ManagedScreen newScreen) {

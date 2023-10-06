@@ -29,10 +29,15 @@ public class EskalonApplicationContext {
 	private String version;
 	private Map<String, ScreenTransition> transitions;
 
-	public EskalonApplicationContext(String appName, String version) {
+	public EskalonApplicationContext(String appName, String version,
+			Map<String, ScreenTransition> transitions) {
 		this.appName = appName;
 		this.version = version;
-		this.transitions = new HashMap<>();
+		this.transitions = transitions;
+	}
+
+	public EskalonApplicationContext(String appName, String version) {
+		this(appName, version, new HashMap<>());
 	}
 
 	public String getAppName() {
