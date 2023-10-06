@@ -15,6 +15,11 @@
 
 package de.eskalon.commons.core;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import de.eskalon.commons.screen.transition.ScreenTransition;
+
 /**
  * This class holds information related to the application.
  */
@@ -22,10 +27,12 @@ public class EskalonApplicationContext {
 
 	private String appName;
 	private String version;
+	private Map<String, ScreenTransition> transitions;
 
 	public EskalonApplicationContext(String appName, String version) {
 		this.appName = appName;
 		this.version = version;
+		this.transitions = new HashMap<>();
 	}
 
 	public String getAppName() {
@@ -36,10 +43,14 @@ public class EskalonApplicationContext {
 		return version;
 	}
 
+	public Map<String, ScreenTransition> getTransitions() {
+		return transitions;
+	}
+
 	@Override
 	public String toString() {
 		return "EskalonApplicationContext{appName=" + appName + ",version="
-				+ version + "}";
+				+ version + ",transitions=" + transitions + "}";
 	}
 
 }
