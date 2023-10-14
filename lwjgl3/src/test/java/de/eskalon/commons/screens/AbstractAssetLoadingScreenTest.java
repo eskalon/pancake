@@ -39,7 +39,7 @@ public class AbstractAssetLoadingScreenTest extends LibgdxUnitTest {
 	@Test
 	public void test() {
 		AnnotationAssetManager a = createAssetManager();
-		AbstractAssetLoadingScreen s = new AbstractAssetLoadingScreen(a, 
+		AbstractAssetLoadingScreen s = new AbstractAssetLoadingScreen(a,
 				"de.eskalon.commons.screens.test") {
 
 			@Override

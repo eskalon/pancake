@@ -13,6 +13,7 @@ allprojects {
 	apply plugin: "idea"
 	apply plugin: "java-library"
 
+	group = "com.github.eskalon.pancake"
 	version = "0.1.2"
 	
 	ext {
@@ -82,7 +83,7 @@ project(":g3d") {
 	}
 }
 
-project(":desktop") {
+project(":lwjgl3") {
 	dependencies {
 		api project(":core")
 		api "com.github.crykn.guacamole:gdx-desktop:$guacamoleVersion"
@@ -113,10 +114,10 @@ project(":desktop") {
 	}
 }
 
-project(":tests") {
+project(":examples") {
 	dependencies {
 		api project(":core")
-		api project(":desktop")
+		api project(":lwjgl3")
 
 		implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
 		implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
