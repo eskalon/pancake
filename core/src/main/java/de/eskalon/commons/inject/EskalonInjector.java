@@ -19,7 +19,7 @@ public class EskalonInjector extends DefaultInjector {
 
 	private static EskalonInjector instance;
 
-	public static EskalonInjector getInstance() {
+	public static EskalonInjector instance() {
 		if (instance == null)
 			instance = new EskalonInjector();
 		return instance;

@@ -34,7 +34,7 @@ public class PostProcessingExample extends AbstractEskalonApplication {
 		Gdx.input.getInputProcessor()
 				.keyDown(EskalonApplicationInputProcessor.toggleOverlayKey);
 
-		EskalonInjector.getInstance().bindToConstructor(TestScreen.class);
+		EskalonInjector.instance().bindToConstructor(TestScreen.class);
 		return TestScreen.class;
 	}
 

@@ -17,6 +17,8 @@ package de.eskalon.commons.screens;
 
 import java.util.function.Supplier;
 
+import javax.annotation.Nullable;
+
 import de.eskalon.commons.core.EskalonApplicationContext;
 import de.eskalon.commons.event.EventBus;
 import de.eskalon.commons.inject.EskalonInjector;
@@ -43,25 +45,31 @@ public class EskalonScreenManager
 	 * @param transitionName
 	 */
 	public void pushScreen(Class<? extends AbstractEskalonScreen> screenClass,
-			String transitionName) {
+			@Nullable String transitionName) {
 		super.pushScreen(() -> {
-			return EskalonInjector.getInstance().getInstance(screenClass);
+			return EskalonInjector.instance().getInstance(screenClass);
 		}, () -> {
-			return appContext.getTransitions().get(transitionName);
+			return transitionName != null
+					? appContext.getTransitions().get(transitionName)
+					: null;
 		});
+	}
+
+	public void pushScreen(Class<? extends AbstractEskalonScreen> screenClass) {
+		pushScreen(screenClass, null);
 	}
 
 	@Override
 	@Deprecated // use pushScreen(Class, String) instead
 	public void pushScreen(AbstractEskalonScreen screen,
-			ScreenTransition transition) {
+			@Nullable ScreenTransition transition) {
 		super.pushScreen(screen, transition);
 	}
 
 	@Override
 	@Deprecated // use pushScreen(Class, String) instead
 	public void pushScreen(Supplier<AbstractEskalonScreen> screenSupplier,
-			Supplier<ScreenTransition> transitionSupplier) {
+			@Nullable Supplier<ScreenTransition> transitionSupplier) {
 		super.pushScreen(screenSupplier, transitionSupplier);
 	}
 

@@ -130,7 +130,7 @@ public class EskalonApplicationStarter implements ApplicationListener {
 		 * Registering the dependency providers outside of EskalonApplication
 		 * itself makes testing the game easier!
 		 */
-		EskalonInjector injector = EskalonInjector.getInstance();
+		EskalonInjector injector = EskalonInjector.instance();
 
 		// App context
 		injector.bindToInstance(EskalonApplicationContext.class, appContext);
