@@ -4,7 +4,7 @@ targetCompatibility = JavaVersion.VERSION_11
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 eclipse.project {
-    name = appName + "-tests"
+    name = appName + "-examples"
 }
 
 test {
