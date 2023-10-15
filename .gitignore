@@ -9,10 +9,10 @@ hs_err_pid*
 .project
 .metadata/
 /core/bin/
-/desktop/bin/
+/lwjgl3/bin/
 /g3d/bin/
 /gwt/bin/
-/tests/bin/
+/examples/bin/
 *.tmp
 *.bak
 *.swp
@@ -25,38 +25,38 @@ hs_err_pid*
 ## NetBeans
 /nbproject/private/
 /core/nbproject/private/
-/desktop/nbproject/private/
+/lwjgl3/nbproject/private/
 /g3d/nbproject/private/
 /gwt/nbproject/private/
-/tests/nbproject/private/
+/examples/nbproject/private/
 
 /build/
 /core/build/
-/desktop/build/
+/lwjgl3/build/
 /g3d/build/
 /gwt/build/
-/tests/build/
+/examples/build/
 
 /nbbuild/
 /core/nbbuild/
-/desktop/nbbuild/
+/lwjgl3/nbbuild/
 /g3d/nbbuild/
 /gwt/nbbuild/
-/tests/nbbuild/
+/examples/nbbuild/
 
 /dist/
 /core/dist/
-/desktop/dist/
+/lwjgl3/dist/
 /g3d/dist/
 /gwt/dist/
-/tests/dist/
+/examples/dist/
 
 /nbdist/
 /core/nbdist/
-/desktop/nbdist/
+/lwjgl3/nbdist/
 /g3d/nbdist/
 /gwt/nbdist/
-/tests/nbdist/
+/examples/nbdist/
 
 nbactions.xml
 nb-configuration.xml
@@ -67,10 +67,10 @@ nb-configuration.xml
 gradle-app.setting
 /build/
 /core/build/
-/desktop/build/
+/lwjgl3/build/
 /g3d/build/
 /gwt/build/
-/tests/build/
+/examples/build/
 
 ## OS Specific
 .DS_Store

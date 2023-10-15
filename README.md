@@ -18,7 +18,7 @@ Pancake uses the following libraries and frameworks :
 ## Content
 A selection of what Pancake offers:
 
-### <u>core:</u>
+### <u>core</u>
 - **AbstractEskalonApplication:** the core application; has to be created via `EskalonApplicationStarter` to take advantage of its features. Dependency injection is used to provide various useful objects, for instance a sprite batch, an asset manager, a sound manager, an event bus, a post processing pipeline etc.
 - **AnnotationAssetManager**
 	- `@Asset("cool_texture.jpg")`, `@Asset(value = "ui/skin/skin.json", params = "ui/skin/skin.atlas")`
@@ -57,11 +57,11 @@ A selection of what Pancake offers:
 - **RandomUtils:** contains various methods dealing with random values
 - **GL32CMacIssueHandler:** provides updated versions of the default shaders that are compatible with OpenGL 3.2
 
-### desktop
+### lwjgl3
 - Audio implementations that support spatial audio
 - A field annotation scanner utilising [reflections](https://github.com/ronmamo/reflections)
 
-### g3d:
+### g3d
 - A **deferred renderer** [WIP]
 
 
