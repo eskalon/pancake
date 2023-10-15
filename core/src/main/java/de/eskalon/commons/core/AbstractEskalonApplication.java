@@ -148,7 +148,7 @@ public abstract class AbstractEskalonApplication
 		/*
 		 * SCREEN MANAGER
 		 */
-		IInjector injector = EskalonInjector.getInstance();
+		IInjector injector = EskalonInjector.instance();
 		injector.injectMembers(this.getScreenManager());
 		this.getScreenManager().setHasDepth(config.shouldProvideDepthBuffers());
 		this.getScreenManager().setAutoDispose(true, true);
@@ -289,6 +289,11 @@ public abstract class AbstractEskalonApplication
 
 		if (postProcessor != null)
 			postProcessor.dispose();
+
+		for (ScreenTransition transition : appContext.getTransitions()
+				.values()) {
+			transition.dispose();
+		}
 	}
 
 }

@@ -29,7 +29,7 @@ public class InputBindingsExample extends AbstractEskalonApplication {
 
 	@Override
 	protected Class<? extends AbstractEskalonScreen> initApp() {
-		EskalonInjector.getInstance().bindToConstructor(TestScreen.class);
+		EskalonInjector.instance().bindToConstructor(TestScreen.class);
 		return TestScreen.class;
 	}
 

@@ -61,7 +61,7 @@ public abstract class AbstractImageScreen extends AbstractEskalonScreen {
 
 	public static final ImageScreenMode DEFAULT_SCREEN_MODE = ImageScreenMode.STRETCH;
 
-	private @Inject SpriteBatch batch;
+	protected @Inject SpriteBatch batch;
 
 	private @Nullable Texture image;
 	private Vector2 dimensions;

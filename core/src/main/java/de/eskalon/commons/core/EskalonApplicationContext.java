@@ -28,6 +28,7 @@ public class EskalonApplicationContext {
 	private String appName;
 	private String version;
 	private Map<String, ScreenTransition> transitions;
+	private Map<String, Object> objectStorage = new HashMap<>();
 
 	public EskalonApplicationContext(String appName, String version,
 			Map<String, ScreenTransition> transitions) {
@@ -52,10 +53,15 @@ public class EskalonApplicationContext {
 		return transitions;
 	}
 
+	public Map<String, Object> getObjectStorage() {
+		return objectStorage;
+	}
+
 	@Override
 	public String toString() {
 		return "EskalonApplicationContext{appName=" + appName + ",version="
-				+ version + ",transitions=" + transitions + "}";
+				+ version + ",transitions=" + transitions + ",objectStorage="
+				+ objectStorage + "}";
 	}
 
 }
