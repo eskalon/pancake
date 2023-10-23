@@ -168,8 +168,8 @@ public class DebugInfoRenderer {
 
 		// Threads & Input
 		fontDrawer.drawLine("Threads in Pool: %s/%s",
-				ThreadHandler.getInstance().getActiveThreadCount(),
-				ThreadHandler.getInstance().getPoolSize());
+				ThreadHandler.instance().getActiveThreadCount(),
+				ThreadHandler.instance().getPoolSize());
 		fontDrawer.drawLine("Mouse Pos: (x) %s (y) %s", Gdx.input.getX(),
 				Gdx.input.getY());
 

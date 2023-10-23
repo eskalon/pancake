@@ -22,7 +22,6 @@ import de.eskalon.commons.examples.PositionalAudioExample;
 import de.eskalon.commons.examples.PostProcessingComplexLayerExample;
 import de.eskalon.commons.examples.PostProcessingExample;
 import de.eskalon.commons.examples.PostProcessingSimpleLayerExample;
-import de.eskalon.commons.inject.EskalonInjector;
 
 public class EskalonExamples {
 
@@ -48,7 +47,7 @@ public class EskalonExamples {
 				args[0]);
 		Preconditions.checkNotNull(testAppClazz);
 
-		StartOnFirstThreadHelper.executeIfJVMValid(() -> {
+		StartOnFirstThreadHelper.executeOnValidJVM(() -> {
 			Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 			config.setTitle(args[0]);
 			config.setWindowedMode(1280, 720);

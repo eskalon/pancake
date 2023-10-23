@@ -51,7 +51,7 @@ public class IssueTestApp extends AbstractEskalonApplication {
 	}
 
 	public static void main(String[] args) {
-		StartOnFirstThreadHelper.executeIfJVMValid(() -> {
+		StartOnFirstThreadHelper.executeOnValidJVM(() -> {
 			Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 			config.setTitle("Test App");
 			config.setWindowedMode(1280, 720);

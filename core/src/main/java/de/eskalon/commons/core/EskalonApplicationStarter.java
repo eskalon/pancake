@@ -162,7 +162,7 @@ public class EskalonApplicationStarter implements ApplicationListener {
 		if (Gdx.app.getType() == ApplicationType.Desktop
 				|| Gdx.app.getType() == ApplicationType.HeadlessDesktop)
 			soundManagerImplClass = (Class<? extends ISoundManager>) ReflectionUtils
-					.getClassByName(
+					.getClassByNameOrNull(
 							"de.eskalon.commons.audio.DesktopSoundManager");
 		else
 			soundManagerImplClass = DefaultSoundManager.class;
@@ -224,6 +224,10 @@ public class EskalonApplicationStarter implements ApplicationListener {
 	@Override
 	public void dispose() {
 		application.dispose();
+	}
+
+	public AbstractEskalonApplication getApplication() {
+		return application;
 	}
 
 }
