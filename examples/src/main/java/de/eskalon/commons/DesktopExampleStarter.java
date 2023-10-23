@@ -25,7 +25,7 @@ import de.eskalon.commons.utils.JavaProcess;
 public class DesktopExampleStarter {
 
 	public static void main(String[] argv) {
-		StartOnFirstThreadHelper.executeIfJVMValid(() -> {
+		StartOnFirstThreadHelper.executeOnValidJVM(() -> {
 			Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 			config.setWindowedMode(500, 415);
 			config.setTitle("Desktop Example Starter");

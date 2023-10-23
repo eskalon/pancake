@@ -19,6 +19,7 @@ import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 
+import de.damios.guacamole.tuple.Pair;
 import de.eskalon.commons.core.EskalonApplicationContext;
 import de.eskalon.commons.event.EventBus;
 import de.eskalon.commons.inject.EskalonInjector;
@@ -46,13 +47,10 @@ public class EskalonScreenManager
 	 */
 	public void pushScreen(Class<? extends AbstractEskalonScreen> screenClass,
 			@Nullable String transitionName) {
-		super.pushScreen(() -> {
-			return EskalonInjector.instance().getInstance(screenClass);
-		}, () -> {
-			return transitionName != null
-					? appContext.getTransitions().get(transitionName)
-					: null;
-		});
+		super.pushScreen(EskalonInjector.instance().getInstance(screenClass),
+				transitionName != null
+						? appContext.getTransitions().get(transitionName)
+						: null);
 	}
 
 	public void pushScreen(Class<? extends AbstractEskalonScreen> screenClass) {
@@ -83,6 +81,19 @@ public class EskalonScreenManager
 	protected void finalizeScreen(ManagedScreen oldScreen) {
 		eventBus.unregister(oldScreen);
 		super.finalizeScreen(oldScreen);
+	}
+
+	@Override
+	public void dispose() {
+		// Prevent transitions from being disposes twice
+		super.transition = null;
+
+		for (Pair<Supplier<ScreenTransition>, Supplier<AbstractEskalonScreen>> pair : transitionQueue) {
+			pair.x.get().dispose();
+		}
+		transitionQueue.clear();
+
+		super.dispose();
 	}
 
 }

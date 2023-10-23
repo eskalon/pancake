@@ -151,7 +151,7 @@ public abstract class AbstractEskalonApplication
 		IInjector injector = EskalonInjector.instance();
 		injector.injectMembers(this.getScreenManager());
 		this.getScreenManager().setHasDepth(config.shouldProvideDepthBuffers());
-		this.getScreenManager().setAutoDispose(true, true);
+		this.getScreenManager().setAutoDispose(true, false);
 
 		/*
 		 * POST PROCESSING
@@ -268,6 +268,9 @@ public abstract class AbstractEskalonApplication
 
 	@Override
 	public void resize(int width, int height) {
+		if (width == 0 || height == 0)
+			return; // see ManagedGame#resize
+
 		super.resize(width, height);
 
 		if (postProcessor != null)

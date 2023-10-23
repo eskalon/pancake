@@ -42,6 +42,7 @@ import de.eskalon.commons.inject.providers.AssetProviders;
 import de.eskalon.commons.inject.providers.LoggerProvider;
 import de.eskalon.commons.inject.providers.LoggerProvider.Log;
 import de.eskalon.commons.screen.ScreenManager;
+import de.eskalon.commons.screens.EskalonScreenManager;
 import de.eskalon.commons.screens.EskalonSplashScreen;
 import de.eskalon.commons.settings.EskalonSettings;
 import de.eskalon.commons.utils.ContextUtils;
@@ -195,9 +196,16 @@ public class EskalonApplicationStarter implements ApplicationListener {
 		 */
 		injector.bindToConstructor(applicationClazz);
 		application = injector.getInstance(applicationClazz);
-		injector.bindToInstance(ScreenManager.class,
-				application.getScreenManager()); // Screenmanager is created in
-													// the super class
+		injector.bindToSubclass(ScreenManager.class,
+				EskalonScreenManager.class);
+		injector.bindToInstance(EskalonScreenManager.class,
+				(EskalonScreenManager) application.getScreenManager()); // Screenmanager
+																		// is
+																		// created
+																		// in
+																		// the
+																		// super
+																		// class
 		application.create();
 	}
 
