@@ -89,7 +89,7 @@ public class EskalonScreenManager
 		super.transition = null;
 
 		for (Pair<Supplier<ScreenTransition>, Supplier<AbstractEskalonScreen>> pair : transitionQueue) {
-			pair.x.get().dispose();
+			pair.y.get().dispose();
 		}
 		transitionQueue.clear();
 
