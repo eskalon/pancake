@@ -23,12 +23,16 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
+import de.eskalon.commons.inject.annotations.Inject;
+
 /**
  * The base class of all UI screens. It automatically sets the {@link #stage} as
  * {@linkplain InputProcessor input processor}. A {@linkplain #mainTable main
  * table} is automatically added to the stage for ease of use.
  */
 public abstract class AbstractEskalonUIScreen extends AbstractImageScreen {
+
+	protected @Inject SpriteBatch batch;
 
 	/**
 	 * The used stage. Contains a {@linkplain #mainTable table} by default.
@@ -39,9 +43,12 @@ public abstract class AbstractEskalonUIScreen extends AbstractImageScreen {
 	 */
 	protected Table mainTable;
 
-	public AbstractEskalonUIScreen(SpriteBatch batch) {
+	public AbstractEskalonUIScreen() {
 		this.setMode(ImageScreenMode.CENTERED_ORIGINAL_SIZE);
+	}
 
+	@Override
+	public void show() {
 		stage = new Stage(new ScreenViewport(), batch);
 		mainTable = new Table();
 		stage.addActor(mainTable);
