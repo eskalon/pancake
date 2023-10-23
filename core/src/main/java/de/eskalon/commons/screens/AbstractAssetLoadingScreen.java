@@ -23,11 +23,12 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.MathUtils;
 
 import de.damios.guacamole.annotations.GwtIncompatible;
+import de.damios.guacamole.gdx.log.Logger;
+import de.damios.guacamole.gdx.log.LoggerService;
 import de.damios.guacamole.gdx.reflection.ReflectionUtils;
 import de.eskalon.commons.asset.AnnotationAssetManager;
 import de.eskalon.commons.asset.AnnotationAssetManager.Asset;
 import de.eskalon.commons.core.AbstractEskalonApplication;
-import de.eskalon.commons.inject.annotations.Inject;
 import de.eskalon.commons.misc.IFieldAnnotationScanner;
 
 /**
@@ -42,6 +43,9 @@ import de.eskalon.commons.misc.IFieldAnnotationScanner;
  */
 @GwtIncompatible
 public abstract class AbstractAssetLoadingScreen extends AbstractEskalonScreen {
+
+	private static final Logger LOG = LoggerService
+			.getLogger(AbstractAssetLoadingScreen.class);
 
 	protected AnnotationAssetManager assetManager;
 
@@ -72,8 +76,10 @@ public abstract class AbstractAssetLoadingScreen extends AbstractEskalonScreen {
 						"de.eskalon.commons.misc.DesktopFieldAnnotationScanner",
 						IFieldAnnotationScanner.class);
 
+			LOG.debug("Scanning the packages for assets...");
 			annotationScanner.forEachFieldAnnotatedWith(packageRoot,
 					Asset.class, (f) -> assetManager.loadAnnotatedAsset(f));
+			LOG.debug("Scanning complete!");
 		}
 	}
 
