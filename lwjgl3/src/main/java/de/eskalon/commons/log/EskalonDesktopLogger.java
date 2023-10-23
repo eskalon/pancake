@@ -26,7 +26,7 @@ import com.badlogic.gdx.ApplicationLogger;
  */
 public class EskalonDesktopLogger implements ApplicationLogger {
 
-	private final String LOG_FORMAT = "%tT - [%s] %s";
+	private final String LOG_FORMAT = "%tH:%<tM:%<tS.%<tL - [%s] %s";
 
 	@Override
 	public void log(String tag, String message) {
