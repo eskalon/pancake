@@ -10,8 +10,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
 import de.eskalon.commons.LibgdxUnitTest;
 import de.eskalon.commons.asset.AnnotationAssetManager;
-import de.eskalon.commons.asset.AnnotationAssetManager.Asset;
 import de.eskalon.commons.asset.AnnotationAssetManagerTest;
+import de.eskalon.commons.asset.AnnotationAssetManager.Asset;
 import de.eskalon.commons.inject.annotations.Inject;
 import de.eskalon.commons.inject.providers.AssetProviders;
 

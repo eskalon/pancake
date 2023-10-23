@@ -30,8 +30,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.I18NBundle;
 
 import de.damios.guacamole.gdx.assets.Text;
-import de.eskalon.commons.asset.AnnotationAssetManager.Asset;
 import de.eskalon.commons.asset.PlaylistDefinition;
+import de.eskalon.commons.asset.AnnotationAssetManager.Asset;
 import de.eskalon.commons.inject.IInjector;
 import de.eskalon.commons.inject.QualifiedProvider;
 import de.eskalon.commons.inject.annotations.Inject;
@@ -81,7 +81,7 @@ public class AssetProviders {
 	/*
 	 * BASE CLASS
 	 */
-	private static abstract class AssetProvider<T>
+	public static abstract class AssetProvider<T>
 			implements QualifiedProvider<T, Asset> {
 		@Inject
 		private AssetManager assetManager;
