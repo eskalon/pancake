@@ -15,12 +15,14 @@
 
 package de.eskalon.commons.core;
 
+import de.damios.guacamole.gdx.log.LoggerService.LogLevel;
+
 /**
  * This class represents the arguments passed to the application from outside.
  */
 public class StartArguments {
 
-	private boolean enableDebugLoggingOnStartup;
+	private LogLevel logLevel = LogLevel.INFO;
 	private boolean skipSplashScreen;
 
 	/* Builder */
@@ -36,8 +38,13 @@ public class StartArguments {
 			this.ret = new StartArguments();
 		}
 
+		public StartArgumentsBuilder enableTraceLogging() {
+			ret.logLevel = LogLevel.TRACE;
+			return this;
+		}
+
 		public StartArgumentsBuilder enableDebugLogging() {
-			ret.enableDebugLoggingOnStartup = true;
+			ret.logLevel = LogLevel.DEBUG;
 			return this;
 		}
 
@@ -57,8 +64,8 @@ public class StartArguments {
 		// reduce visibility
 	}
 
-	public boolean shouldEnableDebugLogging() {
-		return enableDebugLoggingOnStartup;
+	public LogLevel getLogLevel() {
+		return logLevel;
 	}
 
 	public boolean shouldSkipSplashScreen() {
@@ -67,8 +74,7 @@ public class StartArguments {
 
 	@Override
 	public String toString() {
-		return "StartArguments{enableDebugLoggingOnStartup="
-				+ enableDebugLoggingOnStartup + ",skipSplashScreen="
+		return "StartArguments{logLevel=" + logLevel + ",skipSplashScreen="
 				+ skipSplashScreen + "}";
 	}
 

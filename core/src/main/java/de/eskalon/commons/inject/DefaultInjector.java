@@ -198,7 +198,7 @@ class DefaultInjector implements IInjector {
 							return value;
 						}
 					} else {
-						LOG.debug(
+						LOG.trace(
 								"The qualified provider for type '%s' was skipped since no matching qualifier ('@%s') was present on the field.",
 								type, qualifiedProviderBinding.qualifierClass
 										.getSimpleName());
@@ -215,14 +215,14 @@ class DefaultInjector implements IInjector {
 				// NOTE: don't try to inject the value's members in this case;
 				// the class would have been registered if it expected field
 				// injection to happen
-				LOG.debug("Falling back to constructor reflection for type %s",
+				LOG.trace("Falling back to constructor reflection for type %s",
 						type);
 				return value;
 			}
 		}
 
 		/* Dependency could not be resolved */
-		LOG.debug("The dependency '%s' could not be resolved.", type);
+		LOG.warn("The dependency '%s' could not be resolved.", type);
 
 		return null;
 	}

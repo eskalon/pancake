@@ -88,10 +88,8 @@ public class EskalonApplicationStarter implements ApplicationListener {
 			Gdx.app.setApplicationLogger(ReflectionUtils.newInstanceOrNull(
 					"de.eskalon.commons.log.EskalonDesktopLogger",
 					ApplicationLogger.class));
-		if (startArgs.shouldEnableDebugLogging())
-			LoggerService.showAll();
-		else
-			LoggerService.showInfoAndErrors();
+
+		LoggerService.setLogLevel(startArgs.getLogLevel());
 
 		/*
 		 * CREATE APP CONTEXT

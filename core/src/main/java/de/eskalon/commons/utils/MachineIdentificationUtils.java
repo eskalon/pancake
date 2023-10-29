@@ -78,7 +78,7 @@ public final class MachineIdentificationUtils {
 			s.useDelimiter("\\A");
 			return s.hasNext() ? s.next() : "";
 		} catch (IOException e) {
-			LOG.debug(e.getLocalizedMessage());
+			LOG.warn(e.getLocalizedMessage());
 			return null;
 		}
 	}
@@ -92,7 +92,7 @@ public final class MachineIdentificationUtils {
 				return nwi.getHardwareAddress();
 
 		} catch (SocketException | UnknownHostException e) {
-			LOG.debug(e.getLocalizedMessage());
+			LOG.warn(e.getLocalizedMessage());
 		}
 		return null;
 	}

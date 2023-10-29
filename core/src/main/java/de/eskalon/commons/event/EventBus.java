@@ -198,10 +198,10 @@ public class EventBus {
 			}
 		} else {
 			if (event instanceof ExceptionEvent)
-				LOG.debug(
+				LOG.warn(
 						"An ExceptionEvent was thrown, but no subscriber is registered for it.");
 			else if (event instanceof DeadEvent)
-				LOG.debug(
+				LOG.warn(
 						"A DeadEvent was thrown, but no subscriber is registered for it.");
 			else
 				post(new DeadEvent(event));
