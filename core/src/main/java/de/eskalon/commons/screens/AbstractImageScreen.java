@@ -56,7 +56,11 @@ public abstract class AbstractImageScreen extends AbstractEskalonScreen {
 		/**
 		 * The image is displayed in its original size and centered.
 		 */
-		CENTERED_ORIGINAL_SIZE
+		CENTERED_ORIGINAL_SIZE,
+		/**
+		 * The image is scaled to fit the screen while keeping its aspect ratio.
+		 */
+		CENTERED_FILL;
 	}
 
 	public static final ImageScreenMode DEFAULT_SCREEN_MODE = ImageScreenMode.STRETCH;
@@ -145,6 +149,19 @@ public abstract class AbstractImageScreen extends AbstractEskalonScreen {
 			this.dimensions.set(Gdx.graphics.getWidth(),
 					Gdx.graphics.getHeight());
 			this.position.set(0, 0);
+			break;
+		case CENTERED_FILL:
+			scl = Gdx.graphics.getHeight()
+					/ (float) Gdx.graphics.getWidth() < image.getHeight()
+							/ (float) image.getWidth()
+									? Gdx.graphics.getWidth()
+											/ (float) image.getWidth()
+									: Gdx.graphics.getHeight()
+											/ (float) image.getHeight();
+			this.dimensions.set(image.getWidth() * scl,
+					image.getHeight() * scl);
+			this.position.set((Gdx.graphics.getWidth() - dimensions.x) / 2F,
+					(Gdx.graphics.getHeight() - dimensions.y) / 2F);
 			break;
 		case SCALE:
 			scl = image.getWidth() - Gdx.graphics.getWidth() >= image

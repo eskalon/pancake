@@ -44,7 +44,7 @@ public abstract class AbstractEskalonUIScreen extends AbstractImageScreen {
 	protected Table mainTable;
 
 	public AbstractEskalonUIScreen() {
-		this.setMode(ImageScreenMode.CENTERED_ORIGINAL_SIZE);
+		this.setMode(ImageScreenMode.CENTERED_FILL);
 	}
 
 	@Override
