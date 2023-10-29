@@ -141,6 +141,7 @@ public class DefaultInputHandler<E extends Enum<E>, F extends Enum<F>>
 				continue;
 
 			if (b.keycodeMin.get() == keycode) {
+				b.keyminState = true;
 				b.currentState -= 1;
 
 				for (IInputListener l : listeners) {
@@ -151,6 +152,7 @@ public class DefaultInputHandler<E extends Enum<E>, F extends Enum<F>>
 				return true;
 			}
 			if (b.keycodeMax.get() == keycode) {
+				b.keymaxState = true;
 				b.currentState += 1;
 
 				for (IInputListener l : listeners) {
@@ -200,7 +202,8 @@ public class DefaultInputHandler<E extends Enum<E>, F extends Enum<F>>
 					|| b.keycodeMax.get() <= Keys.ANY_KEY)
 				continue;
 
-			if (b.keycodeMin.get() == keycode) {
+			if (b.keycodeMin.get() == keycode && b.keyminState) {
+				b.keyminState = false;
 				b.currentState += 1;
 
 				for (IInputListener l : listeners) {
@@ -210,7 +213,8 @@ public class DefaultInputHandler<E extends Enum<E>, F extends Enum<F>>
 				}
 				return true;
 			}
-			if (b.keycodeMax.get() == keycode) {
+			if (b.keycodeMax.get() == keycode && b.keymaxState) {
+				b.keymaxState = false;
 				b.currentState -= 1;
 
 				for (IInputListener l : listeners) {
@@ -417,6 +421,9 @@ public class DefaultInputHandler<E extends Enum<E>, F extends Enum<F>>
 		// private IntProperty controllerAxis;
 		private IntProperty keycodeMin, keycodeMax;
 		private IntProperty mouseAxis;
+
+		private boolean keyminState = false;
+		private boolean keymaxState = false;
 
 		public float currentState = 0;
 
