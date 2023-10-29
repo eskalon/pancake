@@ -27,6 +27,8 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.BufferUtils;
 
+import de.damios.guacamole.Exceptions;
+import de.damios.guacamole.concurrent.ThreadHandler;
 import de.damios.guacamole.gdx.graphics.ShaderCompatibilityHelper;
 import de.damios.guacamole.gdx.log.Logger;
 import de.damios.guacamole.gdx.log.LoggerService;
@@ -90,6 +92,16 @@ public class EskalonApplicationStarter implements ApplicationListener {
 					ApplicationLogger.class));
 
 		LoggerService.setLogLevel(startArgs.getLogLevel());
+
+		ThreadHandler.instance().setExceptionHandler((r, t) -> {
+			LOG.error("Uncaught exception in ThreadHandler: %s",
+					Exceptions.getStackTraceAsString(t));
+		});
+
+		Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
+			LOG.error("Uncaught exception in thread '%s': %s", t.getName(),
+					Exceptions.getStackTraceAsString(e));
+		});
 
 		/*
 		 * CREATE APP CONTEXT
