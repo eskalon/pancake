@@ -15,6 +15,8 @@
 
 package de.eskalon.commons.screens;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.annotation.Nullable;
 
 import com.badlogic.gdx.Application.ApplicationType;
@@ -22,6 +24,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.MathUtils;
 
+import de.damios.guacamole.Stopwatch;
 import de.damios.guacamole.annotations.GwtIncompatible;
 import de.damios.guacamole.gdx.log.Logger;
 import de.damios.guacamole.gdx.log.LoggerService;
@@ -52,6 +55,8 @@ public abstract class AbstractAssetLoadingScreen extends AbstractEskalonScreen {
 	private int loadingTicksPerSecond;
 	private float progress;
 	private boolean isDone = false;
+
+	private Stopwatch stopwatch;
 
 	/**
 	 * @param application
@@ -88,6 +93,13 @@ public abstract class AbstractAssetLoadingScreen extends AbstractEskalonScreen {
 		this(assetManager, packageRoot, 30);
 	}
 
+	@Override
+	public void show() {
+		super.show();
+
+		stopwatch = Stopwatch.createStarted();
+	}
+
 	/**
 	 * Loads the assets used in the loading screen itself.
 	 */
@@ -107,6 +119,8 @@ public abstract class AbstractAssetLoadingScreen extends AbstractEskalonScreen {
 		// Check if the asset manager is done
 		if (!isDone && assetManager.update(1000 / loadingTicksPerSecond)) {
 			isDone = true;
+			LOG.debug("Loading completed in %d miliseconds.",
+					stopwatch.getTime(TimeUnit.MILLISECONDS));
 			onFinishedLoading();
 		}
 
