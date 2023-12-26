@@ -20,10 +20,10 @@ allprojects {
 		appName = "pancake"
 		
 		freetypeSkinVersion = "0.3.1"
-		gdxVersion = "1.12.0"
-		guacamoleVersion = "d33e84ba2a" // = 0.3.4
+		gdxVersion = "1.12.1"
+		guacamoleVersion = "v0.3.5"
 		reflectionsVersion = "0.11.5"
-		screenmanagerVersion = "5f1dd79fef" // = 0.7.0
+		screenmanagerVersion = "0.7.0"
 		vfxVersion = "0.6.1"
 		
 		// Test dependencies:
@@ -49,7 +49,7 @@ project(":core") {
 		api "com.github.crykn:libgdx-screenmanager:$screenmanagerVersion"
 		api "com.github.crykn.gdx-vfx:gdx-vfx-core:$vfxVersion"
 		api("com.github.crykn.guacamole:gdx:$guacamoleVersion") {
-			force = true // we want to override version supplied by gdx-vfx and screenmanager
+			force = true // we want to override the version supplied by gdx-vfx and screenmanager
 		}
 		implementation "com.github.crykn:freetype-skin:$freetypeSkinVersion"
 
