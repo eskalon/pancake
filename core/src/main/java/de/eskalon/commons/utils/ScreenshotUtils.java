@@ -15,16 +15,16 @@
 
 package de.eskalon.commons.utils;
 
+import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.zip.Deflater;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.PixmapIO;
-import com.badlogic.gdx.utils.BufferUtils;
-import com.badlogic.gdx.utils.ScreenUtils;
 
 import de.damios.guacamole.annotations.GwtIncompatible;
 import de.damios.guacamole.gdx.log.Logger;
@@ -70,7 +70,7 @@ public class ScreenshotUtils {
 
 		LOG.debug("Screenshot saved to %s", file.path());
 
-		PixmapIO.writePNG(file, pixmap);
+		PixmapIO.writePNG(file, pixmap, Deflater.NO_COMPRESSION, true);
 		pixmap.dispose();
 	}
 
@@ -80,13 +80,34 @@ public class ScreenshotUtils {
 	 * @return a pixmap
 	 */
 	public static Pixmap takeScreenshot() {
-		byte[] pixels = ScreenUtils.getFrameBufferPixels(0, 0,
-				Gdx.graphics.getBackBufferWidth(),
-				Gdx.graphics.getBackBufferHeight(), true);
+		return takeScreenshot(0, 0, Gdx.graphics.getBackBufferWidth(),
+				Gdx.graphics.getBackBufferHeight(), false);
+	}
 
-		Pixmap pixmap = new Pixmap(Gdx.graphics.getBackBufferWidth(),
-				Gdx.graphics.getBackBufferHeight(), Pixmap.Format.RGBA8888);
-		BufferUtils.copy(pixels, 0, pixmap.getPixels(), pixels.length);
+	public static Pixmap takeScreenshot(int x, int y, int w, int h,
+			boolean flipY) {
+		Pixmap pixmap = Pixmap.createFromFrameBuffer(x, y, w, h);
+		ByteBuffer pixels = pixmap.getPixels();
+
+		final int numBytes = w * h * 4;
+
+		// Flip horizontally
+		if (flipY) {
+			byte[] lines = new byte[numBytes];
+			final int numBytesPerLine = w * 4;
+
+			for (int i = 0; i < h; i++) {
+				pixels.position((h - i - 1) * numBytesPerLine);
+				pixels.get(lines, i * numBytesPerLine, numBytesPerLine);
+			}
+			pixels.clear();
+			pixels.put(lines);
+		}
+
+		// Remove transparency
+		for (int i = 3; i < numBytes; i += 4) {
+			pixels.put(i, (byte) 255);
+		}
 
 		return pixmap;
 	}
