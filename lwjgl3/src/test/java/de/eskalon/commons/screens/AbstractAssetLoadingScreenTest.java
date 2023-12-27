@@ -59,6 +59,8 @@ public class AbstractAssetLoadingScreenTest extends LibgdxUnitTest {
 			protected void loadOwnAssets() {
 			}
 		};
+		
+		s.show();
 
 		while (!isFinished)
 			s.render(1);
