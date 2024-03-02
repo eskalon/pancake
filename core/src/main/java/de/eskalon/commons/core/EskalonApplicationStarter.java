@@ -29,7 +29,6 @@ import com.badlogic.gdx.utils.BufferUtils;
 
 import de.damios.guacamole.Exceptions;
 import de.damios.guacamole.concurrent.ThreadHandler;
-import de.damios.guacamole.gdx.graphics.ShaderCompatibilityHelper;
 import de.damios.guacamole.gdx.log.Logger;
 import de.damios.guacamole.gdx.log.LoggerService;
 import de.damios.guacamole.gdx.reflection.ReflectionUtils;
@@ -183,10 +182,7 @@ public class EskalonApplicationStarter implements ApplicationListener {
 
 		// Sprite batch
 		injector.bindToInstance(SpriteBatch.class,
-				new SpriteBatch(1000,
-						ShaderCompatibilityHelper.mustUse32CShader()
-								? GL32CMacIssueHandler.createSpriteBatchShader()
-								: null));
+				GL32CMacIssueHandler.createSpriteBatch());
 
 		// Start args
 		injector.bindToInstance(StartArguments.class, startArgs);

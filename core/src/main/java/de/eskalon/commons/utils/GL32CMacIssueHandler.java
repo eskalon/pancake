@@ -15,8 +15,11 @@
 
 package de.eskalon.commons.utils;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
+import de.damios.guacamole.gdx.graphics.ShaderCompatibilityHelper;
 import de.damios.guacamole.gdx.graphics.ShaderProgramFactory;
 
 /**
@@ -26,6 +29,8 @@ import de.damios.guacamole.gdx.graphics.ShaderProgramFactory;
  * This is needed when OpenGL 3+ features (e.g. multiple render targets) are
  * used on mac, as mac only supports core profiles and those are not backward
  * compatible.
+ * <p>
+ * Please note that prepends are ignored for shaders created by this class.
  * 
  * @author damios
  * @see <a href=
@@ -42,7 +47,8 @@ public final class GL32CMacIssueHandler {
 
 	public static ShaderProgram createSpriteBatchShader() {
 		// @formatter:off
-		String vertexShader = "in vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
+		String vertexShader = "#version 150\n" //
+				+ "in vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
 				+ "in vec4 " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
 				+ "in vec2 " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
 				+ "uniform mat4 u_projTrans;\n" //
@@ -58,7 +64,8 @@ public final class GL32CMacIssueHandler {
 				+ "   gl_Position =  u_projTrans * "
 				+ ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
 				+ "}\n";
-		String fragmentShader = "#ifdef GL_ES\n" //
+		String fragmentShader = "#version 150\n" //
+				+ "#ifdef GL_ES\n" //
 				+ "#define LOWP lowp\n" //
 				+ "precision mediump float;\n" //
 				+ "#else\n" //
@@ -72,12 +79,21 @@ public final class GL32CMacIssueHandler {
 				+ "  fragColor = v_color * texture(u_texture, v_texCoords);\n" //
 				+ "}";
 		// @formatter:on
-		return ShaderProgramFactory.fromString(vertexShader, fragmentShader);
+		return ShaderProgramFactory.fromString(vertexShader, fragmentShader,
+				true, true);
+	}
+
+	public static SpriteBatch createSpriteBatch() {
+		return new SpriteBatch(1000,
+				ShaderCompatibilityHelper.mustUse32CShader()
+						? createSpriteBatchShader()
+						: null);
 	}
 
 	private static String createImmediateModeRenderer20VertexShader(
 			boolean hasNormals, boolean hasColors, int numTexCoords) {
-		String shader = "in vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n"
+		String shader = "#version 150\n" + "in vec4 "
+				+ ShaderProgram.POSITION_ATTRIBUTE + ";\n"
 				+ (hasNormals
 						? "in vec3 " + ShaderProgram.NORMAL_ATTRIBUTE + ";\n"
 						: "")
@@ -113,8 +129,8 @@ public final class GL32CMacIssueHandler {
 
 	private static String createImmediateModeRenderer20FragmentShader(
 			boolean hasNormals, boolean hasColors, int numTexCoords) {
-		String shader = "#ifdef GL_ES\n" + "precision mediump float;\n"
-				+ "#endif\n";
+		String shader = "#version 150\n" + "#ifdef GL_ES\n"
+				+ "precision mediump float;\n" + "#endif\n";
 
 		if (hasColors)
 			shader += "in vec4 v_col;\n";
@@ -143,18 +159,25 @@ public final class GL32CMacIssueHandler {
 		return shader;
 	}
 
-	/**
-	 * Returns a new instance of the default shader used by SpriteBatch for GL2
-	 * when no shader is specified.
-	 */
 	public static ShaderProgram createImmediateModeRenderer20DefaultShader(
 			boolean hasNormals, boolean hasColors, int numTexCoords) {
 		String vertexShader = createImmediateModeRenderer20VertexShader(
 				hasNormals, hasColors, numTexCoords);
 		String fragmentShader = createImmediateModeRenderer20FragmentShader(
 				hasNormals, hasColors, numTexCoords);
-		ShaderProgram program = new ShaderProgram(vertexShader, fragmentShader);
-		return program;
+		return ShaderProgramFactory.fromString(vertexShader, fragmentShader,
+				true, true);
+	}
+
+	public static ShaderProgram createImmediateModeRenderer20DefaultShader() {
+		return createImmediateModeRenderer20DefaultShader(false, true, 0);
+	}
+
+	public static ShapeRenderer createShapeRenderer() {
+		return new ShapeRenderer(5000,
+				ShaderCompatibilityHelper.mustUse32CShader()
+						? createImmediateModeRenderer20DefaultShader()
+						: null);
 	}
 
 }
