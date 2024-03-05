@@ -15,7 +15,6 @@
 
 package de.eskalon.commons.event;
 
-import java.util.EventObject;
 import java.util.Objects;
 
 /**

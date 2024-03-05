@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
 import de.damios.guacamole.gdx.DefaultInputProcessor;
-import de.eskalon.commons.IssueTestApp.TestScreen;
 import de.eskalon.commons.core.AbstractEskalonApplication;
 import de.eskalon.commons.inject.EskalonInjector;
 import de.eskalon.commons.inject.annotations.Inject;

@@ -18,7 +18,7 @@ package de.eskalon.commons.audio;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;

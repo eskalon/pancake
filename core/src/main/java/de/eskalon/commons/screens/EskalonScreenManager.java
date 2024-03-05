@@ -17,7 +17,7 @@ package de.eskalon.commons.screens;
 
 import java.util.function.Supplier;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import de.damios.guacamole.tuple.Pair;
 import de.eskalon.commons.core.EskalonApplicationContext;

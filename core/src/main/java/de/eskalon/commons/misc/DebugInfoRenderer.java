@@ -56,8 +56,6 @@ public class DebugInfoRenderer {
 	private BitmapFont font;
 	private FontDrawer fontDrawer;
 	private ShapeRenderer shapeRenderer;
-	private int width;
-	private int height;
 
 	// FPS graph
 	private FPSCounter fpsCounter;
@@ -130,8 +128,6 @@ public class DebugInfoRenderer {
 
 	public void resize(int width, int height) {
 		viewport.update(width, height, true);
-		this.width = width;
-		this.height = height;
 
 		if (fontDrawer != null)
 			fontDrawer.resize(height, width);

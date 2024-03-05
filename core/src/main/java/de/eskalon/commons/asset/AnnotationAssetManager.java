@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.HashMap;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.badlogic.gdx.assets.AssetLoaderParameters;
 import com.badlogic.gdx.assets.AssetManager;
@@ -77,7 +77,6 @@ public class AnnotationAssetManager extends AssetManager {
 	 * @param field
 	 *            the annotated field
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public <T> void loadAnnotatedAsset(Field field) {
 		Annotation annotation = field.getDeclaredAnnotation(Asset.class);
 		Preconditions.checkArgument(annotation != null);
@@ -85,6 +84,7 @@ public class AnnotationAssetManager extends AssetManager {
 		loadAnnotatedAsset(field, annotation.getAnnotation(Asset.class));
 	}
 
+	@SuppressWarnings("unchecked")
 	private <T> void loadAnnotatedAsset(Field field, Asset assetAnnotaion) {
 		if (!assetAnnotaion.disabled())
 			load(assetAnnotaion.value(), (Class) field.getType(),

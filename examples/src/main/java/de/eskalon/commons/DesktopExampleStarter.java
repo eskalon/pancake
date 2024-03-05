@@ -24,7 +24,7 @@ import de.eskalon.commons.utils.JavaProcess;
 // Based on libGDX's Lwjgl3TestStarter
 public class DesktopExampleStarter {
 
-	public static void main(String[] argv) {
+	public static void main(String[] args) {
 		StartOnFirstThreadHelper.executeOnValidJVM(() -> {
 			Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 			config.setWindowedMode(500, 415);
@@ -35,7 +35,7 @@ public class DesktopExampleStarter {
 			// config.useOpenGL3(true, 3, 2);
 
 			new Lwjgl3Application(new TestChooser(), config);
-		});
+		}, args);
 	}
 
 	static class TestChooser extends ApplicationAdapter {
@@ -43,6 +43,7 @@ public class DesktopExampleStarter {
 		private Skin skin;
 		private TextButton lastClickedTestButton;
 
+		@Override
 		public void create() {
 			final Preferences prefs = Gdx.app
 					.getPreferences("eskalon-desktop-examples");

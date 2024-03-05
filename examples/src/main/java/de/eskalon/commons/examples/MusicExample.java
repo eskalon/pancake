@@ -2,7 +2,6 @@ package de.eskalon.commons.examples;
 
 import de.eskalon.commons.asset.PlaylistDefinition;
 import de.eskalon.commons.core.AbstractEskalonApplication;
-import de.eskalon.commons.examples.ImageScreenExample.TestScreen;
 import de.eskalon.commons.inject.EskalonInjector;
 import de.eskalon.commons.inject.annotations.Inject;
 import de.eskalon.commons.screens.AbstractEskalonScreen;

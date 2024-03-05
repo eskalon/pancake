@@ -49,7 +49,7 @@ public final class JavaProcess {
 		}
 
 		try {
-			Process process = (new ProcessBuilder(command)).inheritIO().start();
+			(new ProcessBuilder(command)).inheritIO().start();
 		} catch (IOException e) {
 			System.err.println(
 					"There was a problem executing the provided class.");

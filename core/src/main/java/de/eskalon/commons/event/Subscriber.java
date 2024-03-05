@@ -16,7 +16,6 @@
 package de.eskalon.commons.event;
 
 import com.badlogic.gdx.utils.reflect.Method;
-import com.badlogic.gdx.utils.reflect.ReflectionException;
 
 import de.damios.guacamole.gdx.reflection.ReflectionUtils;
 

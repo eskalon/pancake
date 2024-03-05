@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
@@ -67,7 +67,7 @@ public class EskalonExamples {
 				e.printStackTrace();
 				System.exit(-1);
 			}
-		});
+		}, args);
 	}
 
 	private static @Nullable Class<? extends AbstractEskalonApplication> forName(

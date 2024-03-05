@@ -10,11 +10,6 @@ import org.reflections8.scanners.FieldAnnotationsScanner;
 import com.badlogic.gdx.utils.reflect.Field;
 import com.badlogic.gdx.utils.reflect.ReflectionConverter;
 
-import de.damios.guacamole.gdx.reflection.ReflectionUtils;
-import de.eskalon.commons.asset.AnnotationAssetManager;
-import de.eskalon.commons.asset.AnnotationAssetManager.Asset;
-import de.eskalon.commons.misc.IFieldAnnotationScanner;
-
 public class DesktopFieldAnnotationScanner implements IFieldAnnotationScanner {
 
 	@Override

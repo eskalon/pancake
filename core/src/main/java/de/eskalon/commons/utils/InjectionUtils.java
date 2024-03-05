@@ -15,11 +15,10 @@
 
 package de.eskalon.commons.utils;
 
-import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Set;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.Constructor;
@@ -59,7 +58,7 @@ public class InjectionUtils {
 		return ReflectionUtils.newInstanceWithParamsOrNull(constructor, o);
 	}
 
-	public static @Nullable java.lang.reflect.Constructor getInjectableConstructor(
+	public static java.lang.reflect.@Nullable Constructor getInjectableConstructor(
 			Class<?> clazz, boolean includeNoArgsConstructor) {
 		// TODO: This needs to be ported to libGDX's reflection handling
 		// to make it compatible with GWT
@@ -81,7 +80,7 @@ public class InjectionUtils {
 		Set<Class<?>> allSuperTypes = ReflectionUtils
 				.retrieveAllSuperTypes(clazz);
 		for (Class<?> type : allSuperTypes) {
-			for (Method method : ClassReflection.getMethods(clazz)) {
+			for (Method method : ClassReflection.getMethods(type)) {
 				if (method.getName().equals(methodName) && Arrays
 						.equals(method.getParameterTypes(), paramTypes)) {
 					return method.isAnnotationPresent(Singleton.class);

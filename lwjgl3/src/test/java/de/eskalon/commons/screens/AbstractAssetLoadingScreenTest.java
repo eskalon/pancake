@@ -3,7 +3,6 @@ package de.eskalon.commons.screens;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
@@ -15,8 +14,6 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import de.eskalon.commons.LibgdxUnitTest;
 import de.eskalon.commons.asset.AnnotationAssetManager;
 import de.eskalon.commons.asset.BitmapFontAssetLoaderParametersFactory;
-import de.eskalon.commons.core.AbstractEskalonApplication;
-import de.eskalon.commons.inject.EskalonInjector;
 
 public class AbstractAssetLoadingScreenTest extends LibgdxUnitTest {
 
@@ -59,7 +56,7 @@ public class AbstractAssetLoadingScreenTest extends LibgdxUnitTest {
 			protected void loadOwnAssets() {
 			}
 		};
-		
+
 		s.show();
 
 		while (!isFinished)

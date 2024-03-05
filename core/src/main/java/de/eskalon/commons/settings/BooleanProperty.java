@@ -3,7 +3,7 @@ package de.eskalon.commons.settings;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import de.damios.guacamole.func.BooleanConsumer;
 

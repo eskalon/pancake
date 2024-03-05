@@ -17,7 +17,7 @@ package de.eskalon.commons.screens;
 
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;

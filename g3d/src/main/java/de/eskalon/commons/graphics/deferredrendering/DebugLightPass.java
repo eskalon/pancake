@@ -55,7 +55,7 @@ public class DebugLightPass extends LightPass {
 	private AssetManager assetManager;
 
 	private Camera orthoCam;
-	private Map<String, Mesh> quads = new ConcurrentHashMap<String, Mesh>();
+	private Map<String, Mesh> quads = new ConcurrentHashMap<>();
 	private BitmapFont defaultFont;
 	private ShapeRenderer shapeRenderer;
 	private SpriteBatch sBatch;

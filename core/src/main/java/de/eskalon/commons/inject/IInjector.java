@@ -17,7 +17,7 @@ package de.eskalon.commons.inject;
 
 import java.lang.annotation.Annotation;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import de.damios.guacamole.annotations.Beta;
 import de.eskalon.commons.inject.annotations.Inject;
@@ -97,7 +97,7 @@ public interface IInjector {
 	 * @return
 	 */
 	public <T> T getInstance(Class<T> type,
-			@Nullable com.badlogic.gdx.utils.reflect.Annotation[] annotations);
+			com.badlogic.gdx.utils.reflect.Annotation @Nullable [] annotations);
 
 	/**
 	 * Retrieve an instance of {@code type}.

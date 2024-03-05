@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
@@ -94,9 +94,10 @@ class DefaultInjector implements IInjector {
 		return getInstance(type, null);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T> @Nullable T getInstance(Class<T> type,
-			@Nullable com.badlogic.gdx.utils.reflect.Annotation[] annotations) {
+			com.badlogic.gdx.utils.reflect.Annotation @Nullable [] annotations) {
 		/* Linked bindings */
 		while (links.containsKey(type)) {
 			type = (Class<T>) links.get(type);

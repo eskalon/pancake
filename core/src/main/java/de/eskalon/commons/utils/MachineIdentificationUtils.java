@@ -22,7 +22,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Scanner;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import de.damios.guacamole.annotations.GwtIncompatible;
 import de.damios.guacamole.gdx.log.Logger;
