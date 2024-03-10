@@ -214,6 +214,7 @@ public abstract class AbstractEskalonApplication
 				LOG.error(
 						"An unexpected error occurred while initialising the application: %s",
 						Exceptions.getStackTraceAsString(e));
+				Gdx.app.exit();
 			}
 		});
 

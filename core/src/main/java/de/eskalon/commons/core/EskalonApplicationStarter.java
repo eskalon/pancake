@@ -79,6 +79,7 @@ public class EskalonApplicationStarter implements ApplicationListener {
 				StartArguments.create().enableDebugLogging().build());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void create() {
 		/*
