@@ -30,7 +30,6 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 import de.damios.guacamole.Preconditions;
 import de.damios.guacamole.concurrent.ThreadHandler;
-import de.damios.guacamole.gdx.graphics.ShaderCompatibilityHelper;
 import de.damios.guacamole.gdx.utils.FPSCounter;
 import de.eskalon.commons.audio.ISoundManager;
 import de.eskalon.commons.utils.ColorUtils;
@@ -89,12 +88,7 @@ public class DebugInfoRenderer {
 		this.glProfiler = new GLProfiler(Gdx.graphics);
 		this.soundManager = soundManager;
 		this.fpsCounter = new FPSCounter(MAX_SNAPSHOT_COUNT);
-		this.shapeRenderer = new ShapeRenderer(5000,
-				ShaderCompatibilityHelper.mustUse32CShader()
-						? GL32CMacIssueHandler
-								.createImmediateModeRenderer20DefaultShader(
-										false, true, 0)
-						: null);
+		this.shapeRenderer = GL32CMacIssueHandler.createShapeRenderer();
 
 		this.glProfiler.disable();
 	}
