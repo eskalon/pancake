@@ -115,7 +115,7 @@ public class EskalonApplicationStarter implements ApplicationListener {
 		LOG.info("Version: '%s' | App Type: '%s' | OS: '%s'",
 				appContext.getVersion(), Gdx.app.getType(),
 				System.getProperty("os.name"));
-		LOG.debug("GL Context: '%s' (%s %d.%d.%d) | Renderer: '%s'",
+		LOG.debug("GL ES Context: '%s' (%s %d.%d.%d) | Renderer: '%s'",
 				(Gdx.graphics.isGL32Available() ? "3.2"
 						: (Gdx.graphics.isGL31Available() ? "3.1"
 								: (Gdx.graphics.isGL30Available() ? "3.0"
