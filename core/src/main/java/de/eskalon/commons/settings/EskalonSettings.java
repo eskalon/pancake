@@ -58,6 +58,7 @@ public class EskalonSettings {
 		this.preferences = AutoFlushingPreferences
 				.createInstance(Gdx.app.getPreferences(fileName));
 		this.preferences.setAutoFlushing(true);
+		this.preferences.setFlushSavely(true);
 
 		this.isFirstStartup = this.preferences.getBoolean(FIRST_STARTUP_SETTING,
 				true);

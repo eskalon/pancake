@@ -18,6 +18,11 @@ package de.eskalon.commons.settings;
 import java.util.Map;
 
 import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.utils.GdxRuntimeException;
+
+import de.damios.guacamole.Exceptions;
+import de.damios.guacamole.gdx.log.Logger;
+import de.damios.guacamole.gdx.log.LoggerService;
 
 /**
  * Wraps a {@link Preferences} instance to enable automatic flushing after every
@@ -27,7 +32,9 @@ import com.badlogic.gdx.Preferences;
  */
 public class AutoFlushingPreferences implements Preferences {
 
+	private Logger LOG = LoggerService.getLogger(AutoFlushingPreferences.class);
 	private boolean autoFlush = false;
+	private boolean flushSavely = false;
 	private Preferences preferences;
 
 	public static AutoFlushingPreferences createInstance(
@@ -47,11 +54,19 @@ public class AutoFlushingPreferences implements Preferences {
 		return autoFlush;
 	}
 
+	public void setFlushSavely(boolean flushSavely) {
+		this.flushSavely = flushSavely;
+	}
+
+	public boolean isFlushingSavely() {
+		return flushSavely;
+	}
+
 	@Override
 	public Preferences putBoolean(String key, boolean value) {
 		preferences.putBoolean(key, value);
 		if (autoFlush)
-			preferences.flush();
+			flush();
 		return this;
 	}
 
@@ -59,7 +74,7 @@ public class AutoFlushingPreferences implements Preferences {
 	public Preferences putInteger(String key, int value) {
 		preferences.putInteger(key, value);
 		if (autoFlush)
-			preferences.flush();
+			flush();
 		return this;
 	}
 
@@ -67,7 +82,7 @@ public class AutoFlushingPreferences implements Preferences {
 	public Preferences putLong(String key, long value) {
 		preferences.putLong(key, value);
 		if (autoFlush)
-			preferences.flush();
+			flush();
 		return this;
 	}
 
@@ -75,7 +90,7 @@ public class AutoFlushingPreferences implements Preferences {
 	public Preferences putFloat(String key, float value) {
 		preferences.putFloat(key, value);
 		if (autoFlush)
-			preferences.flush();
+			flush();
 		return this;
 	}
 
@@ -83,7 +98,7 @@ public class AutoFlushingPreferences implements Preferences {
 	public Preferences putString(String key, String value) {
 		preferences.putString(key, value);
 		if (autoFlush)
-			preferences.flush();
+			flush();
 		return this;
 	}
 
@@ -91,7 +106,7 @@ public class AutoFlushingPreferences implements Preferences {
 	public Preferences put(Map<String, ?> vals) {
 		preferences.put(vals);
 		if (autoFlush)
-			preferences.flush();
+			flush();
 		return this;
 	}
 
@@ -167,7 +182,16 @@ public class AutoFlushingPreferences implements Preferences {
 
 	@Override
 	public void flush() {
-		preferences.flush();
+		if (flushSavely) {
+			try {
+				preferences.flush();
+			} catch (GdxRuntimeException e) {
+				LOG.error("Problem while saving preferences: %s",
+						Exceptions.getStackTraceAsString(e));
+			}
+		} else {
+			preferences.flush();
+		}
 	}
 
 }
