@@ -56,6 +56,7 @@ import de.eskalon.commons.utils.GL32CMacIssueHandler;
  */
 public class EskalonApplicationStarter implements ApplicationListener {
 
+	private static boolean JVM_ALREADY_RUNNING = false;
 	private static final Logger LOG = LoggerService
 			.getLogger(EskalonApplicationStarter.class);
 
@@ -132,8 +133,11 @@ public class EskalonApplicationStarter implements ApplicationListener {
 					tmpBuffer.get(),
 					(Runtime.getRuntime().maxMemory() / 1024F / 1024F / 1024F));
 		}
-		LOG.debug("Java Version: '%s'", System.getProperty("java.version"));
+		LOG.debug("Java Version: '%s' | Reused JVM: '%b'",
+				System.getProperty("java.version"), JVM_ALREADY_RUNNING);
 		LOG.info("");
+
+		JVM_ALREADY_RUNNING = true;
 
 		/*
 		 * INITIALIZE DEPENDENCY INJECTION
