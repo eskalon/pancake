@@ -15,8 +15,6 @@
 
 package de.eskalon.commons.screens;
 
-import java.util.function.Supplier;
-
 import org.jspecify.annotations.Nullable;
 
 import de.damios.guacamole.tuple.Pair;
@@ -27,6 +25,7 @@ import de.eskalon.commons.inject.annotations.Inject;
 import de.eskalon.commons.screen.ManagedScreen;
 import de.eskalon.commons.screen.ScreenManager;
 import de.eskalon.commons.screen.transition.ScreenTransition;
+import de.eskalon.commons.utils.Supplier;
 
 /**
  * A simple extension of {@link ScreenManager} that automatically (un)registers
