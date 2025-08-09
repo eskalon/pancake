@@ -16,14 +16,10 @@
 package de.eskalon.commons.screens;
 
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-
-import de.eskalon.commons.inject.annotations.Inject;
 
 /**
  * The base class of all UI screens. It automatically sets the {@link #stage} as
@@ -31,8 +27,6 @@ import de.eskalon.commons.inject.annotations.Inject;
  * table} is automatically added to the stage for ease of use.
  */
 public abstract class AbstractEskalonUIScreen extends AbstractImageScreen {
-
-	protected @Inject SpriteBatch batch;
 
 	/**
 	 * The used stage. Contains a {@linkplain #mainTable table} by default.
@@ -49,7 +43,7 @@ public abstract class AbstractEskalonUIScreen extends AbstractImageScreen {
 
 	@Override
 	public void show() {
-		stage = new Stage(new ScreenViewport(), batch);
+		stage = new Stage(new ScreenViewport());
 		mainTable = new Table();
 		stage.addActor(mainTable);
 		mainTable.setFillParent(true);
@@ -64,9 +58,6 @@ public abstract class AbstractEskalonUIScreen extends AbstractImageScreen {
 		stage.getViewport().apply();
 		stage.act(delta);
 		stage.draw();
-
-		// Resets the alpha changes made by scene2d actions
-		stage.getBatch().setColor(Color.WHITE);
 	}
 
 	protected void renderBackground(float delta) {
