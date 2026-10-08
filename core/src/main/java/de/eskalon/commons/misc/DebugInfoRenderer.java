@@ -32,6 +32,10 @@ import de.damios.guacamole.Preconditions;
 import de.damios.guacamole.concurrent.ThreadHandler;
 import de.damios.guacamole.gdx.utils.FPSCounter;
 import de.eskalon.commons.audio.ISoundManager;
+import de.eskalon.commons.core.EskalonApplicationContext;
+import de.eskalon.commons.inject.annotations.Inject;
+import de.eskalon.commons.inject.annotations.Singleton;
+import de.eskalon.commons.input.EskalonApplicationInputProcessor;
 import de.eskalon.commons.utils.ColorUtils;
 import de.eskalon.commons.utils.GL32CMacIssueHandler;
 import text.formic.Stringf;
@@ -40,14 +44,14 @@ import text.formic.Stringf;
  * Prints the current FPS count, a corresponding graph and some other debug
  * information on screen.
  * <p>
- * Has to be continuously {@linkplain #update(float) updated} for the FPS
+ * Has to be continuously {@linkplain #stopProfiling(float) updated} for the FPS
  * counter to work.
  * 
  * @author damios
  */
 public class DebugInfoRenderer {
 
-	private static int MAX_SNAPSHOT_COUNT = 2 * 20;
+	private static final int MAX_SNAPSHOT_COUNT = 2 * 20;
 
 	// Internal rendering stuff
 	private Viewport viewport;
@@ -58,8 +62,6 @@ public class DebugInfoRenderer {
 
 	// FPS graph
 	private FPSCounter fpsCounter;
-	private int fpsGraphY;
-	private int fpsGraphX;
 
 	// Data sources
 	private GLProfiler glProfiler;
@@ -68,27 +70,29 @@ public class DebugInfoRenderer {
 	private ISoundManager soundManager;
 	private String gameVersion;
 	private String appType;
+	private EskalonApplicationInputProcessor eskalonInputProcessor;
 
 	/**
 	 * Creates a debug info renderer.
 	 * 
-	 * @param batch
-	 * @param gameVersion
-	 * 
 	 * @see #initilaize(int, int, BitmapFont)
 	 */
-	public DebugInfoRenderer(SpriteBatch batch, String gameVersion,
-			ISoundManager soundManager) {
+	@Inject
+	@Singleton
+	public DebugInfoRenderer(SpriteBatch batch,
+			EskalonApplicationContext appContext, ISoundManager soundManager,
+			EskalonApplicationInputProcessor eskalonInputProcessor) {
 		this.viewport = new ScreenViewport();
 		this.batch = batch;
 
-		this.gameVersion = "Version: " + gameVersion;
+		this.gameVersion = "Version: " + appContext.getVersion();
 		this.appType = "App Type: " + Gdx.app.getType() + " ("
 				+ System.getProperty("os.name") + ")";
 		this.glProfiler = new GLProfiler(Gdx.graphics);
 		this.soundManager = soundManager;
 		this.fpsCounter = new FPSCounter(MAX_SNAPSHOT_COUNT);
 		this.shapeRenderer = GL32CMacIssueHandler.createShapeRenderer();
+		this.eskalonInputProcessor = eskalonInputProcessor;
 
 		this.glProfiler.disable();
 	}
@@ -99,7 +103,16 @@ public class DebugInfoRenderer {
 		resize(width, height);
 	}
 
-	public void update(float delta) {
+	public void startProfiling() {
+		if (eskalonInputProcessor.isDebugOverlayEnabled())
+			glProfiler.enable();
+		else
+			glProfiler.disable();
+
+		glProfiler.reset();
+	}
+
+	public void stopProfiling(float delta) {
 		glCalls = glProfiler.getCalls();
 		drawCalls = glProfiler.getDrawCalls();
 		shaderSwitches = glProfiler.getShaderSwitches();
@@ -109,150 +122,161 @@ public class DebugInfoRenderer {
 		fpsCounter.update(delta);
 	}
 
-	public void setProfilingEnabled(boolean doGLProfiling) {
-		if (doGLProfiling)
-			glProfiler.enable();
-		else
-			glProfiler.disable();
-	}
-
-	public void resetProfiler() {
-		glProfiler.reset();
-	}
-
 	public void resize(int width, int height) {
 		viewport.update(width, height, true);
 
 		if (fontDrawer != null)
 			fontDrawer.resize(height, width);
-
-		fpsGraphY = 5;
-		fpsGraphX = width - 356;
 	}
 
 	public void render() {
-		Preconditions.checkState(font != null,
-				"The debug renderer has to be initialized first!");
+		if (eskalonInputProcessor.isDebugOverlayEnabled()) {
+			Preconditions.checkState(font != null,
+					"The debug renderer has to be initialized first!");
 
-		viewport.apply();
-		batch.setProjectionMatrix(viewport.getCamera().combined);
-		batch.begin();
-		/*
-		 * INFO
-		 */
-		fontDrawer.reset();
-		fontDrawer.drawLine(
-				"[F2] TOGGLE DEBUG OVERLAY   /   [F9] SKIP SONG   /   [F12] TAKE SCREENSHOT")
-				.spacer();
+			viewport.apply();
+			batch.setProjectionMatrix(viewport.getCamera().combined);
+			batch.begin();
+			/*
+			 * INFO
+			 */
+			fontDrawer.reset();
+			fontDrawer.drawLine(
+					"[F2] TOGGLE DEBUG OVERLAY   /   [F9] SKIP SONG   /   [F12] TAKE SCREENSHOT")
+					.spacer();
 
-		// Common
-		fontDrawer.drawLine(gameVersion);
-		fontDrawer.drawLine(appType).spacer();
+			// Common
+			fontDrawer.drawLine(gameVersion);
+			fontDrawer.drawLine(appType).spacer();
 
-		// GL Profiling
-		fontDrawer.drawLine("GL Calls: %s", glCalls);
-		fontDrawer.drawLine("Draw Calls: %s", drawCalls);
-		fontDrawer.drawLine("Shader Switches: %s", shaderSwitches);
-		fontDrawer.drawLine("Texture Bindings: %s", textureBindings);
-		fontDrawer.drawLine("Vertex Count: %s", vertexCount).spacer();
+			// GL Profiling
+			fontDrawer.drawLine("GL Calls: %s", glCalls);
+			fontDrawer.drawLine("Draw Calls: %s", drawCalls);
+			fontDrawer.drawLine("Shader Switches: %s", shaderSwitches);
+			fontDrawer.drawLine("Texture Bindings: %s", textureBindings);
+			fontDrawer.drawLine("Vertex Count: %s", vertexCount).spacer();
 
-		// Threads & Input
-		fontDrawer.drawLine("Threads in Pool: %s/%s",
-				ThreadHandler.instance().getActiveThreadCount(),
-				ThreadHandler.instance().getPoolSize());
-		fontDrawer.drawLine("Mouse Pos: (x) %s (y) %s", Gdx.input.getX(),
-				Gdx.input.getY());
+			// Threads & Input
+			fontDrawer.drawLine("Threads in Pool: %s/%s",
+					ThreadHandler.instance().getActiveThreadCount(),
+					ThreadHandler.instance().getPoolSize());
+			fontDrawer.drawLine("Mouse Pos: (x) %s (y) %s", Gdx.input.getX(),
+					Gdx.input.getY());
 
-		// Sound
-		fontDrawer.drawLine("Music: \"%s\"",
-				soundManager.getCurrentMusicTitle(), Gdx.input.getY());
+			// Sound
+			fontDrawer.drawLine("Music: \"%s\"",
+					soundManager.getCurrentMusicTitle(), Gdx.input.getY());
 
-		/*
-		 * FPS COUNT
-		 */
-		fontDrawer.reset().right();
-		fontDrawer.drawLine("%s FPS", fpsCounter.getFramesPerSecond());
+			/*
+			 * FPS COUNT
+			 */
+			fontDrawer.reset().right();
+			fontDrawer.drawLine("%s FPS", fpsCounter.getFramesPerSecond());
 
-		/*
-		 * FPS GRPAH
-		 */
-		font.draw(batch, "8 ms", fpsGraphX + 5 * MAX_SNAPSHOT_COUNT + 111,
-				fpsGraphY + 43 + 6);
-		font.draw(batch, "16 ms", fpsGraphX + 5 * MAX_SNAPSHOT_COUNT + 111,
-				fpsGraphY + 86 + 6);
-		font.draw(batch,
-				"High: " + Math.round(
-						fpsCounter.getPastFrameTimes().getHighest() * 10) / 10F
-						+ " ms",
-				fpsGraphX, fpsGraphY + 43);
-		font.draw(batch,
-				"Mean: " + Math.round(
-						fpsCounter.getPastFrameTimes().getMean() * 10) / 10F
-						+ " ms",
-				fpsGraphX, fpsGraphY + 43 - 15);
-		font.draw(batch,
-				"Low: " + Math.round(
-						fpsCounter.getPastFrameTimes().getLowest() * 10) / 10F
-						+ " ms",
-				fpsGraphX, fpsGraphY + 43 - 30);
-		batch.end();
+			/*
+			 * FPS GRPAH
+			 */
+			int fpsGraphY = 5;
+			int fpsGraphX = Gdx.graphics.getWidth() - 356;
 
-		shapeRenderer.setProjectionMatrix(viewport.getCamera().combined);
-		shapeRenderer.begin(ShapeType.Line);
-		shapeRenderer.setColor(Color.LIGHT_GRAY);
-		// Horizontal bottom
-		shapeRenderer.line(fpsGraphX + 100, fpsGraphY,
-				fpsGraphX + 5 * (MAX_SNAPSHOT_COUNT + 1) + 100, fpsGraphY);
-		// Horizontal mid
-		shapeRenderer.line(fpsGraphX + 100, fpsGraphY + 43,
-				fpsGraphX + 5 * (MAX_SNAPSHOT_COUNT + 1) + 100, fpsGraphY + 43);
-		// Horizontal top
-		shapeRenderer.line(fpsGraphX + 100, fpsGraphY + 86,
-				fpsGraphX + 5 * (MAX_SNAPSHOT_COUNT + 1) + 100, fpsGraphY + 86);
-		// Vertical left
-		shapeRenderer.line(fpsGraphX + 101, fpsGraphY, fpsGraphX + 101,
-				fpsGraphY + 86);
-		// Vertical right
-		shapeRenderer.line(fpsGraphX + 5 * (MAX_SNAPSHOT_COUNT + 1) + 100,
-				fpsGraphY, fpsGraphX + 5 * (MAX_SNAPSHOT_COUNT + 1) + 100,
-				fpsGraphY + 86);
-		shapeRenderer.end();
+			FontDrawer.drawWithShadow(batch, font, "8 ms",
+					fpsGraphX + 5 * MAX_SNAPSHOT_COUNT + 111,
+					fpsGraphY + 43 + 6);
 
-		Gdx.gl.glEnable(GL20.GL_BLEND);
-		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-		shapeRenderer.begin(ShapeType.Filled);
-		// Background
-		shapeRenderer.setColor(new Color(0.2F, 0.2F, 0.2F, 0.7F));
-		shapeRenderer.rect(fpsGraphX + 100, fpsGraphY,
-				5 * (MAX_SNAPSHOT_COUNT + 1), 86);
+			FontDrawer.drawWithShadow(batch, font, "16 ms",
+					fpsGraphX + 5 * MAX_SNAPSHOT_COUNT + 111,
+					fpsGraphY + 86 + 6);
+			FontDrawer.drawWithShadow(batch, font,
+					"High: " + Math.round(
+							fpsCounter.getPastFrameTimes().getHighest() * 10)
+							/ 10F + " ms",
+					fpsGraphX, fpsGraphY + 43);
+			FontDrawer.drawWithShadow(batch, font,
+					"Mean: " + Math.round(
+							fpsCounter.getPastFrameTimes().getMean() * 10) / 10F
+							+ " ms",
+					fpsGraphX, fpsGraphY + 43 - 15);
+			FontDrawer.drawWithShadow(batch, font,
+					"Low: " + Math.round(
+							fpsCounter.getPastFrameTimes().getLowest() * 10)
+							/ 10F + " ms",
+					fpsGraphX, fpsGraphY + 43 - 30);
+			batch.end();
 
-		// Bars
-		float[] times = fpsCounter.getPastFrameTimes().getWindowValues();
-		int startIndex = MAX_SNAPSHOT_COUNT - times.length;
-		for (int i = 0; i < times.length; i++) {
-			float frameTime = times[i];
+			shapeRenderer.setProjectionMatrix(viewport.getCamera().combined);
+			shapeRenderer.begin(ShapeType.Line);
+			shapeRenderer.setColor(Color.LIGHT_GRAY);
+			// Horizontal bottom
+			shapeRenderer.line(fpsGraphX + 100, fpsGraphY,
+					fpsGraphX + 5 * (MAX_SNAPSHOT_COUNT + 1) + 100, fpsGraphY);
+			// Horizontal mid
+			shapeRenderer.line(fpsGraphX + 100, fpsGraphY + 43,
+					fpsGraphX + 5 * (MAX_SNAPSHOT_COUNT + 1) + 100,
+					fpsGraphY + 43);
+			// Horizontal top
+			shapeRenderer.line(fpsGraphX + 100, fpsGraphY + 86,
+					fpsGraphX + 5 * (MAX_SNAPSHOT_COUNT + 1) + 100,
+					fpsGraphY + 86);
+			// Vertical left
+			shapeRenderer.line(fpsGraphX + 101, fpsGraphY, fpsGraphX + 101,
+					fpsGraphY + 86);
+			// Vertical right
+			shapeRenderer.line(fpsGraphX + 5 * (MAX_SNAPSHOT_COUNT + 1) + 100,
+					fpsGraphY, fpsGraphX + 5 * (MAX_SNAPSHOT_COUNT + 1) + 100,
+					fpsGraphY + 86);
+			shapeRenderer.end();
 
-			shapeRenderer.setColor(ColorUtils.getInterpolatedColor(0, 129,
-					Math.min(1, 1000 / frameTime / 140F), 90, 70));
+			Gdx.gl.glEnable(GL20.GL_BLEND);
+			//Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+			shapeRenderer.begin(ShapeType.Filled);
+			// Background
+			shapeRenderer.setColor(new Color(0.2F, 0.2F, 0.2F, 0.7F));
+			shapeRenderer.rect(fpsGraphX + 100, fpsGraphY,
+					5 * (MAX_SNAPSHOT_COUNT + 1), 86);
 
-			if (frameTime > 16.7F) { // use logarithmic scale above certain
-										// threshold
-				shapeRenderer.rect(fpsGraphX + 103 + (startIndex + i) * 5,
-						fpsGraphY, 4,
-						(16.7F + (float) Math.sqrt((frameTime - 17F) * 2.8F))
-								* (43 / 8));
-			} else {
-				shapeRenderer.rect(fpsGraphX + 103 + (startIndex + i) * 5,
-						fpsGraphY, 4, Math.max((frameTime * (43 / 8)), 1));
+			// Bars
+			float[] times = fpsCounter.getPastFrameTimes().getWindowValues();
+			int startIndex = MAX_SNAPSHOT_COUNT - times.length;
+			for (int i = 0; i < times.length; i++) {
+				float frameTime = times[i];
+
+				shapeRenderer.setColor(ColorUtils.getInterpolatedColor(0, 129,
+						Math.min(1, 1000 / frameTime / 140F), 90, 70));
+
+				if (frameTime > 16.7F) { // use logarithmic scale above certain
+											// threshold
+					shapeRenderer.rect(fpsGraphX + 103 + (startIndex + i) * 5,
+							fpsGraphY, 4,
+							(16.7F + (float) Math
+									.sqrt((frameTime - 17F) * 2.8F))
+									* (43 / 8));
+				} else {
+					shapeRenderer.rect(fpsGraphX + 103 + (startIndex + i) * 5,
+							fpsGraphY, 4, Math.max((frameTime * (43 / 8)), 1));
+				}
+
 			}
 
+			shapeRenderer.end();
+			Gdx.gl.glDisable(GL20.GL_BLEND);
 		}
 
-		shapeRenderer.end();
-		Gdx.gl.glDisable(GL20.GL_BLEND);
+		/*
+		 * STEP MODE
+		 */
+		if (eskalonInputProcessor.isStepModeEnabled()) {
+			shapeRenderer.setProjectionMatrix(viewport.getCamera().combined);
+			shapeRenderer.begin(ShapeType.Filled);
+			shapeRenderer.setColor(Color.WHITE);
+			shapeRenderer.rect(Gdx.graphics.getWidth() - 25,
+					Gdx.graphics.getHeight() - 70, 10, 40);
+			shapeRenderer.rect(Gdx.graphics.getWidth() - 45,
+					Gdx.graphics.getHeight() - 70, 10, 40);
+			shapeRenderer.end();
+		}
 	}
 
-	private class FontDrawer {
+	private static class FontDrawer {
 
 		private SpriteBatch batch;
 		private BitmapFont font;
@@ -288,7 +312,7 @@ public class DebugInfoRenderer {
 
 		public FontDrawer drawLine(String string, Object... args) {
 			String s = Stringf.format(string, args);
-			font.draw(batch, s, getX(s), getY());
+			drawWithShadow(batch, font, s, getX(s), getY());
 			return this;
 		}
 
@@ -327,6 +351,14 @@ public class DebugInfoRenderer {
 			return height - 5
 					- ((currentLineFromTop++ - 1) * (int) font.getLineHeight())
 					- (spacerCount * (int) (font.getLineHeight() / 2));
+		}
+
+		private static void drawWithShadow(SpriteBatch batch, BitmapFont font,
+				String text, float x, float y) {
+			font.setColor(Color.BLACK);
+			font.draw(batch, text, x, y);
+			font.setColor(Color.WHITE);
+			font.draw(batch, text, x, y + 1);
 		}
 	}
 

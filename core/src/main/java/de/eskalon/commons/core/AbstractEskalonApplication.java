@@ -17,18 +17,25 @@ package de.eskalon.commons.core;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
+import com.badlogic.gdx.graphics.glutils.HdpiUtils;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.github.acanthite.gdx.graphics.g2d.FreeTypeSkinLoader;
 
 import de.damios.guacamole.Exceptions;
 import de.damios.guacamole.gdx.assets.Text;
 import de.damios.guacamole.gdx.assets.TextLoader;
+import de.damios.guacamole.gdx.graphics.NestableFrameBuffer;
 import de.damios.guacamole.gdx.log.Logger;
 import de.eskalon.commons.asset.AnnotationAssetManager;
 import de.eskalon.commons.asset.BitmapFontAssetLoaderParametersFactory;
@@ -98,10 +105,11 @@ public abstract class AbstractEskalonApplication
 	protected @Inject EskalonSettings settings;
 	protected @Inject ISoundManager soundManager;
 	protected @Inject StartArguments startArgs;
+	private @Inject EskalonApplicationInputProcessor eskalonInputProcessor;
+	private @Inject DebugInfoRenderer debugInfoRenderer;
 
-	// Convenience keybind stuff
-	private EskalonApplicationInputProcessor eskalonInputProcessor;
-	private DebugInfoRenderer debugInfoRenderer;
+	private NestableFrameBuffer stepModeFBO;
+	private Viewport stepModeViewport = new ScreenViewport();
 
 	protected AbstractEskalonApplication() {
 		this(EskalonApplicationConfiguration.create().build());
@@ -165,16 +173,8 @@ public abstract class AbstractEskalonApplication
 		}
 
 		/*
-		 * MISC
-		 */
-		debugInfoRenderer = new DebugInfoRenderer(batch,
-				appContext.getVersion(), soundManager);
-
-		/*
 		 * INPUT
 		 */
-		eskalonInputProcessor = new EskalonApplicationInputProcessor(
-				soundManager);
 		getInputMultiplexer().addProcessor(eskalonInputProcessor);
 
 		/*
@@ -227,8 +227,7 @@ public abstract class AbstractEskalonApplication
 		screenManager.pushScreen(
 				injector.getInstance(EskalonSplashScreen.class),
 				startArgs.shouldSkipSplashScreen() ? null
-						: new BlendingTransition(batch, 0.25F,
-								Interpolation.exp10In));
+						: new BlendingTransition(batch, 0.25F));
 	}
 
 	/**
@@ -241,25 +240,59 @@ public abstract class AbstractEskalonApplication
 
 	@Override
 	public void render() {
-		// Take care of posting the events in the rendering thread
-		eventBus.dispatchEvents();
+		// FIXME: The step mode doesn't quite work yet. There are instances
+		// within pancake, gg and libGDX where System.nanoTime() &
+		// System.currentTimeMillis() are used; this has to be fixed where
+		// appropriate (maybe a Clock should be used with an offset (but that
+		// doesn't work on GWT without another external library, so likely a
+		// custom solution is needed); and that then has to be used within
+		// libGDX TimeUtils class (to be precise: a custom implementation that
+		// replaces the libGDX class) which then should be used within all of
+		// libGDX's classes.); also: only use nanoTime for measuring elapsed
+		// time!!!
+		boolean stepModeEnabled = eskalonInputProcessor.isStepModeEnabled();
 
-		// Profile stuff
-		debugInfoRenderer.resetProfiler();
-		debugInfoRenderer.setProfilingEnabled(
-				eskalonInputProcessor.isDebugOverlayEnabled());
+		/* Normal rendering or rendering during a step */
+		if (!stepModeEnabled || eskalonInputProcessor.pollDoStep()) {
+			// Determine delta time
+			float delta = eskalonInputProcessor.isStepModeEnabled() ? 1 / 30F
+					: Gdx.graphics.getDeltaTime();
 
-		// Render the screen
-		super.render();
+			if (stepModeEnabled)
+				stepModeFBO.begin();
 
-		debugInfoRenderer.update(Gdx.graphics.getDeltaTime());
+			// Start profiling
+			debugInfoRenderer.startProfiling();
 
-		// Render debug overlay
-		if (eskalonInputProcessor.isDebugOverlayEnabled()) {
-			debugInfoRenderer.render();
+			// Take care of posting the events in the rendering thread
+			eventBus.dispatchEvents();
+
+			// Render the screen
+			screenManager.render(delta);
+
+			// Stop profiling
+			debugInfoRenderer.stopProfiling(delta);
+
+			if (stepModeEnabled)
+				stepModeFBO.end();
 		}
 
-		// Take a screenshot
+		/* Rendering during step mode */
+		if (stepModeEnabled) {
+			ScreenUtils.clear(Color.BLACK, true);
+			stepModeViewport.apply();
+			batch.setProjectionMatrix(stepModeViewport.getCamera().combined);
+			batch.begin();
+			batch.draw(stepModeFBO.getColorBufferTexture(), 0, 0,
+					Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), 0, 0, 1,
+					1);
+			batch.end();
+		}
+
+		/* Render the debug overlay on top */
+		debugInfoRenderer.render();
+
+		/* Take a screenshot if requested */
 		if (eskalonInputProcessor.pollTakeScreenshot()) {
 			ScreenshotUtils.takeAndSaveScreenshot();
 			soundManager
@@ -273,6 +306,15 @@ public abstract class AbstractEskalonApplication
 			return; // see ManagedGame#resize
 
 		super.resize(width, height);
+
+		if (stepModeFBO != null)
+			stepModeFBO.dispose();
+		stepModeFBO = new NestableFrameBuffer(Format.RGBA8888,
+				HdpiUtils.toBackBufferX(Gdx.graphics.getWidth()),
+				HdpiUtils.toBackBufferY(Gdx.graphics.getHeight()),
+				config.shouldProvideDepthBuffers());
+
+		stepModeViewport.update(width, height, true);
 
 		if (postProcessor != null)
 			postProcessor.resize(width, height);

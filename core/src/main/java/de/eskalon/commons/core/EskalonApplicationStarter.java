@@ -42,6 +42,8 @@ import de.eskalon.commons.inject.EskalonInjector;
 import de.eskalon.commons.inject.providers.AssetProviders;
 import de.eskalon.commons.inject.providers.LoggerProvider;
 import de.eskalon.commons.inject.providers.LoggerProvider.Log;
+import de.eskalon.commons.input.EskalonApplicationInputProcessor;
+import de.eskalon.commons.misc.DebugInfoRenderer;
 import de.eskalon.commons.screen.ScreenManager;
 import de.eskalon.commons.screens.EskalonScreenManager;
 import de.eskalon.commons.screens.EskalonSplashScreen;
@@ -158,9 +160,15 @@ public class EskalonApplicationStarter implements ApplicationListener {
 				AnnotationAssetManager.class);
 		AssetProviders.bindAssetProviders(injector);
 
+		// Debug info renderer
+		injector.bindToConstructor(DebugInfoRenderer.class);
+
 		// Event bus
 		injector.bindToConstructor(EventQueueBus.class);
 		injector.bindToSubclass(EventBus.class, EventQueueBus.class);
+
+		// Eskalon input handler
+		injector.bindToConstructor(EskalonApplicationInputProcessor.class);
 
 		// Logger
 		injector.bindToQualifiedProvider(Logger.class, Log.class,
