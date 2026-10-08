@@ -20,7 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Simple utilites for dealing with Java processes.
+ * Simple utilities for dealing with Java processes.
  */
 public final class JavaProcess {
 

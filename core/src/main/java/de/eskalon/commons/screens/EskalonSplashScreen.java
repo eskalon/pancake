@@ -24,6 +24,8 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader.FreeTypeFontLoa
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import de.damios.guacamole.gdx.log.Logger;
+import de.damios.guacamole.gdx.log.LoggerService;
 import de.eskalon.commons.core.StartArguments;
 import de.eskalon.commons.event.CommonsEvents;
 import de.eskalon.commons.event.CommonsEvents.CommonsAssetsLoadedEvent;
@@ -40,6 +42,9 @@ import de.eskalon.commons.inject.annotations.Inject;
  */
 public class EskalonSplashScreen extends AbstractEskalonScreen {
 
+	private static final Logger LOG = LoggerService
+			.getLogger(EskalonSplashScreen.class);
+
 	private AssetManager assetManager;
 	private @Inject SpriteBatch batch;
 	private @Inject EventBus eventBus;
@@ -48,10 +53,10 @@ public class EskalonSplashScreen extends AbstractEskalonScreen {
 	private Texture titleImage;
 
 	private long startTime = -1;
-	private long duration = 1325;
+	private long duration = 1300;
 	private boolean skip;
 
-	private boolean isDone = false;
+	private boolean isDone = false, loggedOnce = false;
 	private int xPos;
 	private int yPos;
 
@@ -62,6 +67,7 @@ public class EskalonSplashScreen extends AbstractEskalonScreen {
 		this.skip = startArgs.shouldSkipSplashScreen();
 		this.viewport = new ScreenViewport();
 
+		/* Load assets for this screen */
 		// Don't use injections for performance reasons
 		assetManager.load(EskalonCommonsAssets.LOGO_TEXTURE_PATH,
 				Texture.class);
@@ -69,6 +75,10 @@ public class EskalonSplashScreen extends AbstractEskalonScreen {
 				.finishLoadingAsset(EskalonCommonsAssets.LOGO_TEXTURE_PATH);
 
 		/* Add common assets to loading queue */
+		// Dark logo
+		assetManager.load(EskalonCommonsAssets.LOGO_DARK_TEXTURE_PATH,
+				Texture.class);
+
 		// Default font
 		FreeTypeFontLoaderParameter fontParam = new FreeTypeFontLoaderParameter();
 		fontParam.fontFileName = EskalonCommonsAssets.DEFAULT_FONT_PATH;
@@ -93,11 +103,19 @@ public class EskalonSplashScreen extends AbstractEskalonScreen {
 			this.startTime = System.currentTimeMillis();
 		}
 
-		if (!isDone && assetManager.update(1000 / 30) && (skip
-				|| (startTime + duration) < System.currentTimeMillis())) {
-			isDone = true;
+		if (!isDone && assetManager.update(1000 / 30)) {
+			if (!loggedOnce) {
+				loggedOnce = true;
+				LOG.debug(
+						"Loading completed in %d miliseconds. %d miliseconds left.",
+						System.currentTimeMillis() - startTime,
+						duration - (System.currentTimeMillis() - startTime));
+			}
 
-			eventBus.post(new CommonsEvents.CommonsAssetsLoadedEvent());
+			if (skip || (startTime + duration) < System.currentTimeMillis()) {
+				isDone = true;
+				eventBus.post(new CommonsEvents.CommonsAssetsLoadedEvent());
+			}
 		}
 
 		batch.end();
@@ -107,7 +125,7 @@ public class EskalonSplashScreen extends AbstractEskalonScreen {
 	public void resize(int width, int height) {
 		viewport.update(width, height, true);
 		xPos = (width - titleImage.getWidth()) / 2;
-		yPos = (height - titleImage.getHeight()) / 2 + 40;
+		yPos = (height - titleImage.getHeight()) / 2 + 10;
 	}
 
 	@Override
@@ -121,6 +139,7 @@ public class EskalonSplashScreen extends AbstractEskalonScreen {
 	 */
 	public static class EskalonCommonsAssets {
 		public static final String LOGO_TEXTURE_PATH = "resources/eskalon.png";
+		public static final String LOGO_DARK_TEXTURE_PATH = "resources/eskalon_dark.png";
 		private static final String DEFAULT_FONT_PATH = "resources/fonts/OpenSans-Regular.ttf";
 		public static final String DEFAULT_FONT_NAME = "commons/default_font.ttf";
 		public static final String SHUTTER_SOUND_PATH = "resources/audio/shutter.wav";

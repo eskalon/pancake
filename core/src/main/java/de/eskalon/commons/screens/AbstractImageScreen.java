@@ -87,15 +87,20 @@ public abstract class AbstractImageScreen extends AbstractEskalonScreen {
 
 	@Override
 	public void render(float delta) {
-		if (image != null) {
-			viewport.apply();
-			batch.setProjectionMatrix(viewport.getCamera().combined);
+		viewport.apply();
+		batch.setProjectionMatrix(viewport.getCamera().combined);
 
-			batch.begin();
+		batch.begin();
+		if (image != null) {
 			batch.draw(this.image, this.position.x, this.position.y,
 					this.dimensions.x, this.dimensions.y);
-			batch.end();
 		}
+		renderWithinBatch(batch, delta);
+		batch.end();
+	}
+
+	protected void renderWithinBatch(SpriteBatch batch, float delta) {
+		// do nothing by default
 	}
 
 	@Override
