@@ -186,8 +186,13 @@ public class EskalonApplicationStarter implements ApplicationListener {
 		injector.bindToSubclass(ISoundManager.class, soundManagerImplClass);
 
 		// Sprite batch
-		injector.bindToInstance(SpriteBatch.class,
-				GL32CMacIssueHandler.createSpriteBatch());
+		SpriteBatch batch = GL32CMacIssueHandler.createSpriteBatch();
+		batch.setBlendFunctionSeparate(GL20.GL_SRC_ALPHA,
+				GL20.GL_ONE_MINUS_SRC_ALPHA, GL20.GL_ONE,
+				GL20.GL_ONE_MINUS_SRC_ALPHA); // without GL_ONE for srcFuncAlpha
+												// alpha behaves funky within
+												// framebuffers
+		injector.bindToInstance(SpriteBatch.class, batch);
 
 		// Start args
 		injector.bindToInstance(StartArguments.class, startArgs);

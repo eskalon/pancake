@@ -16,6 +16,7 @@
 package de.eskalon.commons.screens;
 
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -44,6 +45,11 @@ public abstract class AbstractEskalonUIScreen extends AbstractImageScreen {
 	@Override
 	public void show() {
 		stage = new Stage(new ScreenViewport());
+		stage.getBatch().setBlendFunctionSeparate(GL20.GL_SRC_ALPHA,
+				GL20.GL_ONE_MINUS_SRC_ALPHA, GL20.GL_ONE,
+				GL20.GL_ONE_MINUS_SRC_ALPHA); // without GL_ONE for srcFuncAlpha
+												// alpha behaves funky within
+												// framebuffers
 		mainTable = new Table();
 		stage.addActor(mainTable);
 		mainTable.setFillParent(true);
