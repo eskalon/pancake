@@ -28,6 +28,7 @@ import de.damios.guacamole.Preconditions;
 public final class RandomUtils {
 
 	public static final Random RANDOM = new Random();
+	private static final String CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
 	private RandomUtils() {
 		throw new UnsupportedOperationException();
@@ -156,4 +157,52 @@ public final class RandomUtils {
 	public static <T> T getElement(T[] array) {
 		return getElement(RANDOM, array);
 	}
+
+	/*
+	 * CHARS
+	 */
+	/**
+	 * Returns a random char out of {@value #CHARS}.
+	 * 
+	 * @param random
+	 * @return
+	 */
+	public static char getRandomChar(Random random) {
+		return CHARS.charAt(random.nextInt(CHARS.length()));
+	}
+
+	/**
+	 * Returns a random char out of {@value #CHARS}.
+	 * 
+	 * @return
+	 */
+	public static char getRandomChar() {
+		return getRandomChar(RANDOM);
+	}
+
+	/**
+	 * Returns a string of random chars. See {@link #getRandomChar(Random)}.
+	 * 
+	 * @param random
+	 * @param length
+	 * @return
+	 */
+	public static String getRandomChars(Random random, int length) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < length; i++) {
+			sb.append(getRandomChar(random));
+		}
+
+		return sb.toString();
+	}
+
+	/**
+	 * Returns a string of random chars. See {@link #getRandomChar(Random)}.
+	 * 
+	 * @param length
+	 */
+	public static String getRandomChars(int length) {
+		return getRandomChars(RANDOM, length);
+	}
+
 }

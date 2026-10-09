@@ -39,7 +39,6 @@ public final class MachineIdentificationUtils {
 	private static final Logger LOG = LoggerService
 			.getLogger(MachineIdentificationUtils.class);
 
-	private static final String HOSTNAME_COMMAND = "hostname";
 	private static final String UNKNOWN_HOST_PREFIX = "_unidentified";
 
 	private MachineIdentificationUtils() {
@@ -51,7 +50,7 @@ public final class MachineIdentificationUtils {
 	 *         If one cannot be determined, the MAC address of the first found
 	 *         network adapter is returned. If that doesn't work either,
 	 *         <code>{@value #UNKNOWN_HOST_PREFIX}</code> is returned followed
-	 *         by the {@linkplain System#currentTimeMillis() current time}.
+	 *         by a random char sequence.
 	 */
 	public static String getSimpleIdentifier() {
 		String id = getHostname();
@@ -66,15 +65,14 @@ public final class MachineIdentificationUtils {
 		}
 
 		if (id == null)
-			id = UNKNOWN_HOST_PREFIX
-					+ String.valueOf(System.currentTimeMillis());
+			id = UNKNOWN_HOST_PREFIX + RandomUtils.getRandomChars(6);
 
 		return id;
 	}
 
 	public static @Nullable String getHostname() {
-		try (Scanner s = new Scanner(Runtime.getRuntime().exec(HOSTNAME_COMMAND)
-				.getInputStream());) {
+		try (Scanner s = new Scanner(
+				Runtime.getRuntime().exec("hostname").getInputStream());) {
 			s.useDelimiter("\\A");
 			return s.hasNext() ? s.next() : "";
 		} catch (IOException e) {

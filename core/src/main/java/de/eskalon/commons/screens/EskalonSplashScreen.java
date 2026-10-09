@@ -31,6 +31,7 @@ import de.eskalon.commons.event.CommonsEvents;
 import de.eskalon.commons.event.CommonsEvents.CommonsAssetsLoadedEvent;
 import de.eskalon.commons.event.EventBus;
 import de.eskalon.commons.inject.annotations.Inject;
+import de.eskalon.commons.utils.TimeUtils;
 
 /**
  * This screen is the first screen shown to the user when they start the game.
@@ -53,7 +54,7 @@ public class EskalonSplashScreen extends AbstractEskalonScreen {
 	private Texture titleImage;
 
 	private long startTime = -1;
-	private long duration = 1300;
+	private long duration = 1300 * 1_000_000;
 	private boolean skip;
 
 	private boolean isDone = false, loggedOnce = false;
@@ -91,6 +92,11 @@ public class EskalonSplashScreen extends AbstractEskalonScreen {
 	}
 
 	@Override
+	public void show() {
+		this.startTime = TimeUtils.nano();
+	}
+
+	@Override
 	public void render(float delta) {
 		viewport.apply();
 		batch.setProjectionMatrix(viewport.getCamera().combined);
@@ -99,20 +105,17 @@ public class EskalonSplashScreen extends AbstractEskalonScreen {
 		if (!skip)
 			batch.draw(this.titleImage, xPos, yPos);
 
-		if (startTime == -1) {
-			this.startTime = System.currentTimeMillis();
-		}
-
 		if (!isDone && assetManager.update(1000 / 30)) {
 			if (!loggedOnce) {
 				loggedOnce = true;
 				LOG.debug(
 						"Loading completed in %d miliseconds. %d miliseconds left.",
-						System.currentTimeMillis() - startTime,
-						duration - (System.currentTimeMillis() - startTime));
+						TimeUtils.toMillis(TimeUtils.timeSince(startTime)),
+						TimeUtils.toMillis(
+								duration - TimeUtils.timeSince(startTime)));
 			}
 
-			if (skip || (startTime + duration) < System.currentTimeMillis()) {
+			if (skip || (startTime + duration) < System.nanoTime()) {
 				isDone = true;
 				eventBus.post(new CommonsEvents.CommonsAssetsLoadedEvent());
 			}

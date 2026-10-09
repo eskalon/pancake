@@ -81,9 +81,13 @@ import de.eskalon.commons.utils.ScreenshotUtils;
  * <li>a {@link SpriteBatch}</li>
  * <li>the {@link StartArguments}</li>
  * </ul>
- * In addition, the application registers some convenience keybinds, in
- * particular F2 to toggle a {@linkplain DebugInfoRenderer debug overlay} and
- * F12 to take a screenshot.
+ * In addition, the application registers some convenience keybinds:
+ * <ul>
+ * <li>F2 to toggle a {@linkplain DebugInfoRenderer debug overlay}</li>
+ * <li>F12 to take a screenshot</li>
+ * <li>CTRL + F10 to enter step mode</li>
+ * <li>ENTER to proceed within step mode</li>
+ * </ul>
  * <p>
  * When the application is created, an {@link EskalonSplashScreen} is pushed.
  * 
@@ -241,15 +245,10 @@ public abstract class AbstractEskalonApplication
 	@Override
 	public void render() {
 		// FIXME: The step mode doesn't quite work yet. There are instances
-		// within pancake, gg and libGDX where System.nanoTime() &
-		// System.currentTimeMillis() are used; this has to be fixed where
-		// appropriate (maybe a Clock should be used with an offset (but that
-		// doesn't work on GWT without another external library, so likely a
-		// custom solution is needed); and that then has to be used within
-		// libGDX TimeUtils class (to be precise: a custom implementation that
-		// replaces the libGDX class) which then should be used within all of
-		// libGDX's classes.); also: only use nanoTime for measuring elapsed
-		// time!!!
+		// within libGDX where System.nanoTime() & System.currentTimeMillis()
+		// are used (see e.g.,
+		// https://github.com/search?q=repo%3Alibgdx%2Flibgdx+currenttimemillis%28%29&type=code)
+		// this has to be fixed where appropriate with TimeUtils
 		boolean stepModeEnabled = eskalonInputProcessor.isStepModeEnabled();
 
 		/* Normal rendering or rendering during a step */

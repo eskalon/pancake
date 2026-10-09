@@ -21,6 +21,7 @@ import de.damios.guacamole.gdx.DefaultInputProcessor;
 import de.eskalon.commons.audio.ISoundManager;
 import de.eskalon.commons.inject.annotations.Inject;
 import de.eskalon.commons.inject.annotations.Singleton;
+import de.eskalon.commons.utils.TimeUtils;
 
 /**
  * This input processor takes care of some basic application-wide key binds:
@@ -52,7 +53,7 @@ public class EskalonApplicationInputProcessor implements DefaultInputProcessor {
 	private boolean stepModeTriggered1 = false;
 	private boolean stepModeTriggered2 = false;
 
-	private long lastStepTime = -1;
+	private long lastStepTime;
 
 	@Inject
 	@Singleton
@@ -99,7 +100,7 @@ public class EskalonApplicationInputProcessor implements DefaultInputProcessor {
 
 			return true;
 		}
-		if (keycode == doStepKey) {
+		if (stepModeEnabled && keycode == doStepKey) {
 			continueStepping = true;
 			doStep = true;
 			return true;
@@ -121,7 +122,7 @@ public class EskalonApplicationInputProcessor implements DefaultInputProcessor {
 			stepModeTriggered2 = false;
 			return true;
 		}
-		if (keycode == doStepKey) {
+		if (stepModeEnabled && keycode == doStepKey) {
 			continueStepping = false;
 			return true;
 		}
@@ -153,11 +154,11 @@ public class EskalonApplicationInputProcessor implements DefaultInputProcessor {
 	public boolean pollDoStep() {
 		if (doStep) {
 			doStep = false;
-			lastStepTime = System.currentTimeMillis();
+			lastStepTime = TimeUtils.realNano();
 			return true;
 		} else {
 			if (continueStepping && (lastStepTime > 0
-					&& (System.currentTimeMillis() - lastStepTime > 500)))
+					&& TimeUtils.haveRealMillisPassedSince(lastStepTime, 500)))
 				doStep = true;
 			return false;
 		}
