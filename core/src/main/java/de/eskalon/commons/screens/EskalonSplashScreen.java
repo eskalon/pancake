@@ -32,11 +32,7 @@ import de.eskalon.commons.event.CommonsEvents.CommonsAssetsLoadedEvent;
 import de.eskalon.commons.event.EventBus;
 import de.eskalon.commons.inject.annotations.Inject;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.InputMultiplexer;
 
 /**
  * This screen is the first screen shown to the user when they start the game.
@@ -66,13 +62,6 @@ public class EskalonSplashScreen extends AbstractEskalonScreen {
 	private int xPos;
 	private int yPos;
 
-	// Loading-State field
-	private boolean assetsLoaded = false;
-
-	// Input listners
-	private InputAdapter skipInputListener;
-	private InputProcessor previousInputProcessor;
-	private InputMultiplexer inputMultiplexer;
 
 	@Inject
 	public EskalonSplashScreen(StartArguments startArgs,
@@ -104,46 +93,22 @@ public class EskalonSplashScreen extends AbstractEskalonScreen {
 		assetManager.load(EskalonCommonsAssets.SHUTTER_SOUND_PATH, Sound.class);
 	}
 
-	// Register or Skip Input Listener
+		// Register or Skip Input Listener
 	private void registerSkipInputListener() {
-		if (skipInputListener != null) {
-			return;
-		}
+    	addInputProcessor(new InputAdapter() {
+        	@Override
+        	public boolean keyDown(int keycode) {
+            	skip = true;
+            	return true;
+        	}
 
-		skipInputListener = new InputAdapter() {
-			@Override
-			public boolean keyDown(int keycode) {
-				if (assetsLoaded && !isDone) {
-					skip = true;
-					return true;
-				}
-				return false;
-			}
-
-			@Override
-			public boolean touchDown(
-					int screenX,
-					int screenY,
-					int pointer,
-					int button) {
-
-				if (assetsLoaded && !isDone) {
-					skip = true;
-					return true;
-				}
-				return false;
-			}
-		};
-
-		previousInputProcessor = Gdx.input.getInputProcessor();
-
-		inputMultiplexer = new InputMultiplexer();
-		if (previousInputProcessor != null) {
-			inputMultiplexer.addProcessor(previousInputProcessor);
-		}
-		inputMultiplexer.addProcessor(skipInputListener);
-
-		Gdx.input.setInputProcessor(inputMultiplexer);
+        	@Override
+        	public boolean touchDown(
+                int screenX, int screenY, int pointer, int button) {
+            	skip = true;
+            	return true;
+        	}
+    	});
 	}
 
 	@Override
@@ -160,16 +125,15 @@ public class EskalonSplashScreen extends AbstractEskalonScreen {
 		}
 
 		if (!isDone && assetManager.update(1000 / 30)) {
-			assetsLoaded = true;
-
-			registerSkipInputListener();
-
 			if (!loggedOnce) {
-				loggedOnce = true;
-				LOG.debug(
-						"Loading completed in %d miliseconds. %d miliseconds left.",
-						System.currentTimeMillis() - startTime,
-						duration - (System.currentTimeMillis() - startTime));
+    			loggedOnce = true;
+
+    			LOG.debug(
+            		"Loading completed in %d miliseconds. %d miliseconds left.",
+            		System.currentTimeMillis() - startTime,
+            		duration - (System.currentTimeMillis() - startTime));
+
+    			registerSkipInputListener();
 			}
 
 			if (skip || (startTime + duration) < System.currentTimeMillis()) {
@@ -190,9 +154,6 @@ public class EskalonSplashScreen extends AbstractEskalonScreen {
 
 	@Override
 	public void dispose() {
-		if (Gdx.input.getInputProcessor() == inputMultiplexer) {
-			Gdx.input.setInputProcessor(previousInputProcessor);
-		}
 		// The title image might be used in other screens.
 	}
 
