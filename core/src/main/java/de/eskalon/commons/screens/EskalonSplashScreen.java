@@ -15,6 +15,7 @@
 
 package de.eskalon.commons.screens;
 
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
@@ -31,8 +32,6 @@ import de.eskalon.commons.event.CommonsEvents;
 import de.eskalon.commons.event.CommonsEvents.CommonsAssetsLoadedEvent;
 import de.eskalon.commons.event.EventBus;
 import de.eskalon.commons.inject.annotations.Inject;
-
-import com.badlogic.gdx.InputAdapter;
 
 /**
  * This screen is the first screen shown to the user when they start the game.
@@ -56,12 +55,11 @@ public class EskalonSplashScreen extends AbstractEskalonScreen {
 
 	private long startTime = -1;
 	private long duration = 1300;
-	private boolean skip;
+	private boolean skip, manualSkip;
 
-	private boolean isDone = false, loggedOnce = false;
+	private boolean isDone, once;
 	private int xPos;
 	private int yPos;
-
 
 	@Inject
 	public EskalonSplashScreen(StartArguments startArgs,
@@ -93,24 +91,6 @@ public class EskalonSplashScreen extends AbstractEskalonScreen {
 		assetManager.load(EskalonCommonsAssets.SHUTTER_SOUND_PATH, Sound.class);
 	}
 
-		// Register or Skip Input Listener
-	private void registerSkipInputListener() {
-    	addInputProcessor(new InputAdapter() {
-        	@Override
-        	public boolean keyDown(int keycode) {
-            	skip = true;
-            	return true;
-        	}
-
-        	@Override
-        	public boolean touchDown(
-                int screenX, int screenY, int pointer, int button) {
-            	skip = true;
-            	return true;
-        	}
-    	});
-	}
-
 	@Override
 	public void render(float delta) {
 		viewport.apply();
@@ -125,18 +105,33 @@ public class EskalonSplashScreen extends AbstractEskalonScreen {
 		}
 
 		if (!isDone && assetManager.update(1000 / 30)) {
-			if (!loggedOnce) {
-    			loggedOnce = true;
+			if (!once) {
+				once = true;
 
-    			LOG.debug(
-            		"Loading completed in %d miliseconds. %d miliseconds left.",
-            		System.currentTimeMillis() - startTime,
-            		duration - (System.currentTimeMillis() - startTime));
+				LOG.debug(
+						"Loading completed in %d miliseconds. %d miliseconds left.",
+						System.currentTimeMillis() - startTime,
+						duration - (System.currentTimeMillis() - startTime));
 
-    			registerSkipInputListener();
+				// Allow skipping
+				addInputProcessor(new InputAdapter() {
+					@Override
+					public boolean keyDown(int keycode) {
+						manualSkip = true;
+						return true;
+					}
+
+					@Override
+					public boolean touchDown(int screenX, int screenY,
+							int pointer, int button) {
+						manualSkip = true;
+						return true;
+					}
+				});
 			}
 
-			if (skip || (startTime + duration) < System.currentTimeMillis()) {
+			if (skip || manualSkip
+					|| (startTime + duration) < System.currentTimeMillis()) {
 				isDone = true;
 				eventBus.post(new CommonsEvents.CommonsAssetsLoadedEvent());
 			}
@@ -154,7 +149,7 @@ public class EskalonSplashScreen extends AbstractEskalonScreen {
 
 	@Override
 	public void dispose() {
-		// The title image might be used in other screens.
+		// not needed; the title image might be used in other screens.
 	}
 
 	/**
