@@ -109,7 +109,7 @@ public class EskalonSplashScreen extends AbstractEskalonScreen {
 				once = true;
 
 				LOG.debug(
-						"Loading completed in %d miliseconds. %d miliseconds left.",
+						"Loading completed in %d milliseconds. %d milliseconds left.",
 						System.currentTimeMillis() - startTime,
 						duration - (System.currentTimeMillis() - startTime));
 
