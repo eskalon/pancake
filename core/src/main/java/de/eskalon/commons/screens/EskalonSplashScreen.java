@@ -149,7 +149,7 @@ public class EskalonSplashScreen extends AbstractEskalonScreen {
 
 	@Override
 	public void dispose() {
-		// not needed; the title image might be used in other screens.
+		// not needed; the title image might be used in other screens
 	}
 
 	/**
