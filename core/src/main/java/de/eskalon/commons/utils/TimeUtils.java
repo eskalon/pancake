@@ -15,16 +15,23 @@
 
 package de.eskalon.commons.utils;
 
+import de.damios.guacamole.Preconditions;
+
 /**
  * Wrapper around System.nanoTime().
+ * <p>
+ * The time can be frozen. {@link #freeze()}, {@link #unfreeze()} and
+ * {@link #thaw(long)} must always be called from the same thread; all other
+ * methods are thread-safe.
  * 
  * @author damios
  */
 public final class TimeUtils {
 
 	private static final long NANOS_PER_MILLI = 1000000;
-	private static long currentlyFrozenSince = -1;
-	private static long frozenNanos = -1;
+	private static volatile boolean frozen;
+	private static volatile long frozenNanos;
+	private static volatile long timeOfFreeze;
 
 	private TimeUtils() {
 		throw new UnsupportedOperationException();
@@ -34,29 +41,33 @@ public final class TimeUtils {
 	 * FREEZE TIME
 	 */
 	public static void freeze() {
-		currentlyFrozenSince = realNano();
+		Preconditions.checkState(!frozen);
+		timeOfFreeze = nano();
+		frozen = true;
 	}
 
 	public static void unfreeze() {
-		frozenNanos += realTimeSince(currentlyFrozenSince);
-		currentlyFrozenSince = -1;
+		Preconditions.checkState(frozen);
+		frozenNanos = realNano() - timeOfFreeze;
+		frozen = false;
 	}
 
 	public static void thaw(long nanos) {
 		frozenNanos -= nanos;
+		timeOfFreeze += nanos;
 	}
 
-	private static long getFreezingOffset() {
-		return frozenNanos + (currentlyFrozenSince != -1
-				? realTimeSince(currentlyFrozenSince)
-				: 0);
+	public static boolean isFrozen() {
+		return frozen;
 	}
 
 	/*
 	 * GET TIME
 	 */
 	public static long nano() {
-		return System.nanoTime() - getFreezingOffset();
+		if (frozen)
+			return timeOfFreeze;
+		return System.nanoTime() - frozenNanos;
 	}
 
 	public static long realNano() {
@@ -95,11 +106,25 @@ public final class TimeUtils {
 		return realTimeSince(prevNanoTime) >= nanosToPass;
 	}
 
+	/**
+	 * 
+	 * @param prevNanoTime
+	 *            this is the previous time in nano seconds!
+	 * @param millisToPass
+	 * @return
+	 */
 	public static boolean haveMillisPassedSince(long prevNanoTime,
 			long millisToPass) {
 		return timeSince(prevNanoTime) >= toNanos(millisToPass);
 	}
 
+	/**
+	 * 
+	 * @param prevNanoTime
+	 *            this is the previous time in nano seconds!
+	 * @param millisToPass
+	 * @return
+	 */
 	public static boolean haveRealMillisPassedSince(long prevNanoTime,
 			long millisToPass) {
 		return realTimeSince(prevNanoTime) >= toNanos(millisToPass);

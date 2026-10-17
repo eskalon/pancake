@@ -19,8 +19,9 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.Executor;
 
-import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.async.ThreadUtils;
+
+import de.eskalon.commons.utils.TimeUtils;
 
 /**
  * This Executor executes {@link #execute(Runnable) submitted} {@link Runnable}
@@ -34,10 +35,10 @@ public class TaskExecutor implements Executor {
 	private int taskCount = 0;
 
 	public boolean update(int millis) {
-		long endTime = TimeUtils.millis() + millis;
+		long endTime = TimeUtils.realNano() + TimeUtils.toNanos(millis);
 		while (true) {
 			boolean done = update();
-			if (done || TimeUtils.millis() > endTime)
+			if (done || TimeUtils.realNano() > endTime)
 				return done;
 			ThreadUtils.yield();
 		}

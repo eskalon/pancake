@@ -50,6 +50,7 @@ public class EskalonApplicationInputProcessor implements DefaultInputProcessor {
 	private boolean stepModeEnabled = false;
 	private boolean continueStepping = false;
 	private boolean doStep = false;
+	private int currentStepCount;
 	private boolean stepModeTriggered1 = false;
 	private boolean stepModeTriggered2 = false;
 
@@ -153,15 +154,24 @@ public class EskalonApplicationInputProcessor implements DefaultInputProcessor {
 
 	public boolean pollDoStep() {
 		if (doStep) {
+			currentStepCount = 0;
 			doStep = false;
 			lastStepTime = TimeUtils.realNano();
 			return true;
-		} else {
-			if (continueStepping && (lastStepTime > 0
-					&& TimeUtils.haveRealMillisPassedSince(lastStepTime, 500)))
-				doStep = true;
-			return false;
 		}
+
+		if (continueStepping) {
+			currentStepCount++;
+			// Start continuously stepping after first holding the key down
+			// for 300ms; after that step in 75ms intervals
+			if (TimeUtils.haveRealMillisPassedSince(lastStepTime,
+					(currentStepCount == 1 ? 300 : 75))) {
+				lastStepTime = TimeUtils.realNano();
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 }

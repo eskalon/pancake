@@ -63,6 +63,7 @@ import de.eskalon.commons.screens.EskalonSplashScreen;
 import de.eskalon.commons.screens.EskalonSplashScreen.EskalonCommonsAssets;
 import de.eskalon.commons.settings.EskalonSettings;
 import de.eskalon.commons.utils.ScreenshotUtils;
+import de.eskalon.commons.utils.TimeUtils;
 
 /**
  * A basic game application. Has to be created via
@@ -246,19 +247,35 @@ public abstract class AbstractEskalonApplication
 	public void render() {
 		// FIXME: The step mode doesn't quite work yet. There are instances
 		// within libGDX where System.nanoTime() & System.currentTimeMillis()
-		// are used (see e.g.,
-		// https://github.com/search?q=repo%3Alibgdx%2Flibgdx+currenttimemillis%28%29&type=code)
-		// this has to be fixed where appropriate with TimeUtils
+		// are used.
+		// CLASSES TO FIX:
+		// (No classes with System.millis!)
+		// Classes with System.nano:
+		//
+		// Classes with TimeUtils
+		// ...
+		// Classes with Timer?
+		//
 		boolean stepModeEnabled = eskalonInputProcessor.isStepModeEnabled();
+
+		// Freeze the time during step mode
+		if (stepModeEnabled != TimeUtils.isFrozen()) {
+			if (TimeUtils.isFrozen())
+				TimeUtils.unfreeze();
+			else
+				TimeUtils.freeze();
+		}
 
 		/* Normal rendering or rendering during a step */
 		if (!stepModeEnabled || eskalonInputProcessor.pollDoStep()) {
 			// Determine delta time
-			float delta = eskalonInputProcessor.isStepModeEnabled() ? 1 / 30F
+			float delta = eskalonInputProcessor.isStepModeEnabled() ? 1 / 45F
 					: Gdx.graphics.getDeltaTime();
 
-			if (stepModeEnabled)
+			if (stepModeEnabled) {
+				TimeUtils.thaw((long) (delta * 1_000_000_000L));
 				stepModeFBO.begin();
+			}
 
 			// Start profiling
 			debugInfoRenderer.startProfiling();
